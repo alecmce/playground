@@ -1,0 +1,15 @@
+.layer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  left: 0;
+  top: 0;
+}
+
+.overlay {
+  padding: 5px;
+  border-radius: 10px 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  height: min-content;
+}
