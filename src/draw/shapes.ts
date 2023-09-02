@@ -1,8 +1,10 @@
-import { drawPolygon } from './draw-polygon'
+import { mix } from 'chroma-js'
 import { Brush, Fill } from 'src/model/drawing'
-import { Point, Polygon } from 'src/model/geometry'
+import { Point } from 'src/model/geometry'
 import { SeededRandom } from 'src/model/random'
+import { Shape } from 'src/model/shapes'
 import { makeRegularPolygon } from '../lib/polygon'
+import { drawPolygon } from './draw-polygon'
 
 
 interface Props {
@@ -14,13 +16,14 @@ interface Props {
   sides:  number[]
 }
 
-interface Shape {
-  polygon: Polygon
-  fill:    Fill
+interface DrawProps {
+  context: CanvasRenderingContext2D
+  points:  Point[]
+  target:  Point | null
 }
 
 interface Draw {
-  (context: CanvasRenderingContext2D, points: Point[]): void
+  (props: DrawProps): void
 }
 
 export function makeShapes(props: Props): Draw {
@@ -28,11 +31,16 @@ export function makeShapes(props: Props): Draw {
 
   const shapes = Array.from({ length: count }, makeShape)
 
-  return function draw(context: CanvasRenderingContext2D, points: Point[]): void {
+  return function draw(props: DrawProps): void {
+    const { context, points, target } = props
     shapes.forEach(drawShape)
 
     function drawShape(shape: Shape, index: number): void {
-      const { polygon, fill } = shape
+      const { polygon, fill: shapeFill } = shape
+      const offset = points[index]
+      const fill = offset === target
+        ? { alpha: 1, color: mix(shapeFill.color, 'white', 0.5).hex() } as Fill
+        : shapeFill
       drawPolygon({ brush, context, fill, offset: points[index], polygon })
     }
   }
