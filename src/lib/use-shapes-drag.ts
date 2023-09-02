@@ -1,17 +1,21 @@
-import { Dispatch, SetStateAction, useMemo } from 'react'
-import { Point } from 'src/model/geometry'
+import { Dispatch, SetStateAction, useMemo, useRef } from 'react'
+import { Point, Positions } from 'src/model/geometry'
 import { getDistance } from './math-utils'
 import { usePointerHandlers } from './use-pointer-handlers'
 
 interface Props {
-  points:    Point[]
-  radius:    number
-  setTarget: (target: Point | null) => void
-  setPoints: Dispatch<SetStateAction<Point[]>>
+  positions:    Positions
+  radius:       number
+  clampPoint:   (point: Point) => void
+  setPositions: Dispatch<SetStateAction<Positions>>
+  setTarget:    Dispatch<SetStateAction<Point | null>>
 }
 
 export function useShapesDrag(props: Props): void {
-  const { points, radius, setPoints, setTarget } = props
+  const { clampPoint, positions, radius, setPositions, setTarget } = props
+  const { points } = positions
+
+  const initial = useRef<Point>({ x: 0, y: 0 })
 
   const handlers = useMemo(() => {
     return { isOver, onDown, onDrag, onDrop, onHover, onMove, onUp }
@@ -20,7 +24,11 @@ export function useShapesDrag(props: Props): void {
       return points.find(p => getDistance(p, pointer) < radius) ?? null
     }
 
-    function onDown(pointer: Point): boolean {
+    function onDown(pointer: Point, target: Point | null): boolean {
+      if (target) {
+        initial.current.x = target.x
+        initial.current.y = target.y
+      }
       return isOver(pointer) !== null
     }
 
@@ -38,16 +46,17 @@ export function useShapesDrag(props: Props): void {
 
     function onDrag(start: Point, current: Point, target: Point | null): void {
       if (target) {
-        const offset = { x: target.x + current.x - start.x, y: target.y + current.y - start.y }
-        setPoints(points.map(p => p === target ? offset : p))
-        setTarget(offset)
+        target.x = initial.current.x + current.x - start.x
+        target.y = initial.current.y + current.y - start.y
+        clampPoint(target)
+        setPositions(p => ({ ...p, version: p.version + 1 }))
       }
     }
 
     function onDrop(): void {
 
     }
-  }, [setPoints, setTarget])
+  }, [setPositions, setTarget, initial])
 
   return usePointerHandlers<Point | null>(handlers)
 }

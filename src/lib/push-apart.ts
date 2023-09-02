@@ -1,28 +1,28 @@
-import { Point } from 'src/model/geometry'
+import { Point, Positions } from 'src/model/geometry'
 import { clamp } from './math-utils'
 
 interface Props {
-  height:  number
-  points:  Point[]
-  radius:  number
-  width:   number
-  scalar?: number
+  height:    number
+  positions: Positions
+  width:     number
+  scalar?:   number
 }
 
-interface PushApart {
-  isForceApplied: boolean
-  points:         Point[]
-}
-
-export function pushApart(props: Props): PushApart {
-  const { height, points: inputs, radius, width, scalar = 0.001 } = props
+export function pushApart(props: Props): Positions {
+  const { height, positions, scalar = 0.001, width } = props
+  const { points, radius, version } = positions
   let isForceApplied = false
 
-  const pairs = makePairs(inputs)
-  const forces = new Map(inputs.map(p => [p, { x: 0, y: 0 }]))
+  const pairs = makePairs(points)
+  const forces = new Map(points.map(p => [p, { x: 0, y: 0 }]))
   pairs.forEach(gatherForce)
-  const points = isForceApplied ? inputs.map(applyForce) : inputs
-  return { isForceApplied, points }
+
+  if (isForceApplied) {
+    points.forEach(applyForce)
+    return { ...positions, version: version + 1 }
+  } else {
+    return positions
+  }
 
   function gatherForce([a, b]: [Point, Point]): void {
     const forceA = forces.get(a)!
@@ -44,17 +44,10 @@ export function pushApart(props: Props): PushApart {
     }
   }
 
-  function applyForce(point: Point): Point {
+  function applyForce(point: Point): void {
     const force = forces.get(point)!
-    return force.x !== 0 || force.y !== 0
-      ? apply()
-      : point
-
-    function apply(): Point {
-      const x = clamp(point.x + force.x, radius, width - radius)
-      const y = clamp(point.y + force.y, radius, height - radius)
-      return { x, y }
-    }
+    point.x = clamp(point.x + force.x, radius, width - radius)
+    point.y = clamp(point.y + force.y, radius, height - radius)
   }
 }
 

@@ -1,4 +1,4 @@
-import { Point } from 'src/model/geometry'
+import { Point, Positions } from 'src/model/geometry'
 
 interface Props {
   count:  number
@@ -8,17 +8,12 @@ interface Props {
 
 const VOLUME_DENSITY = 0.7
 
-interface Positions {
-  points: Point[]
-  radius: number
-}
-
 export function makePositions(props: Props): Positions {
   const { count, height, width } = props
 
   const radius = getRadius(props)
   const points = Array.from({ length: count }, makeInitialPoint)
-  return { points, radius }
+  return { points, radius, version: 0 }
 
   function makeInitialPoint(): Point {
     const x = Math.random() * (width - 2 * radius) + radius
