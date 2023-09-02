@@ -8,11 +8,12 @@ interface Props {
   radius:       number
   clampPoint:   (point: Point) => void
   setPositions: Dispatch<SetStateAction<Positions>>
+  setPointer:   Dispatch<SetStateAction<Point | null>>
   setTarget:    Dispatch<SetStateAction<Point | null>>
 }
 
 export function useShapesDrag(props: Props): void {
-  const { clampPoint, positions, radius, setPositions, setTarget } = props
+  const { clampPoint, positions, radius, setPointer, setPositions, setTarget } = props
   const { points } = positions
 
   const initial = useRef<Point>({ x: 0, y: 0 })
@@ -36,8 +37,8 @@ export function useShapesDrag(props: Props): void {
       setTarget(target)
     }
 
-    function onMove(): void {
-
+    function onMove(point: Point): void {
+      setPointer(point)
     }
 
     function onUp(): void {
@@ -45,6 +46,7 @@ export function useShapesDrag(props: Props): void {
     }
 
     function onDrag(start: Point, current: Point, target: Point | null): void {
+      setPointer(current)
       if (target) {
         target.x = initial.current.x + current.x - start.x
         target.y = initial.current.y + current.y - start.y
@@ -56,7 +58,7 @@ export function useShapesDrag(props: Props): void {
     function onDrop(): void {
 
     }
-  }, [setPositions, setTarget, initial])
+  }, [setPointer, setPositions, setTarget, initial])
 
   return usePointerHandlers<Point | null>(handlers)
 }

@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
 import { makeShapes } from './draw/shapes'
 import { useClampPoint } from './lib/clamp-point'
@@ -10,7 +10,7 @@ import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
 import { Point } from './model/geometry'
 
-const BRUSH = { alpha: 1, color: 'white', width: 4 } as const
+const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff']
 const SIDES = [3, 4, 5, 6, 7, 8]
 const SCALAR = 0.01 as const
@@ -23,17 +23,19 @@ export function App(): ReactElement {
   const random = useMemo(() => makeTwister(Math.random()), [])
 
   const initial = useMemo(() => makePositions({ count: COUNT, density: DENSITY, height, width }), [width, height])
+  const [pointer, setPointer] = useState<Point | null>(null)
   const [positions, setPositions] = useState(initial)
   const { points, radius } = initial
-  const { version } = positions
 
   const clampPoint = useClampPoint({ width, height, radius })
-  const drawShapes = useMemo(() => makeShapes({ brush: BRUSH, colors: COLORS, radius, random, sides: SIDES, count: COUNT }), [width, height])
+  const drawShapes = useMemo(() => makeShapes({
+    brush: BRUSH, colors: COLORS, count: COUNT, radius, random, sides: SIDES,
+  }), [width, height])
 
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
   const [target, setTarget] = useState<Point | null>(null)
 
-  useShapesDrag({ clampPoint, positions, radius, setTarget, setPositions })
+  useShapesDrag({ clampPoint, positions, radius, setPointer, setPositions, setTarget })
 
   const iterate = useCallback(() => {
     setPositions(positions => pushApart({ positions, width, height, scalar: SCALAR }))
@@ -41,13 +43,11 @@ export function App(): ReactElement {
 
   useTick(iterate)
 
-  useEffect(() => {
-    const context = canvas?.getContext('2d')
-    if (context) {
-      context.clearRect(0, 0, width, height)
-      drawShapes({ context, points, target })
-    }
-  }, [canvas, drawShapes, points, target, version])
+  const context = canvas?.getContext('2d')
+  if (context) {
+    context.clearRect(0, 0, width, height)
+    drawShapes({ context, points, pointer, target })
+  }
 
   return (
     <Fragment>

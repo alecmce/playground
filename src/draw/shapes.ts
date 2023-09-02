@@ -4,20 +4,22 @@ import { Point } from 'src/model/geometry'
 import { SeededRandom } from 'src/model/random'
 import { Shape } from 'src/model/shapes'
 import { makeRegularPolygon } from '../lib/polygon'
+import { drawEye } from './draw-eye'
 import { drawPolygon } from './draw-polygon'
 
 
 interface Props {
-  brush:  Brush
-  colors: string[]
-  count:  number
-  radius: number
-  random: SeededRandom
-  sides:  number[]
+  brush:   Brush
+  colors:  string[]
+  count:   number
+  radius:  number
+  random:  SeededRandom
+  sides:   number[]
 }
 
 interface DrawProps {
   context: CanvasRenderingContext2D
+  pointer: Point | null
   points:  Point[]
   target:  Point | null
 }
@@ -32,16 +34,17 @@ export function makeShapes(props: Props): Draw {
   const shapes = Array.from({ length: count }, makeShape)
 
   return function draw(props: DrawProps): void {
-    const { context, points, target } = props
+    const { context, pointer, points, target } = props
     shapes.forEach(drawShape)
 
     function drawShape(shape: Shape, index: number): void {
       const { polygon, fill: shapeFill } = shape
       const offset = points[index]
       const fill = offset === target
-        ? { alpha: 1, color: mix(shapeFill.color, 'white', 0.5).hex() } as Fill
+        ? { alpha: 1, color: mix(shapeFill.color, 'white', 0.3).hex() } as Fill
         : shapeFill
-      drawPolygon({ brush, context, fill, offset: points[index], polygon })
+      drawPolygon({ brush, context, fill, offset, polygon })
+      drawEye({ brush, center: offset, context, pointer })
     }
   }
 

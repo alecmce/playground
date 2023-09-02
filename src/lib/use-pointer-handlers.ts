@@ -6,6 +6,7 @@ interface Props<T> {
   onDown:  (point: Point, item: T) => boolean // isDrag
   onDrag:  (down: Point, current: Point, item: T) => void
   onDrop:  (down: Point, current: Point, item: T) => void
+  onMove:  (point: Point) => void
   onHover: (point: Point, item: T | null) => void
   onUp:    (point: Point, item: T) => void
 }
@@ -17,7 +18,7 @@ interface State<T> {
 }
 
 export function usePointerHandlers<T>(props: Props<T>): void {
-  const { isOver, onDown, onDrag, onDrop, onHover, onUp } = props
+  const { isOver, onDown, onDrag, onDrop, onHover, onMove, onUp } = props
 
   const state = useRef<State<T>>({
     down: null,
@@ -31,6 +32,7 @@ export function usePointerHandlers<T>(props: Props<T>): void {
 
     function onPointerMove(event: PointerEvent): void {
       const point = getPoint(event)
+      onMove(point)
 
       if (state.current.isDrag) {
         onDrag(state.current.down!, point, state.current.item!)
