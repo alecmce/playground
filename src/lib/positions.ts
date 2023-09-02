@@ -1,12 +1,11 @@
 import { Point, Positions } from 'src/model/geometry'
 
 interface Props {
-  count:  number
-  height: number
-  width:  number
+  count:   number
+  density: number
+  height:  number
+  width:   number
 }
-
-const VOLUME_DENSITY = 0.7
 
 export function makePositions(props: Props): Positions {
   const { count, height, width } = props
@@ -23,6 +22,6 @@ export function makePositions(props: Props): Positions {
 }
 
 function getRadius(props: Props): number {
-  const { count, height, width } = props
-  return VOLUME_DENSITY * Math.sqrt((width * height) / (Math.PI * count))
+  const { count, density, height, width } = props
+  return density * Math.sqrt((width * height) / (Math.PI * count))
 }

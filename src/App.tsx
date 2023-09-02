@@ -15,13 +15,14 @@ const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd'
 const SIDES = [3, 4, 5, 6, 7, 8]
 const SCALAR = 0.01 as const
 const COUNT = 25 as const
+const DENSITY = 0.5 as const
 
 export function App(): ReactElement {
   const { width, height } = useWindowSize()
 
   const random = useMemo(() => makeTwister(Math.random()), [])
 
-  const initial = useMemo(() => makePositions({ width, height, count: COUNT }), [width, height])
+  const initial = useMemo(() => makePositions({ count: COUNT, density: DENSITY, height, width }), [width, height])
   const [positions, setPositions] = useState(initial)
   const { points, radius } = initial
   const { version } = positions
