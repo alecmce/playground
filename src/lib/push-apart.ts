@@ -1,16 +1,17 @@
 import { Point, Positions } from 'src/model/geometry'
 import { clamp } from './math-utils'
+import { Size } from 'src/model/values'
 
 interface Props {
-  height:    number
   positions: Positions
   radius:    number
-  width:     number
   scalar?:   number
+  size:      Size
 }
 
 export function pushApart(props: Props): Positions {
-  const { height, positions, radius, scalar = 0.001, width } = props
+  const { positions, radius, scalar = 0.001, size } = props
+  const { height, width } = size
   const { points, version } = positions
   let isForceApplied = false
 

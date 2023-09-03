@@ -1,21 +1,22 @@
 import { useMemo } from 'react'
 import { Point, Positions } from 'src/model/geometry'
+import { Size } from 'src/model/values'
 
 interface Props {
   count:   number
   radius:  number
-  height:  number
-  width:   number
+  size:    Size
 }
 
 export function usePositions(props: Props): Positions {
-  const { count, height, radius, width } = props
+  const { count, radius, size } = props
 
-  return useMemo(() => makePositions({ count, height, radius, width }), [count])
+  return useMemo(() => makePositions({ count, radius, size }), [count])
 }
 
 export function makePositions(props: Props): Positions {
-  const { count, height, radius, width } = props
+  const { count, radius, size } = props
+  const { height, width } = size
 
   const points = Array.from({ length: count }, makeInitialPoint)
   return { points, version: 0 }

@@ -20,17 +20,18 @@ const COUNT = 100 as const
 const DENSITY = 0.5 as const
 
 export function App(): ReactElement {
-  const { width, height } = useWindowSize()
+  const size = useWindowSize()
+  const { width, height } = size
 
   const random = useMemo(() => makeTwister(Math.random()), [])
 
-  const radius = useRadius({ count: COUNT, density: DENSITY, height, width })
-  const initial = useMemo(() => makePositions({ count: COUNT, radius, height, width }), [])
+  const radius = useRadius({ count: COUNT, density: DENSITY, size })
+  const initial = useMemo(() => makePositions({ count: COUNT, radius, size }), [])
   const [pointer, setPointer] = useState<Point | null>(null)
   const [positions, setPositions] = useState(initial)
   const { points } = initial
 
-  const clampPoint = useClampPoint({ width, height, radius })
+  const clampPoint = useClampPoint({ radius, size })
   const drawShapes = useMemo(() => makeShapes({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES}), [])
 
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
@@ -39,8 +40,8 @@ export function App(): ReactElement {
   useShapesDrag({ clampPoint, positions, radius, setPointer, setPositions, setTarget })
 
   const iterate = useCallback(() => {
-    setPositions(positions => pushApart({ positions, radius, width, height, scalar: SCALAR }))
-  }, [setPositions, width, height])
+    setPositions(positions => pushApart({ positions, radius, size, scalar: SCALAR }))
+  }, [setPositions])
 
   useTick(iterate)
 
