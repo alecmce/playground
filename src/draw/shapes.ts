@@ -7,6 +7,7 @@ import { makeRegularPolygon } from '../lib/polygon'
 import { drawEyes } from './draw-eye'
 import { drawPolygon } from './draw-polygon'
 
+const UNIT_SCALAR = 60
 
 interface Props {
   brush:   Brush
@@ -15,7 +16,7 @@ interface Props {
   radius:  number
   random:  SeededRandom
   sides:   number[]
-  eyes:    number[]
+  eyes:    Array<1 | 2 | 3 | 4 | 5>
 }
 
 interface DrawProps {
@@ -36,6 +37,12 @@ export function makeShapes(props: Props): Draw {
 
   return function draw(props: DrawProps): void {
     const { context, pointer, points, target } = props
+    const scalar = Math.min(1, radius / UNIT_SCALAR)
+
+    const scaledBrush = scalar < 1
+      ? { ...brush, width: brush.width * scalar }
+      : brush
+
     shapes.forEach(drawShape)
 
     function drawShape(shape: Shape, index: number): void {
@@ -44,8 +51,9 @@ export function makeShapes(props: Props): Draw {
       const fill = offset === target
         ? { alpha: 1, color: mix(shapeFill.color, 'white', 0.3).hex() } as Fill
         : shapeFill
-      drawPolygon({ brush, context, fill, offset, polygon })
-      drawEyes({ brush, center: offset, context, eyes, pointer })
+
+      drawPolygon({ brush: scaledBrush, context, fill, offset, polygon })
+      drawEyes({ brush: scaledBrush, center: offset, context, eyes, pointer, scalar })
     }
   }
 

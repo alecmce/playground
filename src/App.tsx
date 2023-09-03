@@ -14,9 +14,9 @@ import { Point } from './model/geometry'
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff']
 const SIDES = [3, 4, 5, 6, 7, 8]
-const EYES = [1, 2, 3, 4]
+const EYES = [1, 2, 3, 4, 5] as Array<1 | 2 | 3 | 4 | 5>
 const SCALAR = 0.01 as const
-const COUNT = 25 as const
+const COUNT = 100 as const
 const DENSITY = 0.5 as const
 
 export function App(): ReactElement {
