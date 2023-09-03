@@ -12,6 +12,5 @@ export interface Point {
 
 export interface Positions {
   points:  Point[]
-  radius:  number
   version: number
 }

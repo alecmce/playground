@@ -4,13 +4,14 @@ import { clamp } from './math-utils'
 interface Props {
   height:    number
   positions: Positions
+  radius:    number
   width:     number
   scalar?:   number
 }
 
 export function pushApart(props: Props): Positions {
-  const { height, positions, scalar = 0.001, width } = props
-  const { points, radius, version } = positions
+  const { height, positions, radius, scalar = 0.001, width } = props
+  const { points, version } = positions
   let isForceApplied = false
 
   const pairs = makePairs(points)
