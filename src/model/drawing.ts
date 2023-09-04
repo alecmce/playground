@@ -5,7 +5,7 @@ export interface Drawing {
 }
 
 export interface Brush {
-  alpha:   number
+  alpha?:  number
   cap?:    CanvasLineCap
   color:   string | CanvasGradient | CanvasPattern
   dashes?: BrushDashes
@@ -19,6 +19,6 @@ interface BrushDashes {
 }
 
 export interface Fill {
-  alpha: number
-  color: string
+  alpha?: number
+  color:  string
 }

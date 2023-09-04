@@ -10,7 +10,7 @@ export function applyBrush(props: Props): void {
   const { brush, context, draw } = props
 
   context.save()
-  context.globalAlpha = brush.alpha
+  context.globalAlpha = brush.alpha ?? 1
   context.strokeStyle = brush.color
   context.lineWidth = brush.width
   context.lineCap = brush.cap ?? 'square'

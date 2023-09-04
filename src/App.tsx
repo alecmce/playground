@@ -1,10 +1,12 @@
 import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
+import { drawCircle } from './draw/draw-circle'
 import { makeShapes } from './draw/shapes'
 import { useClampPoint } from './lib/clamp-point'
 import { makeTwister } from './lib/mersenne-twister'
 import { makePositions } from './lib/positions'
 import { pushApart } from './lib/push-apart'
+import { makeRingOfPoints } from './lib/ring-of-points'
 import { useRadius } from './lib/use-radius'
 import { useShapesDrag } from './lib/use-shapes-drag'
 import { useTick } from './lib/use-tick'
@@ -16,7 +18,7 @@ const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd'
 const SIDES = [3, 4, 5, 6, 7, 8]
 const EYES = [1, 2, 3, 4, 5] as Array<1 | 2 | 3 | 4 | 5>
 const SCALAR = 0.01 as const
-const COUNT = 100 as const
+const COUNT = 25 as const
 const DENSITY = 0.5 as const
 
 export function App(): ReactElement {
@@ -39,6 +41,9 @@ export function App(): ReactElement {
 
   useShapesDrag({ clampPoint, positions, radius, setPointer, setPositions, setTarget })
 
+  const maxDistance = Math.min(width / 2, height / 2) - radius
+  const ring = makeRingOfPoints({ count: COUNT, radius, center: { x: width / 2, y: height / 2 }, maxDistance })
+
   const iterate = useCallback(() => {
     setPositions(positions => pushApart({ positions, radius, size, scalar: SCALAR }))
   }, [setPositions])
@@ -49,6 +54,7 @@ export function App(): ReactElement {
   if (context) {
     context.clearRect(0, 0, width, height)
     drawShapes({ context, points, pointer, target })
+    ring.points.forEach(center => drawCircle({ context, brush: { color: 'grey', width: 2 }, circle: { center, radius: ring.radius }}))
   }
 
   return (
