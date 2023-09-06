@@ -11,7 +11,7 @@ export interface State {
   time:     number
 }
 
-export type StateAction = JumpAction | IterateAction | TogglePipeAction
+export type StateAction = JumpAction | IterateAction | TriggerPieAction
 
 export enum STATE_ACTION_TYPE {
   TRIGGER_PIE = 'toggle-pie',
@@ -37,10 +37,10 @@ export function iterate(deltaTime: number): IterateAction {
   return { type: STATE_ACTION_TYPE.ITERATE, deltaTime }
 }
 
-interface TogglePipeAction {
+interface TriggerPieAction {
   type: typeof STATE_ACTION_TYPE.TRIGGER_PIE
 }
 
-export function togglePie(): TogglePipeAction {
+export function triggerPie(): TriggerPieAction {
   return { type: STATE_ACTION_TYPE.TRIGGER_PIE }
 }

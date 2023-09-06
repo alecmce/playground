@@ -11,8 +11,8 @@ import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
-import { STATE_TYPE, State, iterate, togglePie } from './model/app-state'
-import { Creature } from './model/creatures'
+import { STATE_TYPE, State, iterate, triggerPie } from './model/app-state'
+import { CATEGORY, Creature } from './model/creatures'
 import { Point } from './model/geometry'
 import { PieChart } from './model/piechart'
 import { PushApart } from './model/push-apart'
@@ -66,11 +66,16 @@ export function App(): ReactElement {
       <canvas ref={setCanvas} width={width} height={height} className="layer" />
       <div className="layer">
         <div className="overlay">
-          <Button variant='contained' color='primary' onClick={() => dispatchAppState(togglePie())}>Test</Button>
+          <Button variant='contained' color='primary' onClick={onTest}>Test</Button>
         </div>
       </div>
     </Fragment>
   )
+
+  function onTest(): void {
+    pieChart.init([CATEGORY.COLOR])
+    dispatchAppState(triggerPie())
+  }
 }
 
 interface DrawProps {
@@ -109,7 +114,7 @@ function draw(props: DrawProps): void {
 
   function drawEnterPie(proportion: number): void {
     const scale = 1 + (pieChart.scale - 1) * proportion
-    pieChart.gotoPlaces(proportion)
+    pieChart.update(proportion)
     clampCreatures({ creatures, radius, scale, size })
     drawPie(proportion)
     drawCommon(scale)
@@ -125,7 +130,7 @@ function draw(props: DrawProps): void {
 
   function drawExitPie(proportion: number): void {
     const scale = 1 + (pieChart.scale - 1) * (1 - proportion)
-    pieChart.gotoPlaces(1 - proportion)
+    pieChart.update(1 - proportion)
     clampCreatures({ creatures, radius, scale, size })
     drawPie(1 - proportion)
     drawCommon(scale)

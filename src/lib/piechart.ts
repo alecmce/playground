@@ -1,9 +1,10 @@
 import { drawCircle } from 'src/draw/draw-circle'
-import { Creature } from 'src/model/creatures'
+import { CATEGORY, Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { PieChart, PieChartDrawProps } from 'src/model/piechart'
 import { Size } from 'src/model/values'
 import { PlaceAssignment, makeAssignments } from './assignments'
+import { categorize } from './categorize'
 import { quadInOut } from './ease'
 
 interface Props {
@@ -34,17 +35,20 @@ export function makePieChart(props: Props): PieChart {
 
   let assignments: PlaceAssignment[] | null = null
 
-  return { draw, gotoPlaces, places, radius, reset, scale }
+  return { init, draw, update, places, radius, reset, scale }
+
+  function init(categories: CATEGORY[]): void {
+    const categorized = categorize({ categories, creatures })
+    assignments = makeAssignments({ categorized, places, radius })
+  }
 
   function reset(): void {
     assignments = null
   }
 
-  function gotoPlaces(proportion: number): void {
-    assignments ??= makeAssignments({ creatures, places, radius })
-
+  function update(proportion: number): void {
     const p = quadInOut(proportion)
-    assignments.forEach(gotoAssignment)
+    assignments?.forEach(gotoAssignment)
 
     function gotoAssignment(assignment: PlaceAssignment): void {
       const { creature, start, place } = assignment

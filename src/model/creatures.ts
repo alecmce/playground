@@ -15,3 +15,14 @@ export interface Creature {
   isUnder: (pointer: Point) => boolean
   sides:   number
 }
+
+export enum CATEGORY {
+  COLOR = 'color',
+  EYES  = 'eyes',
+  SIDES = 'sides',
+}
+
+export interface Categorized {
+  creatures: Creature[]
+  values:    Partial<Record<CATEGORY, string | number>>
+}
