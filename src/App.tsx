@@ -101,6 +101,7 @@ function draw(props: DrawProps): void {
 
   function drawFree(): void {
     const scale = 1
+    pieChart.reset()
     pushApart({ radius, scalar: SCALAR })
     clampCreatures({ creatures, radius, scale, size })
     drawCommon(scale)

@@ -6,6 +6,7 @@ export interface PieChart {
   radius:     number
   scale:      number
   gotoPlaces: (proportion: number) => void
+  reset:      VoidFunction
   draw:       (props: PieChartDrawProps) => void
 }
 

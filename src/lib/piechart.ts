@@ -32,14 +32,18 @@ export function makePieChart(props: Props): PieChart {
   const radius = inputRadius * scale
   const places = Array.from({ length: count }, makePlace)
 
-  let assignments: PlaceAssignment[] | undefined
+  let assignments: PlaceAssignment[] | null = null
 
-  return { gotoPlaces, places, radius, scale, draw }
+  return { draw, gotoPlaces, places, radius, reset, scale }
+
+  function reset(): void {
+    assignments = null
+  }
 
   function gotoPlaces(proportion: number): void {
-    const p = quadInOut(proportion)
     assignments ??= makeAssignments({ creatures, places, radius })
 
+    const p = quadInOut(proportion)
     assignments.forEach(gotoAssignment)
 
     function gotoAssignment(assignment: PlaceAssignment): void {
