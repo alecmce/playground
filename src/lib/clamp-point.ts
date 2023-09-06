@@ -1,25 +1,27 @@
-import { useCallback, useEffect, useRef } from 'react'
-import { Point } from 'src/model/geometry'
+import { Creature } from 'src/model/creatures'
 import { Size } from 'src/model/values'
 import { clamp } from './math-utils'
 
 interface Props {
-  size:   Size
-  radius: number
+  creatures: Creature[]
+  radius:    number
+  scale:     number
+  size:      Size
 }
 
-export function useClampPoint(props: Props): (point: Point) => void {
-  const { size, radius } = props
+export function clampCreatures(props: Props): void {
+  const { creatures, radius, scale, size } = props
+  const { width, height } = size
 
-  const ref = useRef<Size>(size)
+  const min = radius * scale
+  const right = width - min
+  const bottom = height - min
 
-  useEffect(() => {
-    ref.current = size
-  }, [size])
+  creatures.forEach(clampCreature)
 
-  return useCallback((point: Point): void => {
-    const { height, width } = ref.current
-    point.x = clamp(point.x, radius, width - radius)
-    point.y = clamp(point.y, radius, height - radius)
-  }, [radius, size])
+  function clampCreature(creature: Creature): void {
+    const { center } = creature
+    center.x = clamp(center.x, min, right)
+    center.y = clamp(center.y, min, bottom)
+  }
 }

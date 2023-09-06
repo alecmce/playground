@@ -4,12 +4,13 @@ import { applyBrush } from './apply-brush'
 import { applyFill } from './apply-fill'
 
 interface Props extends Drawing {
-  offset?: Point
+  center?: Point
   polygon: Polygon
+  scale?:  number
 }
 
 export function drawPolygon(props: Props): void {
-  const { brush, context, fill, offset = { x: 0, y: 0 }, polygon } = props
+  const { brush, context, fill, center = { x: 0, y: 0 }, polygon, scale = 1 } = props
 
   fill && applyFill({ fill, context, draw })
   brush && applyBrush({ brush, context, draw })
@@ -22,10 +23,10 @@ export function drawPolygon(props: Props): void {
   }
 
   function moveTo(point: Point): void {
-    context.moveTo(point.x + offset.x, point.y + offset.y)
+    context.moveTo(center.x + point.x * scale, center.y + point.y * scale)
   }
 
   function lineTo(point: Point): void {
-    context.lineTo(point.x + offset.x, point.y + offset.y)
+    context.lineTo(center.x + point.x * scale, center.y + point.y * scale)
   }
 }

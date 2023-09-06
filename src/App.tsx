@@ -1,17 +1,22 @@
+import { Button } from '@mui/material'
 import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
-import { drawCircle } from './draw/draw-circle'
-import { makeShapes } from './draw/shapes'
-import { useClampPoint } from './lib/clamp-point'
+import { useAppState } from './lib/app-state'
+import { clampCreatures } from './lib/clamp-point'
+import { makeCreatures } from './lib/creatures'
 import { makeTwister } from './lib/mersenne-twister'
-import { makePositions } from './lib/positions'
-import { pushApart } from './lib/push-apart'
-import { makeRingOfPoints } from './lib/ring-of-points'
+import { makePieChart } from './lib/piechart'
+import { makePushApart } from './lib/push-apart'
+import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
-import { useShapesDrag } from './lib/use-shapes-drag'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
+import { STATE_TYPE, State, iterate, togglePie } from './model/app-state'
+import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
+import { PieChart } from './model/piechart'
+import { PushApart } from './model/push-apart'
+import { Size } from './model/values'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff']
@@ -25,44 +30,113 @@ export function App(): ReactElement {
   const size = useWindowSize()
   const { width, height } = size
 
+  // const [gotoRing, setGotoRing] = useState<boolean>(false)
+  const [, setVersion] = useState<number>(0)
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
+  const [target, setTarget] = useState<Creature | null>(null)
+  const [state, dispatchAppState] = useAppState()
+  // const [scale, setScale] = useState<number>(1)
+
   const random = useMemo(() => makeTwister(Math.random()), [])
 
   const radius = useRadius({ count: COUNT, density: DENSITY, size })
-  const initial = useMemo(() => makePositions({ count: COUNT, radius, size }), [])
+  const creatures = useMemo(() => makeCreatures({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES, size }), [])
+  const pushApart = useMemo(() => makePushApart(creatures), [])
+  const pieChart = useMemo(() => makePieChart({ count: COUNT, creatures, radius, size }), [])
+
   const [pointer, setPointer] = useState<Point | null>(null)
-  const [positions, setPositions] = useState(initial)
-  const { points } = initial
 
-  const clampPoint = useClampPoint({ radius, size })
-  const drawShapes = useMemo(() => makeShapes({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES}), [])
+  useCreaturesDrag({ creatures, setPointer, setTarget })
 
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
-  const [target, setTarget] = useState<Point | null>(null)
 
-  useShapesDrag({ clampPoint, positions, radius, setPointer, setPositions, setTarget })
+  const tick = useCallback((deltaTime: number) => {
+    dispatchAppState(iterate(deltaTime))
+    setVersion(version => version + 1)
+  }, [setVersion])
 
-  const maxDistance = Math.min(width / 2, height / 2) - radius
-  const ring = makeRingOfPoints({ count: COUNT, radius, center: { x: width / 2, y: height / 2 }, maxDistance })
-
-  const iterate = useCallback(() => {
-    setPositions(positions => pushApart({ positions, radius, size, scalar: SCALAR }))
-  }, [setPositions])
-
-  useTick(iterate)
+  useTick(tick)
 
   const context = canvas?.getContext('2d')
   if (context) {
-    context.clearRect(0, 0, width, height)
-    drawShapes({ context, points, pointer, target })
-    ring.points.forEach(center => drawCircle({ context, brush: { color: 'grey', width: 2 }, circle: { center, radius: ring.radius }}))
+    draw({ context, creatures, pieChart, pushApart, pointer, radius, size, state, target })
   }
 
   return (
     <Fragment>
       <canvas ref={setCanvas} width={width} height={height} className="layer" />
       <div className="layer">
-        <div className="overlay">Hello Playground</div>
+        <div className="overlay">
+          <Button variant='contained' color='primary' onClick={() => dispatchAppState(togglePie())}>Test</Button>
+        </div>
       </div>
     </Fragment>
   )
+}
+
+interface DrawProps {
+  context:   CanvasRenderingContext2D
+  creatures: Creature[]
+  pieChart:  PieChart
+  pushApart: PushApart
+  pointer:   Point | null
+  radius:    number
+  size:      Size
+  state:     State
+  target:    Creature | null
+}
+
+function draw(props: DrawProps): void {
+  const { context, creatures, pieChart, pointer, pushApart, radius, size, state, target } = props
+  const { width, height } = size
+  const { type, time, duration } = state
+
+  context.clearRect(0, 0, width, height)
+
+  switch (type) {
+    case STATE_TYPE.FREE:        return drawFree()
+    case STATE_TYPE.ENTER_PIE:   return drawEnterPie(time / duration)
+    case STATE_TYPE.OVERLAY_PIE: return drawOverlayPie()
+    case STATE_TYPE.EXIT_PIE:    return drawExitPie(time / duration)
+  }
+
+  function drawFree(): void {
+    const scale = 1
+    pushApart({ radius, scalar: SCALAR })
+    clampCreatures({ creatures, radius, scale, size })
+    drawCommon(scale)
+  }
+
+  function drawEnterPie(proportion: number): void {
+    const scale = 1 + (pieChart.scale - 1) * proportion
+    pieChart.gotoPlaces(proportion)
+    clampCreatures({ creatures, radius, scale, size })
+    drawPie(proportion)
+    drawCommon(scale)
+  }
+
+  function drawOverlayPie(): void {
+    const alpha = 1
+    const { scale } = pieChart
+    clampCreatures({ creatures, radius, scale, size })
+    drawPie(alpha)
+    drawCommon(scale)
+  }
+
+  function drawExitPie(proportion: number): void {
+    const scale = 1 + (pieChart.scale - 1) * (1 - proportion)
+    pieChart.gotoPlaces(1 - proportion)
+    clampCreatures({ creatures, radius, scale, size })
+    drawPie(1 - proportion)
+    drawCommon(scale)
+  }
+
+  function drawCommon(scale: number): void {
+    clampCreatures({ creatures, radius, scale, size })
+    creatures.forEach(creature => creature.draw({ context, pointer, scale, target }))
+  }
+
+  function drawPie(alpha: number): void {
+    pieChart.draw({ context, brush: { alpha, color: 'grey', width: 2 } })
+  }
+
 }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Point, Positions } from 'src/model/geometry'
+import { Point } from 'src/model/geometry'
 import { Size } from 'src/model/values'
 
 interface Props {
@@ -8,18 +8,17 @@ interface Props {
   size:    Size
 }
 
-export function usePositions(props: Props): Positions {
+export function usePositions(props: Props): Point[] {
   const { count, radius, size } = props
 
   return useMemo(() => makePositions({ count, radius, size }), [count])
 }
 
-export function makePositions(props: Props): Positions {
+export function makePositions(props: Props): Point[] {
   const { count, radius, size } = props
   const { height, width } = size
 
-  const points = Array.from({ length: count }, makeInitialPoint)
-  return { points, version: 0 }
+  return Array.from({ length: count }, makeInitialPoint)
 
   function makeInitialPoint(): Point {
     const x = Math.random() * (width - 2 * radius) + radius

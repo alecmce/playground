@@ -1,14 +1,23 @@
 import { useEffect, useRef } from 'react'
 
-export function useTick(tick: VoidFunction): void {
-  const ref = useRef<VoidFunction>(() => void 0)
+interface Tick {
+  (deltaTime: number): void
+}
+
+export function useTick(tick: Tick): void {
+  const time = useRef<number>(performance.now())
+  const ref = useRef<Tick>(() => void 0)
   ref.current = tick
 
   useEffect(() => {
+
     iterate()
 
     function iterate(): void {
-      tick()
+      const now = performance.now()
+      const deltaTime = now - time.current
+      time.current = now
+      tick(deltaTime)
       requestAnimationFrame(iterate)
     }
   }, [tick])

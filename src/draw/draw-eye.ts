@@ -19,7 +19,7 @@ interface Props {
   context: CanvasRenderingContext2D
   eyes:    1 | 2 | 3 | 4 | 5
   pointer: Point | null
-  scalar:  number
+  scale:   number
 }
 
 const DELTA = RADIUS * Math.sqrt(3) / 2
@@ -33,7 +33,7 @@ const five = 2 * RADIUS * Math.SQRT1_2
 const FIVE_EYES = [{ x: -five, y: -five }, { x: -five, y: +five }, { x: 0, y: 0 }, { x: +five, y: -five }, { x: +five, y: +five }]
 
 export function drawEyes(props: Props): void {
-  const { brush, center: shapeCenter, context, eyes, pointer, scalar } = props
+  const { brush, center: shapeCenter, context, eyes, pointer, scale } = props
 
   getOffsets().forEach(drawEye)
 
@@ -48,9 +48,9 @@ export function drawEyes(props: Props): void {
   }
 
   function drawEye(offset: Point): void {
-    const origin = { x: shapeCenter.x + offset.x * scalar, y: shapeCenter.y + offset.y * scalar }
+    const origin = { x: shapeCenter.x + offset.x * scale, y: shapeCenter.y + offset.y * scale }
 
-    drawCircle({ fill: FILL, brush, circle: { center: origin, radius: RADIUS * scalar }, context })
+    drawCircle({ fill: FILL, brush, circle: { center: origin, radius: RADIUS * scale }, context })
     drawCircle({ fill: IRIS_FILL, circle: getIrisCircle(), context })
 
 
@@ -58,13 +58,13 @@ export function drawEyes(props: Props): void {
       const dx = pointer ? pointer.x - origin.x : 0
       const dy = pointer ? pointer.y - origin.y : 0
       const distance = Math.hypot(dx, dy)
-      const offset = OFFSET * scalar
+      const offset = OFFSET * scale
 
       const center = distance < offset
         ? { x: origin.x + dx, y: origin.y + dy }
         : { x: origin.x + dx * offset / distance, y: origin.y + dy * offset / distance }
 
-      return { center, radius: IRIS_RADIUS * scalar }
+      return { center, radius: IRIS_RADIUS * scale }
     }
   }
 }
