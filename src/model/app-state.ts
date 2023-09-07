@@ -7,27 +7,28 @@ export enum STATE_TYPE {
   EXIT_PIE          = 'exit-pie',
 }
 
-export interface State {
+export interface AppState {
   type:      STATE_TYPE
   duration:  number
   time:      number
   isPaused?: boolean
 }
 
-export type StateAction = JumpAction | IterateAction | TriggerPieAction
+export type AppStateAction = JumpAction | IterateAction | TriggerPieAction | TogglePauseAction
 
 export enum STATE_ACTION_TYPE {
-  TRIGGER_PIE = 'toggle-pie',
-  JUMP       = 'jump',
-  ITERATE    = 'iterate',
+  TRIGGER_PIE  = 'toggle-pie',
+  TOGGLE_PAUSE = 'toggle-pause',
+  JUMP         = 'jump',
+  ITERATE      = 'iterate',
 }
 
 interface JumpAction {
   type:  typeof STATE_ACTION_TYPE.JUMP
-  state: State
+  state: Omit<AppState, 'duration'>
 }
 
-export function jump(state: State): JumpAction {
+export function jump(state: Omit<AppState, 'duration'>): JumpAction {
   return { type: STATE_ACTION_TYPE.JUMP, state }
 }
 
@@ -46,4 +47,12 @@ interface TriggerPieAction {
 
 export function triggerPie(): TriggerPieAction {
   return { type: STATE_ACTION_TYPE.TRIGGER_PIE }
+}
+
+interface TogglePauseAction {
+  type: typeof STATE_ACTION_TYPE.TOGGLE_PAUSE
+}
+
+export function togglePause(): TogglePauseAction {
+  return { type: STATE_ACTION_TYPE.TOGGLE_PAUSE }
 }

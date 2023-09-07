@@ -1,33 +1,42 @@
 import { useReducer } from 'react'
-import { STATE_ACTION_TYPE, STATE_TYPE, State, StateAction } from 'src/model/app-state'
+import { AppState, AppStateAction, STATE_ACTION_TYPE, STATE_TYPE } from 'src/model/app-state'
 
 
-export function useAppState(): [State, (state: StateAction) => void] {
+export function useAppState(): [AppState, (state: AppStateAction) => void] {
   return useReducer(stateReducer, { type: STATE_TYPE.FREE, duration: 0, time: 0 })
 }
 
-export function stateReducer(state: State, action: StateAction): State {
-  switch (action.type) {
-    case STATE_ACTION_TYPE.JUMP:        return action.state
-    case STATE_ACTION_TYPE.ITERATE:     return iterate(state, action.deltaTime)
-    case STATE_ACTION_TYPE.TRIGGER_PIE: return triggerPie(state)
+export function stateReducer(state: AppState, action: AppStateAction): AppState {
+  const { isPaused } = state
+  const { type } = action
+
+  switch (type) {
+    case STATE_ACTION_TYPE.JUMP:         return withDuration(action.state)
+    case STATE_ACTION_TYPE.ITERATE:      return isPaused ? state : iterate(state, action.deltaTime)
+    case STATE_ACTION_TYPE.TRIGGER_PIE:  return triggerPie(state)
+    case STATE_ACTION_TYPE.TOGGLE_PAUSE: return togglePause(state)
   }
 
-  function iterate(state: State, deltaTime: number): State {
-    const result = { ...state, time: state.time + deltaTime }
-    const transition = TRANSITION_STATES[state.type]
+  function iterate(state: AppState, deltaTime: number): AppState {
+    const { time, type } = state
+    const result = { ...state, time: time + deltaTime }
+    const transition = TRANSITION_STATES[type]
 
     return transition
       ? transition(result)
       : result
   }
 
-  function triggerPie(state: State): State {
+  function triggerPie(state: AppState): AppState {
     switch (state.type) {
       case STATE_TYPE.FREE:         return withDuration({ type: STATE_TYPE.ENTER_PIE, time: 0 })
       case STATE_TYPE.PIE_OVERLAID: return withDuration({ type: STATE_TYPE.EXIT_OVERLAY_PIE, time: 0 })
       default:                      return state
     }
+  }
+
+  function togglePause(state: AppState): AppState {
+    return { ...state, isPaused: !state.isPaused }
   }
 }
 
@@ -37,7 +46,7 @@ interface TransitionProps {
 }
 
 interface TransitionState {
-  (state: State): State
+  (state: AppState): AppState
 }
 
 export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
@@ -75,7 +84,7 @@ const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
 function makeTransitionState(props: TransitionProps): TransitionState {
   const { prev, next } = props
 
-  return function transition(state: State): State {
+  return function transition(state: AppState): AppState {
     const { time, duration: outgoingDuration } = state
     if (time > outgoingDuration) {
       return next ? withDuration({ type: next, time: time - outgoingDuration }) : state
@@ -87,7 +96,7 @@ function makeTransitionState(props: TransitionProps): TransitionState {
   }
 }
 
-function withDuration(state: Omit<State, 'duration'>): State {
+function withDuration(state: Omit<AppState, 'duration'>): AppState {
   const duration = STATE_DURATIONS[state.type]
   return {...state, duration}
 }

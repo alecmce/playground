@@ -12,7 +12,7 @@ import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
-import { STATE_TYPE, State, iterate, triggerPie } from './model/app-state'
+import { STATE_TYPE, AppState, iterate, triggerPie } from './model/app-state'
 import { CATEGORY, Creature } from './model/creatures'
 import { Point } from './model/geometry'
 import { PieChart } from './model/piechart'
@@ -28,7 +28,7 @@ const COUNT = 25 as const
 const DENSITY = 0.5 as const
 
 export function App(): ReactElement {
-  const size = useWindowSize()
+  const size = useWindowSize({ marginBottom: 100 })
   const { width, height } = size
 
   // const [gotoRing, setGotoRing] = useState<boolean>(false)
@@ -65,13 +65,18 @@ export function App(): ReactElement {
 
   return (
     <Fragment>
-      <canvas ref={setCanvas} width={width} height={height} className="layer" />
+      <div className="layer">
+        <canvas ref={setCanvas} width={width} height={height} style={{ width, height }}/>
+      </div>
       <div className="layer">
         <div className="overlay">
           <Card>
             <CardContent>
-              <Button variant='contained' color='primary' onClick={onTest}>Test</Button>
-              { type !== STATE_TYPE.FREE ? <PiechartSlider state={state} dispatchAppState={dispatchAppState} /> : null }
+              {
+                type === STATE_TYPE.FREE
+                  ? <Button variant='contained' color='primary' onClick={onTest}>Piechart</Button>
+                  : <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
+              }
             </CardContent>
           </Card>
         </div>
@@ -93,7 +98,7 @@ interface DrawProps {
   pointer:   Point | null
   radius:    number
   size:      Size
-  state:     State
+  state:     AppState
   target:    Creature | null
 }
 
@@ -139,7 +144,6 @@ function draw(props: DrawProps): void {
   }
 
   function drawExitPieOverlay(proportion: number): void {
-    pieChart.update(1 - proportion)
     drawPie(1 - proportion)
     drawCommon(pieChart.scale)
     drawPieSpaces(1)
