@@ -41,9 +41,11 @@ export function stateReducer(state: AppState, action: AppStateAction): AppState 
 }
 
 interface TransitionProps {
-  prev?: STATE_TYPE
-  next?: STATE_TYPE
+  prev?: TransitionConfig
+  next?: TransitionConfig
 }
+
+type TransitionConfig = STATE_TYPE | { type: STATE_TYPE, isPaused: true }
 
 interface TransitionState {
   (state: AppState): AppState
@@ -56,6 +58,7 @@ export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
   [STATE_TYPE.EXIT_PIE]:          2000,
   [STATE_TYPE.FREE]:              Infinity,
   [STATE_TYPE.PIE_OVERLAID]:      Infinity,
+  [STATE_TYPE.CLOSE_PIE]:         500,
 }
 
 const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
@@ -64,7 +67,7 @@ const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
     prev: STATE_TYPE.FREE,
   }),
   [STATE_TYPE.ENTER_OVERLAY_PIE]: makeTransitionState({
-    next: STATE_TYPE.PIE_OVERLAID,
+    next: { type: STATE_TYPE.PIE_OVERLAID, isPaused: true },
     prev: STATE_TYPE.ENTER_PIE,
   }),
   [STATE_TYPE.PIE_OVERLAID]: makeTransitionState({
@@ -73,11 +76,14 @@ const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
   }),
   [STATE_TYPE.EXIT_OVERLAY_PIE]: makeTransitionState({
     next: STATE_TYPE.EXIT_PIE,
-    prev: STATE_TYPE.PIE_OVERLAID,
+    prev: { type: STATE_TYPE.PIE_OVERLAID, isPaused: true },
   }),
   [STATE_TYPE.EXIT_PIE]: makeTransitionState({
     next: STATE_TYPE.FREE,
     prev: STATE_TYPE.EXIT_OVERLAY_PIE,
+  }),
+  [STATE_TYPE.CLOSE_PIE]: makeTransitionState({
+    next: STATE_TYPE.FREE,
   }),
 }
 
@@ -87,11 +93,17 @@ function makeTransitionState(props: TransitionProps): TransitionState {
   return function transition(state: AppState): AppState {
     const { time, duration: outgoingDuration } = state
     if (time > outgoingDuration) {
-      return next ? withDuration({ type: next, time: time - outgoingDuration }) : state
+      return next ? resolve(next, time - outgoingDuration) : state
     } else if (time < 0) {
-      return prev ? withDuration({ type: prev, time: outgoingDuration - time }) : state
+      return prev ? resolve(prev, outgoingDuration - time) : state
     } else {
       return state
+    }
+
+    function resolve(typeOrPartial: TransitionConfig, time: number): AppState {
+      return typeof typeOrPartial === 'string'
+        ? withDuration({ type: typeOrPartial, time })
+        : withDuration({ ...typeOrPartial, time })
     }
   }
 }

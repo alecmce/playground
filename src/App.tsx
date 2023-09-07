@@ -5,6 +5,7 @@ import { PiechartSlider } from './components/PiechartSlider'
 import { useAppState } from './lib/app-state'
 import { clampCreatures } from './lib/clamp-point'
 import { makeCreatures } from './lib/creatures'
+import { quadIn, quadInOut, quadOut } from './lib/ease'
 import { makeTwister } from './lib/mersenne-twister'
 import { makePieChart } from './lib/piechart'
 import { makePushApart } from './lib/push-apart'
@@ -12,7 +13,7 @@ import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
-import { STATE_TYPE, AppState, iterate, triggerPie } from './model/app-state'
+import { AppState, STATE_TYPE, iterate, triggerPie } from './model/app-state'
 import { CATEGORY, Creature } from './model/creatures'
 import { Point } from './model/geometry'
 import { PieChart } from './model/piechart'
@@ -72,17 +73,22 @@ export function App(): ReactElement {
         <div className="overlay">
           <Card>
             <CardContent>
-              {
-                type === STATE_TYPE.FREE
-                  ? <Button variant='contained' color='primary' onClick={onTest}>Piechart</Button>
-                  : <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
-              }
+              { showTemp() && <Button variant='contained' color='primary' onClick={onTest}>Piechart</Button> }
+              { showPiechartSlider() && <PiechartSlider state={state} dispatchAppState={dispatchAppState} /> }
             </CardContent>
           </Card>
         </div>
       </div>
     </Fragment>
   )
+
+  function showTemp(): boolean {
+    return type === STATE_TYPE.FREE
+  }
+
+  function showPiechartSlider(): boolean {
+    return type !== STATE_TYPE.FREE && type !== STATE_TYPE.CLOSE_PIE
+  }
 
   function onTest(): void {
     pieChart.init([CATEGORY.COLOR])
@@ -111,11 +117,12 @@ function draw(props: DrawProps): void {
 
   switch (type) {
     case STATE_TYPE.FREE:              return drawFree()
-    case STATE_TYPE.ENTER_PIE:         return drawEnterPie(time / duration)
-    case STATE_TYPE.ENTER_OVERLAY_PIE: return drawEnterPieOverlay(time / duration)
+    case STATE_TYPE.ENTER_PIE:         return drawEnterPie(quadInOut(time / duration))
+    case STATE_TYPE.ENTER_OVERLAY_PIE: return drawEnterPieOverlay(quadOut(time / duration))
     case STATE_TYPE.PIE_OVERLAID:      return drawPieOverlaid()
-    case STATE_TYPE.EXIT_OVERLAY_PIE:  return drawExitPieOverlay(time / duration)
-    case STATE_TYPE.EXIT_PIE:          return drawExitPie(time / duration)
+    case STATE_TYPE.EXIT_OVERLAY_PIE:  return drawExitPieOverlay(quadIn(time / duration))
+    case STATE_TYPE.EXIT_PIE:          return drawExitPie(quadInOut(time / duration))
+    case STATE_TYPE.CLOSE_PIE:         return drawExitPie(quadInOut(time / duration))
   }
 
   function drawFree(): void {
@@ -144,9 +151,9 @@ function draw(props: DrawProps): void {
   }
 
   function drawExitPieOverlay(proportion: number): void {
-    drawPie(1 - proportion)
-    drawCommon(pieChart.scale)
     drawPieSpaces(1)
+    drawCommon(pieChart.scale)
+    drawPie(1 - proportion)
   }
 
   function drawExitPie(proportion: number): void {

@@ -5,6 +5,7 @@ export enum STATE_TYPE {
   PIE_OVERLAID      = 'pie-overlaid',
   EXIT_OVERLAY_PIE  = 'exit-overlay-pie',
   EXIT_PIE          = 'exit-pie',
+  CLOSE_PIE         = 'close-pie',
 }
 
 export interface AppState {
