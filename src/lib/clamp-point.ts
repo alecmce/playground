@@ -5,12 +5,12 @@ import { clamp } from './math-utils'
 interface Props {
   creatures: Creature[]
   radius:    number
-  scale:     number
+  scale?:    number
   size:      Size
 }
 
 export function clampCreatures(props: Props): void {
-  const { creatures, radius, scale, size } = props
+  const { creatures, radius, scale = 1, size } = props
   const { width, height } = size
 
   const min = radius * scale

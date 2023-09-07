@@ -98,51 +98,63 @@ function draw(props: DrawProps): void {
   context.clearRect(0, 0, width, height)
 
   switch (type) {
-    case STATE_TYPE.FREE:        return drawFree()
-    case STATE_TYPE.ENTER_PIE:   return drawEnterPie(time / duration)
-    case STATE_TYPE.OVERLAY_PIE: return drawOverlayPie()
-    case STATE_TYPE.EXIT_PIE:    return drawExitPie(time / duration)
+    case STATE_TYPE.FREE:              return drawFree()
+    case STATE_TYPE.ENTER_PIE:         return drawEnterPie(time / duration)
+    case STATE_TYPE.ENTER_OVERLAY_PIE: return drawEnterPieOverlay(time / duration)
+    case STATE_TYPE.PIE_OVERLAID:      return drawPieOverlaid()
+    case STATE_TYPE.EXIT_OVERLAY_PIE:  return drawExitPieOverlay(time / duration)
+    case STATE_TYPE.EXIT_PIE:          return drawExitPie(time / duration)
   }
 
   function drawFree(): void {
-    const scale = 1
     pieChart.reset()
     pushApart({ radius, scalar: SCALAR })
-    clampCreatures({ creatures, radius, scale, size })
-    drawCommon(scale)
+    clampCreatures({ creatures, radius, size })
+    drawCommon()
   }
 
   function drawEnterPie(proportion: number): void {
-    const scale = 1 + (pieChart.scale - 1) * proportion
     pieChart.update(proportion)
-    clampCreatures({ creatures, radius, scale, size })
-    drawPie(proportion)
-    drawCommon(scale)
+    drawPieSpaces(proportion)
+    drawCommon(1 + (pieChart.scale - 1) * proportion)
   }
 
-  function drawOverlayPie(): void {
-    const alpha = 1
+  function drawEnterPieOverlay(proportion: number): void {
+    drawPieSpaces(1)
+    drawCommon(pieChart.scale)
+    drawPie(proportion)
+  }
+
+  function drawPieOverlaid(): void {
     const { scale } = pieChart
-    clampCreatures({ creatures, radius, scale, size })
-    drawPie(alpha)
     drawCommon(scale)
+    drawPie(1)
+  }
+
+  function drawExitPieOverlay(proportion: number): void {
+    pieChart.update(proportion)
+    drawPie(proportion)
+    drawCommon(pieChart.scale)
+    drawPieSpaces(1)
   }
 
   function drawExitPie(proportion: number): void {
-    const scale = 1 + (pieChart.scale - 1) * (1 - proportion)
     pieChart.update(1 - proportion)
-    clampCreatures({ creatures, radius, scale, size })
-    drawPie(1 - proportion)
-    drawCommon(scale)
+    drawPieSpaces(1 - proportion)
+    drawCommon(1 + (pieChart.scale - 1) * (1 - proportion))
   }
 
-  function drawCommon(scale: number): void {
+  function drawCommon(scale = 1): void {
     clampCreatures({ creatures, radius, scale, size })
     creatures.forEach(creature => creature.draw({ context, pointer, scale, target }))
   }
 
+  function drawPieSpaces(alpha: number): void {
+    pieChart.drawSpaces({ context, brush: { alpha, color: 'grey', width: 2 } })
+  }
+
   function drawPie(alpha: number): void {
-    pieChart.draw({ context, brush: { alpha, color: 'grey', width: 2 } })
+    pieChart.drawPie({ context, alpha, brush: { alpha, color: 'grey', width: 2 } })
   }
 
 }

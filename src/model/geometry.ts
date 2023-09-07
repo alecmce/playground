@@ -9,3 +9,8 @@ export interface Point {
   x: number
   y: number
 }
+
+export interface ArcPlace extends Point {
+  angle: number
+  theta: number
+}

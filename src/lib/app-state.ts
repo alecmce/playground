@@ -30,26 +30,43 @@ export function stateReducer(state: State, action: StateAction): State {
 }
 
 interface TransitionProps {
-  prev?: Omit<State, 'time'>
-  next?: Omit<State, 'time'>
+  prev?: STATE_TYPE
+  next?: STATE_TYPE
 }
 
 interface TransitionState {
   (state: State): State
 }
 
+const STATE_DURATIONS: Record<STATE_TYPE, number> = {
+  [STATE_TYPE.ENTER_OVERLAY_PIE]: 1000,
+  [STATE_TYPE.ENTER_PIE]:         3000,
+  [STATE_TYPE.EXIT_OVERLAY_PIE]:  1000,
+  [STATE_TYPE.EXIT_PIE]:          2000,
+  [STATE_TYPE.FREE]:              Infinity,
+  [STATE_TYPE.PIE_OVERLAID]:      Infinity,
+}
+
 const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
   [STATE_TYPE.ENTER_PIE]: makeTransitionState({
-    next: { type: STATE_TYPE.OVERLAY_PIE, duration: 1000 },
-    prev: { type: STATE_TYPE.FREE,        duration: 0 },
+    next: STATE_TYPE.ENTER_OVERLAY_PIE,
+    prev: STATE_TYPE.FREE,
   }),
-  [STATE_TYPE.OVERLAY_PIE]: makeTransitionState({
-    next: { type: STATE_TYPE.EXIT_PIE, duration: 1000 },
-    prev: { type: STATE_TYPE.ENTER_PIE, duration: 1000 },
+  [STATE_TYPE.ENTER_OVERLAY_PIE]: makeTransitionState({
+    next: STATE_TYPE.PIE_OVERLAID,
+    prev: STATE_TYPE.ENTER_PIE,
+  }),
+  [STATE_TYPE.PIE_OVERLAID]: makeTransitionState({
+    next: STATE_TYPE.EXIT_OVERLAY_PIE,
+    prev: STATE_TYPE.ENTER_OVERLAY_PIE,
+  }),
+  [STATE_TYPE.EXIT_OVERLAY_PIE]: makeTransitionState({
+    next: STATE_TYPE.EXIT_PIE,
+    prev: STATE_TYPE.PIE_OVERLAID,
   }),
   [STATE_TYPE.EXIT_PIE]: makeTransitionState({
-    next: { type: STATE_TYPE.FREE, duration: 0 },
-    prev: { type: STATE_TYPE.OVERLAY_PIE, duration: 1000 },
+    next: STATE_TYPE.FREE,
+    prev: STATE_TYPE.EXIT_OVERLAY_PIE,
   }),
 }
 
@@ -59,9 +76,9 @@ function makeTransitionState(props: TransitionProps): TransitionState {
   return function transition(state: State): State {
     const { time, duration: outgoingDuration } = state
     if (time > outgoingDuration) {
-      return next ? { ...next, time: time - outgoingDuration } : state
+      return next ? { type: next, duration: STATE_DURATIONS[next], time: time - outgoingDuration } : state
     } else if (time < 0) {
-      return prev ? { ...prev, time: outgoingDuration - time } : state
+      return prev ? { type: prev, duration: STATE_DURATIONS[prev], time: outgoingDuration - time } : state
     } else {
       return state
     }

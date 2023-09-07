@@ -1,4 +1,4 @@
-import { CATEGORY, Categorized, Creature } from 'src/model/creatures'
+import { CATEGORY, Categorized, CategoryValues, Creature } from 'src/model/creatures'
 
 
 interface Props {
@@ -22,7 +22,7 @@ export function categorize(props: Props): Categorized[] {
       ? categoryMap.get(key)!.creatures.push(creature)
       : categoryMap.set(key, { creatures: [creature], values })
 
-    function getCategories(): Partial<Record<CATEGORY, string | number>> {
+    function getCategories(): Partial<CategoryValues> {
       return Object.fromEntries(categories.map(category => [category, getValue(category)]))
     }
 

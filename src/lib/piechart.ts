@@ -1,9 +1,10 @@
-import { drawCircle } from 'src/draw/draw-circle'
-import { CATEGORY, Creature } from 'src/model/creatures'
-import { Point } from 'src/model/geometry'
-import { PieChart, PieChartDrawProps } from 'src/model/piechart'
+import { drawCircleSector } from 'src/draw/draw-segment'
+import { CATEGORY, Categorized, CategoryValues, Creature } from 'src/model/creatures'
+import { Fill } from 'src/model/drawing'
+import { ArcPlace } from 'src/model/geometry'
+import { DrawPieProps, DrawSpacesProps, PieChart } from 'src/model/piechart'
 import { Size } from 'src/model/values'
-import { PlaceAssignment, makeAssignments } from './assignments'
+import { Assignment, makeAssignments } from './assignments'
 import { categorize } from './categorize'
 import { quadInOut } from './ease'
 
@@ -33,24 +34,29 @@ export function makePieChart(props: Props): PieChart {
   const radius = inputRadius * scale
   const places = Array.from({ length: count }, makePlace)
 
-  let assignments: PlaceAssignment[] | null = null
+  let categorized: Categorized[] | null = null
+  let assignments: Assignment[] | null = null
+  let categorySectors: CategorySector[] | null = null
 
-  return { init, draw, update, places, radius, reset, scale }
+  return { drawPie, drawSpaces, init, places, radius, reset, scale, update }
 
   function init(categories: CATEGORY[]): void {
-    const categorized = categorize({ categories, creatures })
+    categorized = categorize({ categories, creatures })
     assignments = makeAssignments({ categorized, places, radius })
+    categorySectors = makeCategorySectors(categorized, assignments)
   }
 
   function reset(): void {
+    categorized = null
     assignments = null
+    categorySectors = null
   }
 
   function update(proportion: number): void {
     const p = quadInOut(proportion)
     assignments?.forEach(gotoAssignment)
 
-    function gotoAssignment(assignment: PlaceAssignment): void {
+    function gotoAssignment(assignment: Assignment): void {
       const { creature, start, place } = assignment
       const { center } = creature
 
@@ -59,16 +65,68 @@ export function makePieChart(props: Props): PieChart {
     }
   }
 
-  function makePlace(_: unknown, index: number): Point {
+  function makePlace(_: unknown, index: number): ArcPlace {
     const angle = start + index * theta
     const x = center.x + distance * Math.cos(angle)
     const y = center.y + distance * Math.sin(angle)
-    return { x, y }
+    return { x, y, angle: angle - theta / 2, theta }
   }
 
-  function draw(props: PieChartDrawProps): void {
+  function drawPie(props: DrawPieProps): void {
+    const { alpha, brush, context } = props
+    const circle = { center, radius: distance + radius }
+    categorySectors?.forEach(drawCategory)
+
+    function drawCategory(sector: CategorySector): void {
+      const { angle, theta, values } = sector
+      const fill: Fill = { color: values.color ?? '#999', alpha }
+      drawCircleSector({ angle, brush, circle, context, fill, theta })
+    }
+  }
+
+  function drawSpaces(props: DrawSpacesProps): void {
     const { context, brush, fill } = props
-    places.forEach(center => drawCircle({ context, brush, fill, circle: { radius, center } }))
+    assignments?.forEach(drawPlace)
+
+    function drawPlace(assignment: Assignment): void {
+      const { place: { angle, theta } } = assignment
+      const circle = { radius: distance + radius, center }
+      const inner = distance - radius
+      drawCircleSector({ angle, brush, circle, context, fill, theta, inner })
+    }
   }
 
+}
+
+interface CategorySector {
+  values: Partial<CategoryValues>
+  angle:  number
+  theta:  number
+}
+
+function makeCategorySectors(categorized: Categorized[], assignments: Assignment[]): CategorySector[] {
+  return categorized.map(toCategorySector)
+
+  function toCategorySector(categorized: Categorized): CategorySector {
+    const { creatures, values } = categorized
+    const [min, max] = creatures.map(findAssignment).reduce(getRange, [Infinity, -Infinity])
+
+    return { values, angle: min, theta: max - min }
+
+    function findAssignment(creature: Creature): Assignment {
+      return assignments.find(hasCreature)!
+
+      function hasCreature(assignment: Assignment): boolean {
+        return assignment.creature === creature
+      }
+    }
+
+    type Range = [min: number, max: number]
+
+    function getRange(accumulator: Range, assignment: Assignment): Range {
+      const { place: { angle, theta } } = assignment
+      const [min, max] = accumulator
+      return [Math.min(min, angle), Math.max(max, angle + theta)]
+    }
+  }
 }

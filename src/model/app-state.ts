@@ -1,8 +1,10 @@
 export enum STATE_TYPE {
-  FREE        = 'free',
-  ENTER_PIE   = 'enter-pie',
-  OVERLAY_PIE = 'overlay-pie',
-  EXIT_PIE    = 'exit-pie',
+  FREE              = 'free',
+  ENTER_PIE         = 'enter-pie',
+  ENTER_OVERLAY_PIE = 'enter-overlay-pie',
+  PIE_OVERLAID      = 'pie-overlaid',
+  EXIT_OVERLAY_PIE  = 'exit-overlay-pie',
+  EXIT_PIE          = 'exit-pie',
 }
 
 export interface State {

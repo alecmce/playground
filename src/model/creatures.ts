@@ -24,5 +24,11 @@ export enum CATEGORY {
 
 export interface Categorized {
   creatures: Creature[]
-  values:    Partial<Record<CATEGORY, string | number>>
+  values:    Partial<CategoryValues>
+}
+
+export interface CategoryValues {
+  [CATEGORY.COLOR]: string
+  [CATEGORY.EYES]:  1 | 2 | 3 | 4 | 5
+  [CATEGORY.SIDES]: number
 }
