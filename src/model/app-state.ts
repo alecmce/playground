@@ -8,9 +8,10 @@ export enum STATE_TYPE {
 }
 
 export interface State {
-  type:     STATE_TYPE
-  duration: number
-  time:     number
+  type:      STATE_TYPE
+  duration:  number
+  time:      number
+  isPaused?: boolean
 }
 
 export type StateAction = JumpAction | IterateAction | TriggerPieAction

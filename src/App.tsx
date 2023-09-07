@@ -1,6 +1,7 @@
-import { Button } from '@mui/material'
+import { Button, Card, CardContent } from '@mui/material'
 import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
+import { PiechartSlider } from './components/PiechartSlider'
 import { useAppState } from './lib/app-state'
 import { clampCreatures } from './lib/clamp-point'
 import { makeCreatures } from './lib/creatures'
@@ -35,6 +36,7 @@ export function App(): ReactElement {
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
+  const { type } = state
   // const [scale, setScale] = useState<number>(1)
 
   const random = useMemo(() => makeTwister(Math.random()), [])
@@ -66,7 +68,12 @@ export function App(): ReactElement {
       <canvas ref={setCanvas} width={width} height={height} className="layer" />
       <div className="layer">
         <div className="overlay">
-          <Button variant='contained' color='primary' onClick={onTest}>Test</Button>
+          <Card>
+            <CardContent>
+              <Button variant='contained' color='primary' onClick={onTest}>Test</Button>
+              { type !== STATE_TYPE.FREE ? <PiechartSlider state={state} dispatchAppState={dispatchAppState} /> : null }
+            </CardContent>
+          </Card>
         </div>
       </div>
     </Fragment>
@@ -132,8 +139,8 @@ function draw(props: DrawProps): void {
   }
 
   function drawExitPieOverlay(proportion: number): void {
-    pieChart.update(proportion)
-    drawPie(proportion)
+    pieChart.update(1 - proportion)
+    drawPie(1 - proportion)
     drawCommon(pieChart.scale)
     drawPieSpaces(1)
   }
@@ -154,7 +161,7 @@ function draw(props: DrawProps): void {
   }
 
   function drawPie(alpha: number): void {
-    pieChart.drawPie({ context, alpha, brush: { alpha, color: 'grey', width: 2 } })
+    pieChart.drawPie({ context, alpha, brush: { alpha, color: 'black', width: 2 } })
   }
 
 }

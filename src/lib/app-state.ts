@@ -23,9 +23,11 @@ export function stateReducer(state: State, action: StateAction): State {
   }
 
   function triggerPie(state: State): State {
-    return state.type === STATE_TYPE.FREE
-      ? { type: STATE_TYPE.ENTER_PIE, duration: 1000, time: 0 }
-      : state
+    switch (state.type) {
+      case STATE_TYPE.FREE:         return withDuration({ type: STATE_TYPE.ENTER_PIE, time: 0 })
+      case STATE_TYPE.PIE_OVERLAID: return withDuration({ type: STATE_TYPE.EXIT_OVERLAY_PIE, time: 0 })
+      default:                      return state
+    }
   }
 }
 
@@ -38,10 +40,10 @@ interface TransitionState {
   (state: State): State
 }
 
-const STATE_DURATIONS: Record<STATE_TYPE, number> = {
-  [STATE_TYPE.ENTER_OVERLAY_PIE]: 1000,
+export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
+  [STATE_TYPE.ENTER_OVERLAY_PIE]: 3000,
   [STATE_TYPE.ENTER_PIE]:         3000,
-  [STATE_TYPE.EXIT_OVERLAY_PIE]:  1000,
+  [STATE_TYPE.EXIT_OVERLAY_PIE]:  3000,
   [STATE_TYPE.EXIT_PIE]:          2000,
   [STATE_TYPE.FREE]:              Infinity,
   [STATE_TYPE.PIE_OVERLAID]:      Infinity,
@@ -76,11 +78,16 @@ function makeTransitionState(props: TransitionProps): TransitionState {
   return function transition(state: State): State {
     const { time, duration: outgoingDuration } = state
     if (time > outgoingDuration) {
-      return next ? { type: next, duration: STATE_DURATIONS[next], time: time - outgoingDuration } : state
+      return next ? withDuration({ type: next, time: time - outgoingDuration }) : state
     } else if (time < 0) {
-      return prev ? { type: prev, duration: STATE_DURATIONS[prev], time: outgoingDuration - time } : state
+      return prev ? withDuration({ type: prev, time: outgoingDuration - time }) : state
     } else {
       return state
     }
   }
+}
+
+function withDuration(state: Omit<State, 'duration'>): State {
+  const duration = STATE_DURATIONS[state.type]
+  return {...state, duration}
 }
