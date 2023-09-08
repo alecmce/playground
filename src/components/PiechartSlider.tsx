@@ -124,9 +124,9 @@ function getMarks(): Mark[] {
 
   return [
     { value: 0, label: 'Start'},
-    { value: enterPie, label: 'Places' },
-    { value: enterPie + enterOverlay, label: 'Pie' },
-    { value: enterPie + enterOverlay + exitOverlay, label: 'Places' },
+    { value: enterPie, label: 'In Place' },
+    { value: enterPie + enterOverlay, label: 'Pie Chart' },
+    { value: enterPie + enterOverlay + exitOverlay, label: 'In Place' },
     { value: enterPie + enterOverlay + exitOverlay + exitPie, label: 'End' },
   ]
 }

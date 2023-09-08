@@ -1,6 +1,7 @@
-import { Button, Card, CardContent } from '@mui/material'
+import { Card, CardContent } from '@mui/material'
 import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
+import { PieChartOptions } from './components/CategoryOptions'
 import { PiechartSlider } from './components/PiechartSlider'
 import { useAppState } from './lib/app-state'
 import { clampCreatures } from './lib/clamp-point'
@@ -73,7 +74,11 @@ export function App(): ReactElement {
         <div className="overlay">
           <Card>
             <CardContent>
-              { showTemp() && <Button variant='contained' color='primary' onClick={onTest}>Piechart</Button> }
+              { showTemp() && (
+                <Fragment>
+                  <PieChartOptions onClick={onPieChart} />
+                </Fragment>
+              ) }
               { showPiechartSlider() && <PiechartSlider state={state} dispatchAppState={dispatchAppState} /> }
             </CardContent>
           </Card>
@@ -90,8 +95,8 @@ export function App(): ReactElement {
     return type !== STATE_TYPE.FREE && type !== STATE_TYPE.CLOSE_PIE
   }
 
-  function onTest(): void {
-    pieChart.init([CATEGORY.COLOR])
+  function onPieChart(categories: CATEGORY[]): void {
+    pieChart.init(categories)
     dispatchAppState(triggerPie())
   }
 }
