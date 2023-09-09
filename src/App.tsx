@@ -1,8 +1,6 @@
-import { Card, CardContent } from '@mui/material'
 import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
-import { PieChartOptions } from './components/CategoryOptions'
-import { PiechartSlider } from './components/PiechartSlider'
+import { Ui } from './components/UI'
 import { useAppState } from './lib/app-state'
 import { clampCreatures } from './lib/clamp-point'
 import { makeCreatures } from './lib/creatures'
@@ -14,8 +12,8 @@ import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
-import { AppState, STATE_TYPE, iterate, triggerPie } from './model/app-state'
-import { CATEGORY, Creature } from './model/creatures'
+import { AppState, STATE_TYPE, iterate } from './model/app-state'
+import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
 import { PieChart } from './model/piechart'
 import { PushApart } from './model/push-apart'
@@ -33,13 +31,9 @@ export function App(): ReactElement {
   const size = useWindowSize({ marginBottom: 100 })
   const { width, height } = size
 
-  // const [gotoRing, setGotoRing] = useState<boolean>(false)
-  const [, setVersion] = useState<number>(0)
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
-  const { type } = state
-  // const [scale, setScale] = useState<number>(1)
 
   const random = useMemo(() => makeTwister(Math.random()), [])
 
@@ -55,8 +49,7 @@ export function App(): ReactElement {
 
   const tick = useCallback((deltaTime: number) => {
     dispatchAppState(iterate(deltaTime))
-    setVersion(version => version + 1)
-  }, [setVersion])
+  }, [dispatchAppState])
 
   useTick(tick)
 
@@ -70,35 +63,9 @@ export function App(): ReactElement {
       <div className="layer">
         <canvas ref={setCanvas} width={width} height={height} style={{ width, height }}/>
       </div>
-      <div className="layer">
-        <div className="overlay">
-          <Card>
-            <CardContent>
-              { showTemp() && (
-                <Fragment>
-                  <PieChartOptions onClick={onPieChart} />
-                </Fragment>
-              ) }
-              { showPiechartSlider() && <PiechartSlider state={state} dispatchAppState={dispatchAppState} /> }
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <Ui pieChart={pieChart} state={state} dispatchAppState={dispatchAppState} />
     </Fragment>
   )
-
-  function showTemp(): boolean {
-    return type === STATE_TYPE.FREE
-  }
-
-  function showPiechartSlider(): boolean {
-    return type !== STATE_TYPE.FREE && type !== STATE_TYPE.CLOSE_PIE
-  }
-
-  function onPieChart(categories: CATEGORY[]): void {
-    pieChart.init(categories)
-    dispatchAppState(triggerPie())
-  }
 }
 
 interface DrawProps {
@@ -122,6 +89,7 @@ function draw(props: DrawProps): void {
 
   switch (type) {
     case STATE_TYPE.FREE:              return drawFree()
+    case STATE_TYPE.PIE_CHART_CONFIG:  return drawFree()
     case STATE_TYPE.ENTER_PIE:         return drawEnterPie(quadInOut(time / duration))
     case STATE_TYPE.ENTER_OVERLAY_PIE: return drawEnterPieOverlay(quadOut(time / duration))
     case STATE_TYPE.PIE_OVERLAID:      return drawPieOverlaid()

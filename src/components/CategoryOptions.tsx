@@ -1,24 +1,22 @@
-import { Checkbox, FormControlLabel, IconButton } from '@mui/material'
-import { Dispatch, Fragment, ReactElement, SetStateAction, useState } from 'react'
+import { Checkbox, FormControlLabel } from '@mui/material'
+import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 
 import Palette from '@mui/icons-material/Palette'
 import PaletteOutlined from '@mui/icons-material/PaletteOutlined'
 import Pentagon from '@mui/icons-material/Pentagon'
 import PentagonOutlined from '@mui/icons-material/PentagonOutlined'
-import PieChart from '@mui/icons-material/PieChart'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined'
 import { CATEGORY } from 'src/model/creatures'
 
 
 interface Props {
-  onClick: (catgories: CATEGORY[]) => void
+  categories:    Set<CATEGORY>
+  setCategories: Dispatch<SetStateAction<Set<CATEGORY>>>
 }
 
-export function PieChartOptions(props: Props): ReactElement {
-  const { onClick } = props
-
-  const [categories, setCategories] = useState<Set<CATEGORY>>(new Set([CATEGORY.COLOR]))
+export function CategoryOptions(props: Props): ReactElement {
+  const { categories, setCategories } = props
 
   return (
     <Fragment>
@@ -46,9 +44,6 @@ export function PieChartOptions(props: Props): ReactElement {
         color="secondary"
         onChange={(_, isChecked) => toggleCategory(CATEGORY.EYES, isChecked)}
       />
-      <IconButton aria-label="pie-chart" size="large" onClick={() => onClick(Array.from(categories))}>
-        <PieChart />
-      </IconButton>
     </Fragment>
   )
 

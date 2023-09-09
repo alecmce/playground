@@ -1,5 +1,6 @@
 export enum STATE_TYPE {
   FREE              = 'free',
+  PIE_CHART_CONFIG  = 'pie-chart-config',
   ENTER_PIE         = 'enter-pie',
   ENTER_OVERLAY_PIE = 'enter-overlay-pie',
   PIE_OVERLAID      = 'pie-overlaid',
