@@ -1,12 +1,17 @@
 export enum STATE_TYPE {
   FREE              = 'free',
   PIE_CHART_CONFIG  = 'pie-chart-config',
-  ENTER_PIE         = 'enter-pie',
-  ENTER_OVERLAY_PIE = 'enter-overlay-pie',
-  PIE_OVERLAID      = 'pie-overlaid',
-  EXIT_OVERLAY_PIE  = 'exit-overlay-pie',
-  EXIT_PIE          = 'exit-pie',
-  CLOSE_PIE         = 'close-pie',
+  ENTER_PLACES      = 'enter-places',
+  ENTER_OVERLAY     = 'enter-overlay',
+  FULL_OVERLAY      = 'pie-overlaid',
+  EXIT_OVERLAY      = 'exit-overlay',
+  LEAVE_PLACES      = 'leave-places',
+  CLOSE_CHART       = 'close-chart',
+}
+
+export enum CHART_TYPE {
+  BAR_CHART = 'bar-chart',
+  PIE_CHART = 'pie-chart',
 }
 
 export interface AppState {
@@ -14,6 +19,7 @@ export interface AppState {
   duration:  number
   time:      number
   isPaused?: boolean
+  chart?:    CHART_TYPE
 }
 
 export type AppStateAction = JumpAction | IterateAction | TriggerPieAction | TogglePauseAction

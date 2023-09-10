@@ -19,7 +19,7 @@ export function PiechartSlider(props: Props): ReactElement {
 
   const duration = useDuration()
   const marks = useMemo(() => getMarks(), [])
-  const isPlay = useMemo(() => type !== STATE_TYPE.FREE && type !== STATE_TYPE.PIE_OVERLAID && !isPaused, [type])
+  const isPlay = useMemo(() => type !== STATE_TYPE.FREE && type !== STATE_TYPE.FULL_OVERLAY && !isPaused, [type])
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -38,8 +38,8 @@ export function PiechartSlider(props: Props): ReactElement {
   )
 
   function onPlay(): void {
-    if (type == STATE_TYPE.PIE_OVERLAID) {
-      dispatchAppState(jump({ type: STATE_TYPE.EXIT_OVERLAY_PIE, time: 0 }))
+    if (type == STATE_TYPE.FULL_OVERLAY) {
+      dispatchAppState(jump({ type: STATE_TYPE.EXIT_OVERLAY, time: 0 }))
     } else if (isPaused) {
       dispatchAppState(togglePause())
     }
@@ -50,16 +50,16 @@ export function PiechartSlider(props: Props): ReactElement {
   }
 
   function onClose(): void {
-    const enterDuration = STATE_DURATIONS[STATE_TYPE.ENTER_PIE]
-    const exitDuration = STATE_DURATIONS[STATE_TYPE.EXIT_PIE]
-    const closeDuration = STATE_DURATIONS[STATE_TYPE.CLOSE_PIE]
+    const enterDuration = STATE_DURATIONS[STATE_TYPE.ENTER_PLACES]
+    const exitDuration = STATE_DURATIONS[STATE_TYPE.LEAVE_PLACES]
+    const closeDuration = STATE_DURATIONS[STATE_TYPE.CLOSE_CHART]
 
-    dispatchAppState(jump({ type: STATE_TYPE.CLOSE_PIE, time: getTime() }))
+    dispatchAppState(jump({ type: STATE_TYPE.CLOSE_CHART, time: getTime() }))
 
     function getTime(): number {
       switch (type) {
-        case STATE_TYPE.ENTER_PIE: return closeDuration * (1 - time) / enterDuration
-        case STATE_TYPE.EXIT_PIE:  return closeDuration * time / exitDuration
+        case STATE_TYPE.ENTER_PLACES: return closeDuration * (1 - time) / enterDuration
+        case STATE_TYPE.LEAVE_PLACES:  return closeDuration * time / exitDuration
         default:                   return 0
       }
     }
@@ -68,45 +68,45 @@ export function PiechartSlider(props: Props): ReactElement {
   function onChange(_: Event, value: number | number[]): void {
     const time = value as number
 
-    const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PIE]
-    const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY_PIE]
-    const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY_PIE]
+    const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PLACES]
+    const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY]
+    const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY]
 
     dispatchAppState(jump({ ...getState(), isPaused: true }))
 
     function getState(): Omit<AppState, 'duration'> {
       if (time < enterPie) {
-        return { type: STATE_TYPE.ENTER_PIE, time }
+        return { type: STATE_TYPE.ENTER_PLACES, time }
       } else if (time < enterPie + enterOverlay) {
-        return { type: STATE_TYPE.ENTER_OVERLAY_PIE, time: time - enterPie }
+        return { type: STATE_TYPE.ENTER_OVERLAY, time: time - enterPie }
       } else if (time < enterPie + enterOverlay + exitOverlay) {
-        return { type: STATE_TYPE.EXIT_OVERLAY_PIE, time: time - enterPie - enterOverlay }
+        return { type: STATE_TYPE.EXIT_OVERLAY, time: time - enterPie - enterOverlay }
       } else {
-        return { type: STATE_TYPE.EXIT_PIE, time: time - enterPie - enterOverlay - exitOverlay }
+        return { type: STATE_TYPE.LEAVE_PLACES, time: time - enterPie - enterOverlay - exitOverlay }
       }
     }
   }
 }
 
 function useDuration(): number {
-  const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PIE]
-  const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY_PIE]
-  const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY_PIE]
-  const exitPie = STATE_DURATIONS[STATE_TYPE.EXIT_PIE]
+  const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PLACES]
+  const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY]
+  const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY]
+  const exitPie = STATE_DURATIONS[STATE_TYPE.LEAVE_PLACES]
   return enterPie + enterOverlay + exitOverlay + exitPie
 }
 
 function getTime(state: AppState): number {
-  const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PIE]
-  const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY_PIE]
-  const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY_PIE]
+  const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PLACES]
+  const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY]
+  const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY]
 
   switch (state.type) {
-    case STATE_TYPE.ENTER_PIE:         return state.time
-    case STATE_TYPE.ENTER_OVERLAY_PIE: return enterPie + state.time
-    case STATE_TYPE.PIE_OVERLAID:      return enterPie + enterOverlay
-    case STATE_TYPE.EXIT_OVERLAY_PIE:  return enterPie + enterOverlay + state.time
-    case STATE_TYPE.EXIT_PIE:          return enterPie + enterOverlay + exitOverlay + state.time
+    case STATE_TYPE.ENTER_PLACES:         return state.time
+    case STATE_TYPE.ENTER_OVERLAY: return enterPie + state.time
+    case STATE_TYPE.FULL_OVERLAY:      return enterPie + enterOverlay
+    case STATE_TYPE.EXIT_OVERLAY:  return enterPie + enterOverlay + state.time
+    case STATE_TYPE.LEAVE_PLACES:          return enterPie + enterOverlay + exitOverlay + state.time
     default:                           return NaN
   }
 }
@@ -117,10 +117,10 @@ interface Mark {
 }
 
 function getMarks(): Mark[] {
-  const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PIE]
-  const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY_PIE]
-  const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY_PIE]
-  const exitPie = STATE_DURATIONS[STATE_TYPE.EXIT_PIE]
+  const enterPie = STATE_DURATIONS[STATE_TYPE.ENTER_PLACES]
+  const enterOverlay = STATE_DURATIONS[STATE_TYPE.ENTER_OVERLAY]
+  const exitOverlay = STATE_DURATIONS[STATE_TYPE.EXIT_OVERLAY]
+  const exitPie = STATE_DURATIONS[STATE_TYPE.LEAVE_PLACES]
 
   return [
     { value: 0, label: 'Start'},

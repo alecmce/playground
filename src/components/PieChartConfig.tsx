@@ -2,9 +2,9 @@ import { IconButton } from '@mui/material'
 import { Fragment, ReactElement, useState } from 'react'
 
 import PlayArrow from '@mui/icons-material/PlayArrow'
-import { AppStateAction, STATE_TYPE, jump } from 'src/model/app-state'
-import { CATEGORY } from 'src/model/creatures'
+import { AppStateAction, CHART_TYPE, STATE_TYPE, jump } from 'src/model/app-state'
 import { Chart } from 'src/model/charts'
+import { CATEGORY } from 'src/model/creatures'
 import { CategoryOptions } from './CategoryOptions'
 
 
@@ -28,6 +28,6 @@ export function PieChartConfig(props: Props): ReactElement {
 
   function onClick(): void {
     pieChart.init(Array.from(categories))
-    dispatchAppState(jump({ type: STATE_TYPE.ENTER_PIE, time: 0 }))
+    dispatchAppState(jump({ chart: CHART_TYPE.PIE_CHART, type: STATE_TYPE.ENTER_PLACES, time: 0 }))
   }
 }

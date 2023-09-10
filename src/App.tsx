@@ -6,16 +6,16 @@ import { clampCreatures } from './lib/clamp-point'
 import { makeCreatures } from './lib/creatures'
 import { quadIn, quadInOut, quadOut } from './lib/ease'
 import { makeTwister } from './lib/mersenne-twister'
-import { makePieChart } from './lib/piechart'
+import { makePieChart } from './lib/pie-chart'
 import { makePushApart } from './lib/push-apart'
 import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
 import { AppState, STATE_TYPE, iterate } from './model/app-state'
+import { Chart } from './model/charts'
 import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
-import { Chart } from './model/charts'
 import { PushApart } from './model/push-apart'
 import { Size } from './model/values'
 
@@ -87,14 +87,14 @@ function draw(props: DrawProps): void {
   context.clearRect(0, 0, width, height)
 
   switch (type) {
-    case STATE_TYPE.FREE:              return drawFree()
-    case STATE_TYPE.PIE_CHART_CONFIG:  return drawFree()
-    case STATE_TYPE.ENTER_PIE:         return drawEnterPie(quadInOut(time / duration))
-    case STATE_TYPE.ENTER_OVERLAY_PIE: return drawEnterPieOverlay(quadOut(time / duration))
-    case STATE_TYPE.PIE_OVERLAID:      return drawPieOverlaid()
-    case STATE_TYPE.EXIT_OVERLAY_PIE:  return drawExitPieOverlay(quadIn(time / duration))
-    case STATE_TYPE.EXIT_PIE:          return drawExitPie(quadInOut(time / duration))
-    case STATE_TYPE.CLOSE_PIE:         return drawExitPie(quadInOut(time / duration))
+    case STATE_TYPE.FREE:             return drawFree()
+    case STATE_TYPE.PIE_CHART_CONFIG: return drawFree()
+    case STATE_TYPE.ENTER_PLACES:     return drawEnterPie(quadInOut(time / duration))
+    case STATE_TYPE.ENTER_OVERLAY:    return drawEnterPieOverlay(quadOut(time / duration))
+    case STATE_TYPE.FULL_OVERLAY:     return drawPieOverlaid()
+    case STATE_TYPE.EXIT_OVERLAY:     return drawExitPieOverlay(quadIn(time / duration))
+    case STATE_TYPE.LEAVE_PLACES:     return drawExitPie(quadInOut(time / duration))
+    case STATE_TYPE.CLOSE_CHART:      return drawExitPie(quadInOut(time / duration))
   }
 
   function drawFree(): void {

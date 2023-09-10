@@ -33,12 +33,12 @@ export function Ui(props: Props): ReactElement {
     switch (type) {
       case STATE_TYPE.FREE:              return <FeatureChoice dispatchAppState={dispatchAppState} />
       case STATE_TYPE.PIE_CHART_CONFIG:  return <PieChartConfig pieChart={pieChart} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.ENTER_PIE:         return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.ENTER_OVERLAY_PIE: return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.PIE_OVERLAID:      return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.EXIT_OVERLAY_PIE:  return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.EXIT_PIE:          return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.CLOSE_PIE:         return <FeatureChoice disabled dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.ENTER_PLACES:         return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.ENTER_OVERLAY: return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.FULL_OVERLAY:      return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.EXIT_OVERLAY:  return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.LEAVE_PLACES:          return <PiechartSlider state={state} dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.CLOSE_CHART:         return <FeatureChoice disabled dispatchAppState={dispatchAppState} />
       default:                           return null
     }
   }
