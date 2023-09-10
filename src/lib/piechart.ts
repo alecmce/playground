@@ -2,7 +2,7 @@ import { drawCircleSector } from 'src/draw/draw-segment'
 import { CATEGORY, Categorized, CategoryValues, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { ArcPlace } from 'src/model/geometry'
-import { DrawPieProps, DrawSpacesProps, PieChart } from 'src/model/piechart'
+import { MainDrawProps, BackgroundDrawProps, Chart } from 'src/model/charts'
 import { Size } from 'src/model/values'
 import { Assignment, makeAssignments } from './assignments'
 import { categorize } from './categorize'
@@ -19,7 +19,7 @@ interface Props {
  * Generates a ring of points around the origin such that circles with the given radius at those points touch but do not
  * intersect.
  */
-export function makePieChart(props: Props): PieChart {
+export function makePieChart(props: Props): Chart {
   const { creatures, count, radius: inputRadius, size } = props
   const { width, height } = size
 
@@ -38,7 +38,7 @@ export function makePieChart(props: Props): PieChart {
   let assignments: Assignment[] | null = null
   let categorySectors: CategorySector[] | null = null
 
-  return { drawPie, drawSpaces, init, places, radius, reset, scale, update }
+  return { drawMain, drawBackground, init, places, radius, reset, scale, update }
 
   function init(categories: CATEGORY[]): void {
     categorized = categorize({ categories, creatures })
@@ -72,7 +72,7 @@ export function makePieChart(props: Props): PieChart {
     return { x, y, angle: angle - theta / 2, theta }
   }
 
-  function drawPie(props: DrawPieProps): void {
+  function drawMain(props: MainDrawProps): void {
     const { alpha, brush, context } = props
     const circle = { center, radius: distance + radius }
     categorySectors?.forEach(drawCategory)
@@ -84,7 +84,7 @@ export function makePieChart(props: Props): PieChart {
     }
   }
 
-  function drawSpaces(props: DrawSpacesProps): void {
+  function drawBackground(props: BackgroundDrawProps): void {
     const { context, brush, fill } = props
     assignments?.forEach(drawPlace)
 

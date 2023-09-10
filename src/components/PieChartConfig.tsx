@@ -4,12 +4,12 @@ import { Fragment, ReactElement, useState } from 'react'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import { AppStateAction, STATE_TYPE, jump } from 'src/model/app-state'
 import { CATEGORY } from 'src/model/creatures'
-import { PieChart } from 'src/model/piechart'
+import { Chart } from 'src/model/charts'
 import { CategoryOptions } from './CategoryOptions'
 
 
 interface Props {
-  pieChart:         PieChart
+  pieChart:         Chart
   dispatchAppState: (action: AppStateAction) => void
 }
 

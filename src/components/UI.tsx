@@ -1,14 +1,14 @@
 import { Card, CardContent } from '@mui/material'
 import { ReactElement } from 'react'
 import { AppState, AppStateAction, STATE_TYPE } from 'src/model/app-state'
-import { PieChart } from 'src/model/piechart'
+import { Chart } from 'src/model/charts'
 import { FeatureChoice } from './FeatureChoice'
 import { PieChartConfig } from './PieChartConfig'
 import { PiechartSlider } from './PiechartSlider'
 
 
 interface Props {
-  pieChart:         PieChart
+  pieChart:         Chart
   state:            AppState
   dispatchAppState: (action: AppStateAction) => void
 }

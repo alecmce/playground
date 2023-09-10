@@ -15,7 +15,7 @@ import { useWindowSize } from './lib/use-window-size'
 import { AppState, STATE_TYPE, iterate } from './model/app-state'
 import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
-import { PieChart } from './model/piechart'
+import { Chart } from './model/charts'
 import { PushApart } from './model/push-apart'
 import { Size } from './model/values'
 
@@ -46,7 +46,6 @@ export function App(): ReactElement {
 
   useCreaturesDrag({ creatures, setPointer, setTarget })
 
-
   const tick = useCallback((deltaTime: number) => {
     dispatchAppState(iterate(deltaTime))
   }, [dispatchAppState])
@@ -71,7 +70,7 @@ export function App(): ReactElement {
 interface DrawProps {
   context:   CanvasRenderingContext2D
   creatures: Creature[]
-  pieChart:  PieChart
+  pieChart:  Chart
   pushApart: PushApart
   pointer:   Point | null
   radius:    number
@@ -141,11 +140,11 @@ function draw(props: DrawProps): void {
   }
 
   function drawPieSpaces(alpha: number): void {
-    pieChart.drawSpaces({ context, brush: { alpha, color: 'grey', width: 2 } })
+    pieChart.drawBackground({ context, brush: { alpha, color: 'grey', width: 2 } })
   }
 
   function drawPie(alpha: number): void {
-    pieChart.drawPie({ context, alpha, brush: { alpha, color: 'black', width: 2 } })
+    pieChart.drawMain({ context, alpha, brush: { alpha, color: 'black', width: 2 } })
   }
 
 }
