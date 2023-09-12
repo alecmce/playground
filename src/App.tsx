@@ -2,6 +2,7 @@ import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
 import { Ui } from './components/UI'
 import { useAppState } from './lib/app-state'
+import { makeBarChart } from './lib/bar-chart/bar-chart'
 import { clampCreatures } from './lib/clamp-point'
 import { makeCreatures } from './lib/creatures'
 import { quadIn, quadInOut, quadOut } from './lib/ease'
@@ -12,7 +13,7 @@ import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
 import { useWindowSize } from './lib/use-window-size'
-import { AppState, STATE_TYPE, iterate } from './model/app-state'
+import { AppState, CHART_TYPE, STATE_TYPE, iterate } from './model/app-state'
 import { Chart } from './model/charts'
 import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
@@ -31,6 +32,8 @@ export function App(): ReactElement {
   const size = useWindowSize({ marginBottom: 100 })
   const { width, height } = size
 
+  const bounds = useMemo(() => ({ left: 30, top: 30, right: width - 60, bottom: height - 60 }), [width, height])
+
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
@@ -40,7 +43,8 @@ export function App(): ReactElement {
   const radius = useRadius({ count: COUNT, density: DENSITY, size })
   const creatures = useMemo(() => makeCreatures({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES, size }), [])
   const pushApart = useMemo(() => makePushApart(creatures), [])
-  const pieChart = useMemo(() => makePieChart({ count: COUNT, creatures, radius, size }), [])
+  const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius }), [bounds, creatures])
+  const pieChart = useMemo(() => makePieChart({ count: COUNT, creatures, radius, size }), [creatures, radius, size])
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
@@ -54,7 +58,7 @@ export function App(): ReactElement {
 
   const context = canvas?.getContext('2d')
   if (context) {
-    draw({ context, creatures, pieChart, pushApart, pointer, radius, size, state, target })
+    draw({ context, creatures, barChart, pieChart, pushApart, pointer, radius, size, state, target })
   }
 
   return (
@@ -62,7 +66,7 @@ export function App(): ReactElement {
       <div className="layer">
         <canvas ref={setCanvas} width={width} height={height} style={{ width, height }}/>
       </div>
-      <Ui pieChart={pieChart} state={state} dispatchAppState={dispatchAppState} />
+      <Ui barChart={barChart} pieChart={pieChart} state={state} dispatchAppState={dispatchAppState} />
     </Fragment>
   )
 }
@@ -70,6 +74,7 @@ export function App(): ReactElement {
 interface DrawProps {
   context:   CanvasRenderingContext2D
   creatures: Creature[]
+  barChart:  Chart
   pieChart:  Chart
   pushApart: PushApart
   pointer:   Point | null
@@ -80,7 +85,7 @@ interface DrawProps {
 }
 
 function draw(props: DrawProps): void {
-  const { context, creatures, pieChart, pointer, pushApart, radius, size, state, target } = props
+  const { context, creatures, barChart, pieChart, pointer, pushApart, radius, size, state, target } = props
   const { width, height } = size
   const { type, time, duration } = state
 
@@ -88,50 +93,59 @@ function draw(props: DrawProps): void {
 
   switch (type) {
     case STATE_TYPE.FREE:             return drawFree()
+    case STATE_TYPE.BAR_CHART_CONFIG: return drawFree()
     case STATE_TYPE.PIE_CHART_CONFIG: return drawFree()
-    case STATE_TYPE.ENTER_PLACES:     return drawEnterPie(quadInOut(time / duration))
-    case STATE_TYPE.ENTER_OVERLAY:    return drawEnterPieOverlay(quadOut(time / duration))
-    case STATE_TYPE.FULL_OVERLAY:     return drawPieOverlaid()
-    case STATE_TYPE.EXIT_OVERLAY:     return drawExitPieOverlay(quadIn(time / duration))
-    case STATE_TYPE.LEAVE_PLACES:     return drawExitPie(quadInOut(time / duration))
-    case STATE_TYPE.CLOSE_CHART:      return drawExitPie(quadInOut(time / duration))
+    case STATE_TYPE.ENTER_PLACES:     return drawEnterChart(getChart(state.chart)!, quadInOut(time / duration))
+    case STATE_TYPE.ENTER_OVERLAY:    return drawEnterChartOverlay(getChart(state.chart)!, quadOut(time / duration))
+    case STATE_TYPE.FULL_OVERLAY:     return drawChartOverlay(getChart(state.chart)!, )
+    case STATE_TYPE.EXIT_OVERLAY:     return drawExitChartOverlay(getChart(state.chart)!, quadIn(time / duration))
+    case STATE_TYPE.LEAVE_PLACES:     return drawExitChart(getChart(state.chart)!, quadInOut(time / duration))
+    case STATE_TYPE.CLOSE_CHART:      return drawExitChart(getChart(state.chart)!, quadInOut(time / duration))
   }
 
   function drawFree(): void {
+    barChart.reset()
     pieChart.reset()
     pushApart({ radius, scalar: SCALAR })
     clampCreatures({ creatures, radius, size })
     drawCommon()
   }
 
-  function drawEnterPie(proportion: number): void {
-    pieChart.update(proportion)
-    drawPieSpaces(proportion)
-    drawCommon(1 + (pieChart.scale - 1) * proportion)
+  function drawEnterChart(chart: Chart, proportion: number): void {
+    chart.update(proportion)
+    drawChartBackground(chart, proportion)
+    drawCommon(1 + (chart.getScale() - 1) * proportion)
   }
 
-  function drawEnterPieOverlay(proportion: number): void {
-    drawPieSpaces(1)
-    drawCommon(pieChart.scale)
-    drawPie(proportion)
+  function drawEnterChartOverlay(chart: Chart, proportion: number): void {
+    drawChartBackground(chart, 1)
+    drawCommon(chart.getScale())
+    drawChart(chart, proportion)
   }
 
-  function drawPieOverlaid(): void {
-    const { scale } = pieChart
-    drawCommon(scale)
-    drawPie(1)
+  function drawChartOverlay(chart: Chart): void {
+    drawCommon(chart.getScale())
+    drawChart(chart, 1)
   }
 
-  function drawExitPieOverlay(proportion: number): void {
-    drawPieSpaces(1)
-    drawCommon(pieChart.scale)
-    drawPie(1 - proportion)
+  function drawExitChartOverlay(chart: Chart, proportion: number): void {
+    drawChartBackground(chart, 1)
+    drawCommon(chart.getScale())
+    drawChart(chart, 1 - proportion)
   }
 
-  function drawExitPie(proportion: number): void {
-    pieChart.update(1 - proportion)
-    drawPieSpaces(1 - proportion)
-    drawCommon(1 + (pieChart.scale - 1) * (1 - proportion))
+  function drawExitChart(chart: Chart, proportion: number): void {
+    chart.update(1 - proportion)
+    drawChartBackground(chart, 1 - proportion)
+    drawCommon(1 + (chart.getScale() - 1) * (1 - proportion))
+  }
+
+  function getChart(chart: CHART_TYPE | undefined): Chart | undefined {
+    switch (chart) {
+      case CHART_TYPE.BAR_CHART: return barChart
+      case CHART_TYPE.PIE_CHART: return pieChart
+      default:                   return undefined
+    }
   }
 
   function drawCommon(scale = 1): void {
@@ -139,12 +153,12 @@ function draw(props: DrawProps): void {
     creatures.forEach(creature => creature.draw({ context, pointer, scale, target }))
   }
 
-  function drawPieSpaces(alpha: number): void {
-    pieChart.drawBackground({ context, brush: { alpha, color: 'grey', width: 2 } })
+  function drawChartBackground(chart: Chart, alpha: number): void {
+    chart.drawBackground({ context, brush: { alpha, color: 'grey', width: 2 } })
   }
 
-  function drawPie(alpha: number): void {
-    pieChart.drawMain({ context, alpha, brush: { alpha, color: 'black', width: 2 } })
+  function drawChart(chart: Chart, alpha: number): void {
+    chart.drawMain({ context, alpha, brush: { alpha, color: 'black', width: 2 } })
   }
 
 }

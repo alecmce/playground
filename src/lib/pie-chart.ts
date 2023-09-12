@@ -1,10 +1,11 @@
 import { drawCircleSector } from 'src/draw/draw-segment'
+import { BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
 import { CATEGORY, Categorized, CategoryValues, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { ArcPlace } from 'src/model/geometry'
-import { MainDrawProps, BackgroundDrawProps, Chart } from 'src/model/charts'
 import { Size } from 'src/model/values'
-import { Assignment, makeAssignments } from './assignments'
+import { assignOptions } from './assign-options'
+import { Assignment, makePieChartOptions } from './assignments'
 import { categorize } from './categorize'
 import { quadInOut } from './ease'
 
@@ -35,14 +36,14 @@ export function makePieChart(props: Props): Chart {
   const places = Array.from({ length: count }, makePlace)
 
   let categorized: Categorized[] | null = null
-  let assignments: Assignment[] | null = null
+  let assignments: Assignment<ArcPlace>[] | null = null
   let categorySectors: CategorySector[] | null = null
 
-  return { drawMain, drawBackground, init, places, radius, reset, scale, update }
+  return { drawMain, drawBackground, init, getRadius: () => radius, reset, getScale: () => scale, update }
 
   function init(categories: CATEGORY[]): void {
     categorized = categorize({ categories, creatures })
-    assignments = makeAssignments({ categorized, places, radius })
+    assignments = assignOptions(makePieChartOptions({ categorized, places, radius }))
     categorySectors = makeCategorySectors(categorized, assignments)
   }
 
@@ -56,7 +57,7 @@ export function makePieChart(props: Props): Chart {
     const p = quadInOut(proportion)
     assignments?.forEach(gotoAssignment)
 
-    function gotoAssignment(assignment: Assignment): void {
+    function gotoAssignment(assignment: Assignment<ArcPlace>): void {
       const { creature, start, place } = assignment
       const { center } = creature
 
@@ -88,14 +89,13 @@ export function makePieChart(props: Props): Chart {
     const { context, brush, fill } = props
     assignments?.forEach(drawPlace)
 
-    function drawPlace(assignment: Assignment): void {
+    function drawPlace(assignment: Assignment<ArcPlace>): void {
       const { place: { angle, theta } } = assignment
       const circle = { radius: distance + radius, center }
       const inner = distance - radius
       drawCircleSector({ angle, brush, circle, context, fill, theta, inner })
     }
   }
-
 }
 
 interface CategorySector {
@@ -104,7 +104,7 @@ interface CategorySector {
   theta:  number
 }
 
-function makeCategorySectors(categorized: Categorized[], assignments: Assignment[]): CategorySector[] {
+function makeCategorySectors(categorized: Categorized[], assignments: Assignment<ArcPlace>[]): CategorySector[] {
   return categorized.map(toCategorySector)
 
   function toCategorySector(categorized: Categorized): CategorySector {
@@ -113,17 +113,17 @@ function makeCategorySectors(categorized: Categorized[], assignments: Assignment
 
     return { values, angle: min, theta: max - min }
 
-    function findAssignment(creature: Creature): Assignment {
+    function findAssignment(creature: Creature): Assignment<ArcPlace> {
       return assignments.find(hasCreature)!
 
-      function hasCreature(assignment: Assignment): boolean {
+      function hasCreature(assignment: Assignment<ArcPlace>): boolean {
         return assignment.creature === creature
       }
     }
 
     type Range = [min: number, max: number]
 
-    function getRange(accumulator: Range, assignment: Assignment): Range {
+    function getRange(accumulator: Range, assignment: Assignment<ArcPlace>): Range {
       const { place: { angle, theta } } = assignment
       const [min, max] = accumulator
       return [Math.min(min, angle), Math.max(max, angle + theta)]

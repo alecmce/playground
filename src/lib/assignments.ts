@@ -1,19 +1,19 @@
 import { CATEGORY, Categorized, Creature } from 'src/model/creatures'
-import { ArcPlace, Point } from 'src/model/geometry'
+import { Point } from 'src/model/geometry'
 import { getDistance } from './math-utils'
 
 
-interface Props {
+interface Props<T extends Point> {
   categorized: Categorized[]
-  places:      ArcPlace[]
+  places:      T[]
   radius:      number
 }
 
-export interface Assignment {
+export interface Assignment<T extends Point = Point> {
   categories: Partial<Record<CATEGORY, string | number>>
   creature:   Creature
   distance:   number
-  place:      ArcPlace
+  place:      T
   start:      Point
 }
 
@@ -21,67 +21,36 @@ export interface Assignment {
  * A naive algorithm to reduce long assignments, by first finding the creature with the longest trip to a place, then
  * assigning to it the closest available place; and then repeating.
  */
-export function makeAssignments(props: Props): Assignment[] {
+export function makePieChartOptions<T extends Point>(props: Props<T>): Assignment<T>[] {
   const { categorized, places } = props
 
-  return assignOptions(makeOptions())
+  let placeIndex = 0
+  return categorized
+    .flatMap(makeCategoryOptions)
+    .sort(sortDescending)
 
-  function makeOptions(): Assignment[] {
-    let placeIndex = 0
-    return categorized
-      .flatMap(makeCategoryOptions)
-      .sort(sortDescending)
+  function makeCategoryOptions(category: Categorized): Assignment<T>[] {
+    const { creatures, values: categories } = category
 
-    function makeCategoryOptions(category: Categorized): Assignment[] {
-      const { creatures, values: categories } = category
+    const categoryPlaces = places.slice(placeIndex, placeIndex + creatures.length)
+    placeIndex += creatures.length
 
-      const categoryPlaces = places.slice(placeIndex, placeIndex + creatures.length)
-      placeIndex += creatures.length
+    return creatures.flatMap(makeCreatureOptions)
 
-      return creatures.flatMap(makeCreatureOptions)
+    function makeCreatureOptions(creature: Creature): Assignment<T>[] {
+      const { center } = creature
+      const start = { ...center }
 
-      function makeCreatureOptions(creature: Creature): Assignment[] {
-        const { center } = creature
-        const start = { ...center }
+      return categoryPlaces.map(makeOption)
 
-        return categoryPlaces.map(makeOption)
-
-        function makeOption(place: ArcPlace): Assignment {
-          const distance = getDistance(center, place)
-          return { categories, creature, distance, place, start }
-        }
+      function makeOption(place: T): Assignment<T> {
+        const distance = getDistance(center, place)
+        return { categories, creature, distance, place, start }
       }
-    }
-
-    function sortDescending(a: Assignment, b: Assignment): number {
-      return b.distance - a.distance
     }
   }
 
-  function assignOptions(options: Assignment[]): Assignment[] {
-    const consumed = new Set<Assignment>()
-    const assignments: Assignment[] = []
-    options.forEach(assignOrSkip)
-    return assignments
-
-    function assignOrSkip(option: Assignment): void {
-      const { creature } = option
-      if (!consumed.has(option)) {
-        const creatureOptions = filterOptions(o => o.creature === creature)
-        const assigned = creatureOptions.at(-1)!
-        assignments.push(assigned)
-        const placeOptions = filterOptions(o => o.place === assigned.place)
-        consumeOptions(creatureOptions)
-        consumeOptions(placeOptions)
-      }
-
-      function filterOptions(fn: (option: Assignment) => boolean): Assignment[] {
-        return options.filter(o => !consumed.has(o) && fn(o))
-      }
-
-      function consumeOptions(options: Assignment[]): void {
-        options.forEach(o => consumed.add(o))
-      }
-    }
+  function sortDescending(a: Assignment<T>, b: Assignment<T>): number {
+    return b.distance - a.distance
   }
 }

@@ -58,6 +58,7 @@ export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
   [STATE_TYPE.EXIT_OVERLAY]:      3000,
   [STATE_TYPE.LEAVE_PLACES]:      2000,
   [STATE_TYPE.FREE]:              Infinity,
+  [STATE_TYPE.BAR_CHART_CONFIG]:  Infinity,
   [STATE_TYPE.PIE_CHART_CONFIG]:  Infinity,
   [STATE_TYPE.FULL_OVERLAY]:      Infinity,
 }
