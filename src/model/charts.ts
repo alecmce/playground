@@ -1,5 +1,6 @@
-import { CATEGORY } from './creatures'
+import { CATEGORY, Creature } from './creatures'
 import { Brush, Fill } from './drawing'
+import { Point } from './geometry'
 
 export interface Chart {
   drawMain:       (props: MainDrawProps) => void
@@ -21,4 +22,12 @@ export interface BackgroundDrawProps {
   context: CanvasRenderingContext2D
   brush?:  Brush
   fill?:   Fill
+}
+
+export interface Assignment<T extends Point = Point> {
+  categories: Partial<Record<CATEGORY, string | number>>
+  creature:   Creature
+  distance:   number
+  place:      T
+  start:      Point
 }

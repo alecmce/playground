@@ -1,20 +1,13 @@
-import { CATEGORY, Categorized, Creature } from 'src/model/creatures'
+import { Assignment } from 'src/model/charts'
+import { Categorized, Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
-import { getDistance } from './math-utils'
+import { getDistance } from '../math-utils'
 
 
 interface Props<T extends Point> {
   categorized: Categorized[]
   places:      T[]
   radius:      number
-}
-
-export interface Assignment<T extends Point = Point> {
-  categories: Partial<Record<CATEGORY, string | number>>
-  creature:   Creature
-  distance:   number
-  place:      T
-  start:      Point
 }
 
 /**

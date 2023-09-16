@@ -1,13 +1,12 @@
 import { drawRectangle } from 'src/draw/draw-rectangle'
-import { BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
-import { CATEGORY, Categorized, Creature } from 'src/model/creatures'
+import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
+import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { Rectangle, RectanglePlace } from 'src/model/geometry'
 import { assignOptions } from '../assign-options'
-import { Assignment } from '../assignments'
 import { categorize } from '../categorize'
 import { quadInOut } from '../ease'
-import { CategorizedBarPlaces, CategoryBars, makeCategoryBars } from './category-bars'
+import { BarChartConfig, CategorizedBarPlaces, makeCategoryBars } from './bar-chart-config'
 
 interface Props {
   bounds:    Rectangle
@@ -22,16 +21,15 @@ interface Props {
 export function makeBarChart(props: Props): Chart {
   const { bounds, creatures, radius: inputRadius } = props
 
-  let categorized: Categorized[] | null = null
   let assignments: Assignment<RectanglePlace>[] | null = null
-  let categoryBars: CategoryBars | null = null
+  let config: BarChartConfig | null = null
 
   return { drawMain, drawBackground, init, getRadius, reset, update, getScale }
 
   function init(categories: CATEGORY[]): void {
-    categorized = categorize({ categories, creatures })
-    categoryBars = makeCategoryBars({ bounds, categorized, horizontal: false, proportion: 0.8 })
-    assignments = assignOptions(categoryBars.options)
+    const categorized = categorize({ categories, creatures })
+    config = makeCategoryBars({ bounds, categorized, horizontal: false, proportion: 0.8 })
+    assignments = assignOptions(config.options)
   }
 
   function getRadius(): number {
@@ -39,12 +37,11 @@ export function makeBarChart(props: Props): Chart {
   }
 
   function getScale(): number {
-    return categoryBars ? categoryBars.radius / inputRadius : 1
+    return config ? config.radius / inputRadius : 1
   }
 
   function reset(): void {
-    categorized = null
-    categoryBars = null
+    config = null
     assignments = null
   }
 
@@ -63,7 +60,7 @@ export function makeBarChart(props: Props): Chart {
 
   function drawMain(props: MainDrawProps): void {
     const { alpha, brush, context } = props
-    categoryBars?.categorized?.forEach(drawCategory)
+    config?.categorized?.forEach(drawCategory)
 
     function drawCategory(sector: CategorizedBarPlaces): void {
       const { rectangle, values } = sector

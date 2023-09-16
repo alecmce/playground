@@ -1,5 +1,5 @@
+import { Assignment } from 'src/model/charts'
 import { Point } from 'src/model/geometry'
-import { Assignment } from './assignments'
 
 /**
  * Chooses which assignments are actually used from a set of all  possible assignemnts, by finding the

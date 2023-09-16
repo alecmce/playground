@@ -7,7 +7,7 @@ import { Point } from 'src/model/geometry'
 import { SeededRandom } from 'src/model/random'
 import { Size } from 'src/model/values'
 import { getDistance } from './math-utils'
-import { makeRegularPolygon } from './polygon'
+import { makeRegularPolygon } from './regular-polygon'
 import { makePositions } from './positions'
 
 interface Props {

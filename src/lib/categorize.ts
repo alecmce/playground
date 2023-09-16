@@ -6,6 +6,7 @@ interface Props {
   creatures:  Creature[]
 }
 
+/** Categorises creatures based on the given categories. */
 export function categorize(props: Props): Categorized[] {
   const { categories, creatures } = props
 

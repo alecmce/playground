@@ -1,13 +1,14 @@
 import { drawCircleSector } from 'src/draw/draw-segment'
-import { BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
-import { CATEGORY, Categorized, CategoryValues, Creature } from 'src/model/creatures'
+import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
+import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { ArcPlace } from 'src/model/geometry'
 import { Size } from 'src/model/values'
-import { assignOptions } from './assign-options'
-import { Assignment, makePieChartOptions } from './assignments'
-import { categorize } from './categorize'
-import { quadInOut } from './ease'
+import { assignOptions } from '../assign-options'
+import { categorize } from '../categorize'
+import { quadInOut } from '../ease'
+import { makePieChartOptions } from './pie-chart-options'
+import { CategorySector, makePieChartSectors } from './pie-chart-sectors'
 
 interface Props {
   creatures: Creature[]
@@ -35,20 +36,18 @@ export function makePieChart(props: Props): Chart {
   const radius = inputRadius * scale
   const places = Array.from({ length: count }, makePlace)
 
-  let categorized: Categorized[] | null = null
   let assignments: Assignment<ArcPlace>[] | null = null
   let categorySectors: CategorySector[] | null = null
 
   return { drawMain, drawBackground, init, getRadius: () => radius, reset, getScale: () => scale, update }
 
   function init(categories: CATEGORY[]): void {
-    categorized = categorize({ categories, creatures })
+    const categorized = categorize({ categories, creatures })
     assignments = assignOptions(makePieChartOptions({ categorized, places, radius }))
-    categorySectors = makeCategorySectors(categorized, assignments)
+    categorySectors = makePieChartSectors(categorized, assignments)
   }
 
   function reset(): void {
-    categorized = null
     assignments = null
     categorySectors = null
   }
@@ -98,35 +97,4 @@ export function makePieChart(props: Props): Chart {
   }
 }
 
-interface CategorySector {
-  values: Partial<CategoryValues>
-  angle:  number
-  theta:  number
-}
 
-function makeCategorySectors(categorized: Categorized[], assignments: Assignment<ArcPlace>[]): CategorySector[] {
-  return categorized.map(toCategorySector)
-
-  function toCategorySector(categorized: Categorized): CategorySector {
-    const { creatures, values } = categorized
-    const [min, max] = creatures.map(findAssignment).reduce(getRange, [Infinity, -Infinity])
-
-    return { values, angle: min, theta: max - min }
-
-    function findAssignment(creature: Creature): Assignment<ArcPlace> {
-      return assignments.find(hasCreature)!
-
-      function hasCreature(assignment: Assignment<ArcPlace>): boolean {
-        return assignment.creature === creature
-      }
-    }
-
-    type Range = [min: number, max: number]
-
-    function getRange(accumulator: Range, assignment: Assignment<ArcPlace>): Range {
-      const { place: { angle, theta } } = assignment
-      const [min, max] = accumulator
-      return [Math.min(min, angle), Math.max(max, angle + theta)]
-    }
-  }
-}

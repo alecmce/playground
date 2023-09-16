@@ -2,7 +2,6 @@ import { Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { PushApart, PushApartProps } from 'src/model/push-apart'
 import { makePairs } from './array-util'
-import { applyForce } from './forces'
 
 
 export function makePushApart(creatures: Creature[]): PushApart {
@@ -46,7 +45,10 @@ export function makePushApart(creatures: Creature[]): PushApart {
     }
 
     function apply(creature: Creature): void {
-      applyForce(creature, forces.get(creature)!)
+      const force = forces.get(creature)!
+      const { center } = creature
+      center.x += force.x
+      center.y += force.y
     }
   }
 }

@@ -1,6 +1,6 @@
+import { Assignment } from 'src/model/charts'
 import { Categorized, CategoryValues, Creature } from 'src/model/creatures'
 import { Rectangle, RectanglePlace } from 'src/model/geometry'
-import { Assignment } from '../assignments'
 
 interface Props {
   bounds:      Rectangle
@@ -9,7 +9,7 @@ interface Props {
   proportion?: number
 }
 
-export interface CategoryBars {
+export interface BarChartConfig {
   categorized: CategorizedBarPlaces[]
   options:     Assignment<RectanglePlace>[]
   radius:      number
@@ -22,7 +22,7 @@ export interface CategorizedBarPlaces {
   values:    Partial<CategoryValues>
 }
 
-export function makeCategoryBars(props: Props): CategoryBars {
+export function makeCategoryBars(props: Props): BarChartConfig {
   const { bounds, categorized, proportion = 0.8 } = props
 
   const dWidth = Math.abs(bounds.right - bounds.left) / categorized.length

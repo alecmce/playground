@@ -3,11 +3,11 @@ import './App.css'
 import { Ui } from './components/UI'
 import { useAppState } from './lib/app-state'
 import { makeBarChart } from './lib/bar-chart/bar-chart'
-import { clampCreatures } from './lib/clamp-point'
+import { clampCreatures } from './lib/clamp-creatures'
 import { makeCreatures } from './lib/creatures'
 import { quadIn, quadInOut, quadOut } from './lib/ease'
 import { makeTwister } from './lib/mersenne-twister'
-import { makePieChart } from './lib/pie-chart'
+import { makePieChart } from './lib/pie-chart/pie-chart'
 import { makePushApart } from './lib/push-apart'
 import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
@@ -87,20 +87,25 @@ interface DrawProps {
 function draw(props: DrawProps): void {
   const { context, creatures, barChart, pieChart, pointer, pushApart, radius, size, state, target } = props
   const { width, height } = size
-  const { type, time, duration } = state
+  const { chart: chartType, type, time, duration } = state
+  const chart = getChart(chartType)
 
   context.clearRect(0, 0, width, height)
+  chart ? applyChartState(chart) : drawFree()
 
-  switch (type) {
-    case STATE_TYPE.FREE:             return drawFree()
-    case STATE_TYPE.BAR_CHART_CONFIG: return drawFree()
-    case STATE_TYPE.PIE_CHART_CONFIG: return drawFree()
-    case STATE_TYPE.ENTER_PLACES:     return drawEnterChart(getChart(state.chart)!, quadInOut(time / duration))
-    case STATE_TYPE.ENTER_OVERLAY:    return drawEnterChartOverlay(getChart(state.chart)!, quadOut(time / duration))
-    case STATE_TYPE.FULL_OVERLAY:     return drawChartOverlay(getChart(state.chart)!, )
-    case STATE_TYPE.EXIT_OVERLAY:     return drawExitChartOverlay(getChart(state.chart)!, quadIn(time / duration))
-    case STATE_TYPE.LEAVE_PLACES:     return drawExitChart(getChart(state.chart)!, quadInOut(time / duration))
-    case STATE_TYPE.CLOSE_CHART:      return drawExitChart(getChart(state.chart)!, quadInOut(time / duration))
+  function applyChartState(chart: Chart): void {
+    const p = time / duration
+    switch (type) {
+      case STATE_TYPE.FREE:             return drawFree()
+      case STATE_TYPE.BAR_CHART_CONFIG: return drawFree()
+      case STATE_TYPE.PIE_CHART_CONFIG: return drawFree()
+      case STATE_TYPE.ENTER_PLACES:     return drawEnterChart(chart, quadInOut(p))
+      case STATE_TYPE.ENTER_OVERLAY:    return drawEnterChartOverlay(chart, quadOut(p))
+      case STATE_TYPE.FULL_OVERLAY:     return drawChartOverlay(chart, )
+      case STATE_TYPE.EXIT_OVERLAY:     return drawExitChartOverlay(chart, quadIn(p))
+      case STATE_TYPE.LEAVE_PLACES:     return drawExitChart(chart, quadInOut(p))
+      case STATE_TYPE.CLOSE_CHART:      return drawExitChart(chart, quadInOut(p))
+    }
   }
 
   function drawFree(): void {
@@ -160,5 +165,4 @@ function draw(props: DrawProps): void {
   function drawChart(chart: Chart, alpha: number): void {
     chart.drawMain({ context, alpha, brush: { alpha, color: 'black', width: 2 } })
   }
-
 }
