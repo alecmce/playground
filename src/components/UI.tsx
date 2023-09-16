@@ -23,7 +23,7 @@ export function Ui(props: Props): ReactElement {
     <div className="layer">
       <div className="overlay">
         <Card>
-          <CardContent sx={{ '&:last-child': { paddingBottom: 2 }}}>
+          <CardContent sx={{ width: '100%', '&:last-child': { paddingBottom: 2 }}}>
             { getContents() }
           </CardContent>
         </Card>

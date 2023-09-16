@@ -1,5 +1,5 @@
-import { Checkbox, FormControlLabel } from '@mui/material'
-import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
+import { Checkbox, FormControlLabel, IconButton, Stack } from '@mui/material'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import Palette from '@mui/icons-material/Palette'
 import PaletteOutlined from '@mui/icons-material/PaletteOutlined'
@@ -11,15 +11,18 @@ import { CATEGORY } from 'src/model/creatures'
 
 
 interface Props {
-  categories:    Set<CATEGORY>
-  setCategories: Dispatch<SetStateAction<Set<CATEGORY>>>
+  ['aria-label']: string
+  categories:     Set<CATEGORY>
+  setCategories:  Dispatch<SetStateAction<Set<CATEGORY>>>
+  children:       ReactElement | ReactElement[]
+  onClick:        VoidFunction
 }
 
 export function CategoryOptions(props: Props): ReactElement {
-  const { categories, setCategories } = props
+  const { categories, setCategories, children, onClick } = props
 
   return (
-    <Fragment>
+    <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
       <FormControlLabel
         checked={categories.has(CATEGORY.COLOR)}
         control={ <Checkbox icon={<PaletteOutlined />} checkedIcon={<Palette />} />}
@@ -44,7 +47,10 @@ export function CategoryOptions(props: Props): ReactElement {
         color="secondary"
         onChange={(_, isChecked) => toggleCategory(CATEGORY.EYES, isChecked)}
       />
-    </Fragment>
+      <IconButton aria-label={props['aria-label']} size="large" onClick={onClick}>
+        {children}
+      </IconButton>
+    </Stack>
   )
 
   function toggleCategory(category: CATEGORY, isChecked: boolean): void {

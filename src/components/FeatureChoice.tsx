@@ -15,7 +15,7 @@ export function FeatureChoice(props: Props): ReactElement {
   const { dispatchAppState, disabled } = props
 
   return (
-    <Stack spacing={2} direction="row">
+    <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
       <Button
         aria-label="bar-chart"
         color="primary"

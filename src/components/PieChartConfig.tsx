@@ -1,4 +1,3 @@
-import { IconButton } from '@mui/material'
 import { Fragment, ReactElement, useState } from 'react'
 
 import PlayArrow from '@mui/icons-material/PlayArrow'
@@ -19,10 +18,9 @@ export function PieChartConfig(props: Props): ReactElement {
 
   return (
     <Fragment>
-      <CategoryOptions categories={categories} setCategories={setCategories} />
-      <IconButton aria-label="pie-chart" size="large" onClick={onClick}>
+      <CategoryOptions aria-label="pie-chart" categories={categories} setCategories={setCategories} onClick={onClick}>
         <PlayArrow />
-      </IconButton>
+      </CategoryOptions>
     </Fragment>
   )
 
