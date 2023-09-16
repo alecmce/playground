@@ -3,9 +3,9 @@ import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model
 import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { Rectangle, RectanglePlace } from 'src/model/geometry'
-import { assignOptions } from '../assign-options'
-import { categorize } from '../categorize'
-import { quadInOut } from '../ease'
+import { assignOptions } from '../lib/assign-options'
+import { categorize } from '../lib/categorize'
+import { quadInOut } from '../lib/ease'
 import { BarChartConfig, CategorizedBarPlaces, makeCategoryBars } from './bar-chart-config'
 
 interface Props {

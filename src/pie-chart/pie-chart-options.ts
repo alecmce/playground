@@ -1,7 +1,7 @@
 import { Assignment } from 'src/model/charts'
 import { Categorized, Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
-import { getDistance } from '../math-utils'
+import { getDistance } from '../lib/math-utils'
 
 
 interface Props<T extends Point> {

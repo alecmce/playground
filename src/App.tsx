@@ -1,13 +1,12 @@
 import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
 import './App.css'
+import { makeBarChart } from './bar-chart/bar-chart'
 import { Ui } from './components/UI'
 import { useAppState } from './lib/app-state'
-import { makeBarChart } from './lib/bar-chart/bar-chart'
 import { clampCreatures } from './lib/clamp-creatures'
 import { makeCreatures } from './lib/creatures'
 import { quadIn, quadInOut, quadOut } from './lib/ease'
 import { makeTwister } from './lib/mersenne-twister'
-import { makePieChart } from './lib/pie-chart/pie-chart'
 import { makePushApart } from './lib/push-apart'
 import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
@@ -19,6 +18,7 @@ import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
 import { PushApart } from './model/push-apart'
 import { Size } from './model/values'
+import { makePieChart } from './pie-chart/pie-chart'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff']
