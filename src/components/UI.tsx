@@ -5,7 +5,7 @@ import { Chart } from 'src/model/charts'
 import { BarChartConfig } from './BarChartConfig'
 import { FeatureChoice } from './FeatureChoice'
 import { PieChartConfig } from './PieChartConfig'
-import { ChartSlider } from './PiechartSlider'
+import { ChartSlider } from './ChartSlider'
 
 
 interface Props {

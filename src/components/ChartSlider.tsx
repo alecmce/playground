@@ -1,4 +1,4 @@
-import { Slider, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import CloseIcon from '@mui/icons-material/Close'
@@ -6,6 +6,7 @@ import Pause from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import { STATE_DURATIONS } from 'src/lib/app-state'
 import { AppState, AppStateAction, STATE_TYPE, jump, togglePause } from 'src/model/app-state'
+import { ImmediateSlider } from './lib/ImmediateSlider'
 
 interface Props {
   state:            AppState
@@ -19,13 +20,13 @@ export function ChartSlider(props: Props): ReactElement {
 
   const duration = useDuration()
   const marks = useMemo(() => getMarks(), [])
-  const isPlay = useMemo(() => type !== STATE_TYPE.FREE && type !== STATE_TYPE.FULL_OVERLAY && !isPaused, [type])
+  const isPlay = type !== STATE_TYPE.FREE && type !== STATE_TYPE.FULL_OVERLAY && !isPaused
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
       <div style={{width: 24, height: 24}} />
       <CloseIcon onClick={onClose} />
-      <Slider
+      <ImmediateSlider
         aria-label="Volume"
         value={time}
         min={0}
