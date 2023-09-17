@@ -43,8 +43,8 @@ export function App(): ReactElement {
   const radius = useRadius({ count: COUNT, density: DENSITY, size })
   const creatures = useMemo(() => makeCreatures({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES, size }), [])
   const pushApart = useMemo(() => makePushApart(creatures), [])
-  const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius }), [bounds, creatures])
-  const pieChart = useMemo(() => makePieChart({ count: COUNT, creatures, radius, size }), [creatures, radius, size])
+  const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius, random }), [bounds, creatures])
+  const pieChart = useMemo(() => makePieChart({ count: COUNT, creatures, radius, random, size }), [creatures, radius, size])
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
@@ -123,17 +123,20 @@ function draw(props: DrawProps): void {
   }
 
   function drawEnterChartOverlay(chart: Chart, proportion: number): void {
+    chart.update(1)
     drawChartBackground(chart, 1)
     drawCommon(chart.getScale())
     drawChart(chart, proportion)
   }
 
   function drawChartOverlay(chart: Chart): void {
+    chart.update(1)
     drawCommon(chart.getScale())
     drawChart(chart, 1)
   }
 
   function drawExitChartOverlay(chart: Chart, proportion: number): void {
+    chart.update(1)
     drawChartBackground(chart, 1)
     drawCommon(chart.getScale())
     drawChart(chart, 1 - proportion)

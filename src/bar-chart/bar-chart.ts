@@ -1,8 +1,10 @@
 import { drawRectangle } from 'src/draw/draw-rectangle'
+import { makeColorScale } from 'src/lib/color-scale'
 import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
 import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { Rectangle, RectanglePlace } from 'src/model/geometry'
+import { SeededRandom } from 'src/model/random'
 import { assignOptions } from '../lib/assign-options'
 import { categorize } from '../lib/categorize'
 import { quadInOut } from '../lib/ease'
@@ -12,6 +14,7 @@ interface Props {
   bounds:    Rectangle
   creatures: Creature[]
   radius:    number
+  random:    SeededRandom
 }
 
 /**
@@ -19,10 +22,11 @@ interface Props {
  * intersect.
  */
 export function makeBarChart(props: Props): Chart {
-  const { bounds, creatures, radius: inputRadius } = props
+  const { bounds, creatures, radius: inputRadius, random } = props
 
   let assignments: Assignment<RectanglePlace>[] | null = null
   let config: BarChartConfig | null = null
+  let colors: string[] | null = null
 
   return { drawMain, drawBackground, init, getRadius, reset, update, getScale }
 
@@ -30,6 +34,7 @@ export function makeBarChart(props: Props): Chart {
     const categorized = categorize({ categories, creatures })
     config = makeCategoryBars({ bounds, categorized, horizontal: false, proportion: 0.8 })
     assignments = assignOptions(config.options)
+    colors = makeColorScale({ count: categorized.length, random })
   }
 
   function getRadius(): number {
@@ -41,6 +46,7 @@ export function makeBarChart(props: Props): Chart {
   }
 
   function reset(): void {
+    colors = null
     config = null
     assignments = null
   }
@@ -62,9 +68,9 @@ export function makeBarChart(props: Props): Chart {
     const { alpha, brush, context } = props
     config?.categorized?.forEach(drawCategory)
 
-    function drawCategory(sector: CategorizedBarPlaces): void {
+    function drawCategory(sector: CategorizedBarPlaces, i: number): void {
       const { rectangle, values } = sector
-      const fill: Fill = { color: values.color ?? '#999', alpha }
+      const fill: Fill = { color: values.color ?? colors![i], alpha }
       drawRectangle({ brush, context, fill, rectangle })
     }
   }

@@ -9,11 +9,14 @@ import { categorize } from '../lib/categorize'
 import { quadInOut } from '../lib/ease'
 import { makePieChartOptions } from './pie-chart-options'
 import { CategorySector, makePieChartSectors } from './pie-chart-sectors'
+import { makeColorScale } from 'src/lib/color-scale'
+import { SeededRandom } from 'src/model/random'
 
 interface Props {
   creatures: Creature[]
   count:     number
   radius:    number
+  random:    SeededRandom
   size:      Size
 }
 
@@ -22,7 +25,7 @@ interface Props {
  * intersect.
  */
 export function makePieChart(props: Props): Chart {
-  const { creatures, count, radius: inputRadius, size } = props
+  const { creatures, count, radius: inputRadius, random, size } = props
   const { width, height } = size
 
   const center = { x: width / 2, y: height / 2 }
@@ -38,6 +41,7 @@ export function makePieChart(props: Props): Chart {
 
   let assignments: Assignment<ArcPlace>[] | null = null
   let categorySectors: CategorySector[] | null = null
+  let colors: string[] | null = null
 
   return { drawMain, drawBackground, init, getRadius: () => radius, reset, getScale: () => scale, update }
 
@@ -45,9 +49,11 @@ export function makePieChart(props: Props): Chart {
     const categorized = categorize({ categories, creatures })
     assignments = assignOptions(makePieChartOptions({ categorized, places, radius }))
     categorySectors = makePieChartSectors(categorized, assignments)
+    colors = makeColorScale({ count: categorized.length, random })
   }
 
   function reset(): void {
+    colors = null
     assignments = null
     categorySectors = null
   }
@@ -77,9 +83,9 @@ export function makePieChart(props: Props): Chart {
     const circle = { center, radius: distance + radius }
     categorySectors?.forEach(drawCategory)
 
-    function drawCategory(sector: CategorySector): void {
+    function drawCategory(sector: CategorySector, i: number): void {
       const { angle, theta, values } = sector
-      const fill: Fill = { color: values.color ?? '#999', alpha }
+      const fill: Fill = { color: values.color ?? colors![i], alpha }
       drawCircleSector({ angle, brush, circle, context, fill, theta })
     }
   }
