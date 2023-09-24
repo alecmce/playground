@@ -10,6 +10,8 @@ import { assignOptions } from '../lib/assign-options'
 import { categorize } from '../lib/categorize'
 import { quadInOut } from '../lib/ease'
 import { BarChartConfig, CategorizedBarPlaces, makeCategoryBars } from './bar-chart-config'
+import { makeChartState } from 'src/util/chart-state'
+import { POINTER_ACTION } from 'src/model/interaction'
 
 interface Props {
   bounds:    Rectangle
@@ -25,10 +27,11 @@ interface Props {
 export function makeBarChart(props: Props): Chart {
   const { bounds, creatures, radius: inputRadius, random } = props
 
+  const state = makeChartState({ getItem: getBarUnderPoint })
+
   let assignments: Assignment<RectanglePlace>[] | null = null
   let config: BarChartConfig | null = null
   let colors: string[] | null = null
-  let pointerBar: CategorizedBarPlaces | null = null
 
   return { drawBackground, drawMain, getRadius, getScale, init, reset, setPointer, update }
 
@@ -67,13 +70,13 @@ export function makeBarChart(props: Props): Chart {
   }
 
   function drawMain(props: MainDrawProps): void {
-    const { alpha, brush, context } = props
+    const { alpha: mainAlpha = 1, brush, context } = props
     config?.categorized?.forEach(drawCategory)
 
-    function drawCategory(sector: CategorizedBarPlaces, i: number): void {
-      const { rectangle, values } = sector
-      const a = (alpha ?? 1) * (pointerBar === sector ? 0.2 : 1)
-      const fill: Fill = { color: values.color ?? colors![i], alpha: a }
+    function drawCategory(bar: CategorizedBarPlaces, i: number): void {
+      const { rectangle, values } = bar
+      const alpha = mainAlpha * state.getAlpha(bar)
+      const fill: Fill = { color: values.color ?? colors![i], alpha }
       drawRectangle({ brush, context, fill, rectangle })
     }
   }
@@ -88,11 +91,15 @@ export function makeBarChart(props: Props): Chart {
     }
   }
 
-  function setPointer(point: Point): void {
-    pointerBar = config?.categorized.find(findBar) ?? null
+  function setPointer(point: Point, action: POINTER_ACTION): void {
+    state.update(point, action)
+  }
 
-    function findBar(sector: CategorizedBarPlaces): boolean {
-      const { rectangle } = sector
+  function getBarUnderPoint(point: Point): CategorizedBarPlaces | null {
+    return config?.categorized.find(barContainsPoint) ?? null
+
+    function barContainsPoint(bar: CategorizedBarPlaces): boolean {
+      const { rectangle } = bar
       return rectangleContainsPoint({ point, rectangle })
     }
   }

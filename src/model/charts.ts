@@ -1,6 +1,7 @@
 import { CATEGORY, Creature } from './creatures'
 import { Brush, Fill } from './drawing'
 import { Point } from './geometry'
+import { POINTER_ACTION } from './interaction'
 
 export interface Chart {
   drawBackground: (props: BackgroundDrawProps) => void
@@ -9,7 +10,7 @@ export interface Chart {
   getScale:       () => number
   init:           (categories: CATEGORY[]) => void
   reset:          VoidFunction
-  setPointer:     (pointer: Point) => void
+  setPointer:     (pointer: Point, action: POINTER_ACTION) => void
   update:         (proportion: number) => void
 }
 

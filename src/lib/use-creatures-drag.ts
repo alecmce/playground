@@ -3,6 +3,7 @@ import { Chart } from 'src/model/charts'
 import { Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { usePointerHandlers } from './use-pointer-handlers'
+import { POINTER_ACTION } from 'src/model/interaction'
 
 interface Props {
   chart:      Chart | undefined
@@ -23,12 +24,13 @@ export function useCreaturesDrag(props: Props): void {
       return creatures.find(c => c.isUnder(pointer)) ?? null
     }
 
-    function onDown(pointer: Point, target: Creature | null): boolean {
+    function onDown(point: Point, target: Creature | null): boolean {
       if (target) {
         initial.current.x = target.center.x
         initial.current.y = target.center.y
       }
-      return isOver(pointer) !== null
+      chart?.setPointer(point, POINTER_ACTION.DOWN)
+      return isOver(point) !== null
     }
 
     function onHover(_: Point, target: Creature | null): void {
@@ -37,11 +39,11 @@ export function useCreaturesDrag(props: Props): void {
 
     function onMove(point: Point): void {
       setPointer(point)
-      chart?.setPointer(point)
+      chart?.setPointer(point, POINTER_ACTION.MOVE)
     }
 
-    function onUp(): void {
-
+    function onUp(point: Point): void {
+      chart?.setPointer(point, POINTER_ACTION.UP)
     }
 
     function onDrag(start: Point, current: Point, target: Creature | null): void {

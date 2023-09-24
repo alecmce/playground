@@ -4,8 +4,10 @@ import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model
 import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { ArcPlace, Point } from 'src/model/geometry'
+import { POINTER_ACTION } from 'src/model/interaction'
 import { SeededRandom } from 'src/model/random'
 import { Size } from 'src/model/values'
+import { makeChartState } from 'src/util/chart-state'
 import { assignOptions } from '../lib/assign-options'
 import { categorize } from '../lib/categorize'
 import { quadInOut } from '../lib/ease'
@@ -38,11 +40,11 @@ export function makePieChart(props: Props): Chart {
 
   const radius = inputRadius * scale
   const places = Array.from({ length: count }, makePlace)
+  const state = makeChartState({ getItem: getSectorUnderPoint })
 
   let assignments: Assignment<ArcPlace>[] | null = null
   let categorySectors: CategorySector[] | null = null
   let colors: string[] | null = null
-  let pointerSector: CategorySector | null = null
 
   return { drawBackground, drawMain, getRadius, getScale, init, reset, setPointer, update }
 
@@ -64,6 +66,7 @@ export function makePieChart(props: Props): Chart {
     colors = null
     assignments = null
     categorySectors = null
+    state.reset()
   }
 
   function update(proportion: number): void {
@@ -87,14 +90,14 @@ export function makePieChart(props: Props): Chart {
   }
 
   function drawMain(props: MainDrawProps): void {
-    const { alpha, brush, context } = props
+    const { alpha: mainAlpha = 1, brush, context } = props
     const circle = { center, radius: distance + radius }
     categorySectors?.forEach(drawCategory)
 
     function drawCategory(sector: CategorySector, i: number): void {
       const { angle, theta, values } = sector
-      const a = (alpha ?? 1) * (pointerSector === sector ? 0.2 : 1)
-      const fill: Fill = { color: values.color ?? colors![i], alpha: a }
+      const alpha = mainAlpha * state.getAlpha(sector)
+      const fill: Fill = { color: values.color ?? colors![i], alpha }
       drawCircleSector({ angle, brush, circle, context, fill, theta })
     }
   }
@@ -111,13 +114,17 @@ export function makePieChart(props: Props): Chart {
     }
   }
 
-  function setPointer(point: Point): void {
+  function setPointer(point: Point, action: POINTER_ACTION): void {
+    state.update(point, action)
+  }
+
+  function getSectorUnderPoint(point: Point): CategorySector | null {
     const dx = point.x - center.x
     const dy = point.y - center.y
     const delta = Math.hypot(dx, dy)
     const phi = positiveAngle(Math.atan2(dy, dx))
 
-    pointerSector = delta < distance + radius
+    return delta < distance + radius
       ? categorySectors?.find(findSector) ?? null
       : null
 
@@ -125,7 +132,10 @@ export function makePieChart(props: Props): Chart {
       const { angle, theta } = sector
       const start = positiveAngle(angle)
       const end = start + theta
-      return phi >= start && phi <= end
+      return (
+        (phi >= start && phi <= end) ||
+        (phi + 2 * Math.PI >= start && phi + 2 * Math.PI <= end)
+      )
     }
   }
 }

@@ -3,12 +3,12 @@ import { Point } from 'src/model/geometry'
 
 interface Props<T> {
   isOver:  (point: Point) => T
-  onDown:  (point: Point, item: T) => boolean // isDrag
+  onDown:  (point: Point, item: T | null) => boolean // isDrag
   onDrag:  (down: Point, current: Point, item: T) => void
   onDrop:  (down: Point, current: Point, item: T) => void
   onMove:  (point: Point) => void
   onHover: (point: Point, item: T | null) => void
-  onUp:    (point: Point, item: T) => void
+  onUp:    (point: Point, item: T | null) => void
 }
 
 interface State<T> {
@@ -47,9 +47,7 @@ export function usePointerHandlers<T>(props: Props<T>): void {
 
       window.addEventListener('pointerup', onPointerUp)
       state.current.down = point
-      if (state.current.item !== null) {
-        state.current.isDrag = onDown(point, state.current.item)
-      }
+      state.current.isDrag = onDown(point, state.current.item)
     }
 
     function onPointerUp(event: PointerEvent): void {
@@ -59,7 +57,7 @@ export function usePointerHandlers<T>(props: Props<T>): void {
       if (state.current.isDrag) {
         state.current.isDrag = false
         onDrop(state.current.down!, point, state.current.item!)
-      } else if (state.current.item !== null) {
+      } else {
         onUp(point, state.current.item)
       }
 
