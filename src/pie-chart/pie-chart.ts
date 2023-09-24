@@ -1,16 +1,16 @@
 import { drawCircleSector } from 'src/draw/draw-segment'
+import { makeColorScale } from 'src/lib/color-scale'
 import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
 import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
 import { ArcPlace } from 'src/model/geometry'
+import { SeededRandom } from 'src/model/random'
 import { Size } from 'src/model/values'
 import { assignOptions } from '../lib/assign-options'
 import { categorize } from '../lib/categorize'
 import { quadInOut } from '../lib/ease'
 import { makePieChartOptions } from './pie-chart-options'
 import { CategorySector, makePieChartSectors } from './pie-chart-sectors'
-import { makeColorScale } from 'src/lib/color-scale'
-import { SeededRandom } from 'src/model/random'
 
 interface Props {
   creatures: Creature[]
@@ -43,13 +43,20 @@ export function makePieChart(props: Props): Chart {
   let categorySectors: CategorySector[] | null = null
   let colors: string[] | null = null
 
-  return { drawMain, drawBackground, init, getRadius: () => radius, reset, getScale: () => scale, update }
+  return { drawBackground, drawMain, getRadius, getScale, init, reset, setPointer, update }
 
   function init(categories: CATEGORY[]): void {
     const categorized = categorize({ categories, creatures })
     assignments = assignOptions(makePieChartOptions({ categorized, places, radius }))
     categorySectors = makePieChartSectors(categorized, assignments)
     colors = makeColorScale({ count: categorized.length, random })
+  }
+
+  function getRadius(): number {
+    return radius
+  }
+  function getScale(): number {
+    return scale
   }
 
   function reset(): void {
@@ -100,6 +107,10 @@ export function makePieChart(props: Props): Chart {
       const inner = distance - radius
       drawCircleSector({ angle, brush, circle, context, fill, theta, inner })
     }
+  }
+
+  function setPointer(): void {
+
   }
 }
 

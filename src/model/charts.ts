@@ -3,12 +3,13 @@ import { Brush, Fill } from './drawing'
 import { Point } from './geometry'
 
 export interface Chart {
-  drawMain:       (props: MainDrawProps) => void
   drawBackground: (props: BackgroundDrawProps) => void
-  init:           (categories: CATEGORY[]) => void
+  drawMain:       (props: MainDrawProps) => void
   getRadius:      () => number
-  reset:          VoidFunction
   getScale:       () => number
+  init:           (categories: CATEGORY[]) => void
+  reset:          VoidFunction
+  setPointer:     (pointer: Point) => void
   update:         (proportion: number) => void
 }
 

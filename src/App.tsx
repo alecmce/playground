@@ -19,6 +19,7 @@ import { Point } from './model/geometry'
 import { PushApart } from './model/push-apart'
 import { Size } from './model/values'
 import { makePieChart } from './pie-chart/pie-chart'
+import { useCurrentChart } from './use-current-chart'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff']
@@ -48,7 +49,8 @@ export function App(): ReactElement {
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
-  useCreaturesDrag({ creatures, setPointer, setTarget })
+  const chart = useCurrentChart({ type: state.chart, barChart, pieChart })
+  useCreaturesDrag({ chart, creatures, setPointer, setTarget })
 
   const tick = useCallback((deltaTime: number) => {
     dispatchAppState(iterate(deltaTime))

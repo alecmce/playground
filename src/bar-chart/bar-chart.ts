@@ -1,9 +1,10 @@
 import { drawRectangle } from 'src/draw/draw-rectangle'
 import { makeColorScale } from 'src/lib/color-scale'
+import { rectangleContainsPoint } from 'src/lib/rectangle-contains-point'
 import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
 import { CATEGORY, Creature } from 'src/model/creatures'
 import { Fill } from 'src/model/drawing'
-import { Rectangle, RectanglePlace } from 'src/model/geometry'
+import { Point, Rectangle, RectanglePlace } from 'src/model/geometry'
 import { SeededRandom } from 'src/model/random'
 import { assignOptions } from '../lib/assign-options'
 import { categorize } from '../lib/categorize'
@@ -27,8 +28,9 @@ export function makeBarChart(props: Props): Chart {
   let assignments: Assignment<RectanglePlace>[] | null = null
   let config: BarChartConfig | null = null
   let colors: string[] | null = null
+  let pointerBar: CategorizedBarPlaces | undefined = undefined
 
-  return { drawMain, drawBackground, init, getRadius, reset, update, getScale }
+  return { drawBackground, drawMain, getRadius, getScale, init, reset, setPointer, update }
 
   function init(categories: CATEGORY[]): void {
     const categorized = categorize({ categories, creatures })
@@ -70,7 +72,8 @@ export function makeBarChart(props: Props): Chart {
 
     function drawCategory(sector: CategorizedBarPlaces, i: number): void {
       const { rectangle, values } = sector
-      const fill: Fill = { color: values.color ?? colors![i], alpha }
+      const a = (alpha ?? 1) * (pointerBar === sector ? 0.2 : 1)
+      const fill: Fill = { color: values.color ?? colors![i], alpha: a }
       drawRectangle({ brush, context, fill, rectangle })
     }
   }
@@ -82,6 +85,15 @@ export function makeBarChart(props: Props): Chart {
     function drawPlace(assignment: Assignment<RectanglePlace>): void {
       const { place } = assignment
       drawRectangle({ brush, context, fill, rectangle: place })
+    }
+  }
+
+  function setPointer(point: Point): void {
+    pointerBar = config?.categorized.find(findBar)
+
+    function findBar(sector: CategorizedBarPlaces): boolean {
+      const { rectangle } = sector
+      return rectangleContainsPoint({ point, rectangle })
     }
   }
 }

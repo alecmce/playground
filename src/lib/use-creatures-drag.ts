@@ -1,16 +1,18 @@
 import { Dispatch, SetStateAction, useMemo, useRef } from 'react'
+import { Chart } from 'src/model/charts'
 import { Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { usePointerHandlers } from './use-pointer-handlers'
 
 interface Props {
+  chart:      Chart | undefined
   creatures:  Creature[]
   setPointer: Dispatch<SetStateAction<Point | null>>
   setTarget:  Dispatch<SetStateAction<Creature | null>>
 }
 
 export function useCreaturesDrag(props: Props): void {
-  const { creatures, setPointer, setTarget } = props
+  const { chart, creatures, setPointer, setTarget } = props
 
   const initial = useRef<Point>({ x: 0, y: 0 })
 
@@ -35,6 +37,7 @@ export function useCreaturesDrag(props: Props): void {
 
     function onMove(point: Point): void {
       setPointer(point)
+      chart?.setPointer(point)
     }
 
     function onUp(): void {
@@ -52,7 +55,7 @@ export function useCreaturesDrag(props: Props): void {
     function onDrop(): void {
 
     }
-  }, [setPointer, setTarget, initial])
+  }, [chart, setPointer, setTarget, initial])
 
   return usePointerHandlers<Creature | null>(handlers)
 }
