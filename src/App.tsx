@@ -39,7 +39,7 @@ export function App(): ReactElement {
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
 
-  const random = useMemo(() => makeTwister(Math.random()), [])
+  const random = useMemo(() => makeTwister(), [])
 
   const radius = useRadius({ count: COUNT, density: DENSITY, size })
   const creatures = useMemo(() => makeCreatures({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES, size }), [])

@@ -28,7 +28,7 @@ export function makeBarChart(props: Props): Chart {
   let assignments: Assignment<RectanglePlace>[] | null = null
   let config: BarChartConfig | null = null
   let colors: string[] | null = null
-  let pointerBar: CategorizedBarPlaces | undefined = undefined
+  let pointerBar: CategorizedBarPlaces | null = null
 
   return { drawBackground, drawMain, getRadius, getScale, init, reset, setPointer, update }
 
@@ -89,7 +89,7 @@ export function makeBarChart(props: Props): Chart {
   }
 
   function setPointer(point: Point): void {
-    pointerBar = config?.categorized.find(findBar)
+    pointerBar = config?.categorized.find(findBar) ?? null
 
     function findBar(sector: CategorizedBarPlaces): boolean {
       const { rectangle } = sector
