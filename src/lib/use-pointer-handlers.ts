@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react'
 import { Point } from 'src/model/geometry'
 
 interface Props<T> {
-  isOver:  (point: Point) => T
+  isOver:  (point: Point) => T | null
   onDown:  (point: Point, item: T | null) => boolean // isDrag
   onDrag:  (down: Point, current: Point, item: T) => void
   onDrop:  (down: Point, current: Point, item: T) => void
@@ -29,6 +29,12 @@ export function usePointerHandlers<T>(props: Props<T>): void {
   useMemo(() => {
     window.addEventListener('pointermove', onPointerMove)
     window.addEventListener('pointerdown', onPointerDown)
+
+    return function unmount(): void {
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('pointerup', onPointerUp)
+    }
 
     function onPointerMove(event: PointerEvent): void {
       const point = getPoint(event)

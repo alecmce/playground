@@ -16,6 +16,7 @@ import { AppState, CHART_TYPE, STATE_TYPE, iterate } from './model/app-state'
 import { Chart } from './model/charts'
 import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
+import { PopulationModel } from './model/population'
 import { PushApart } from './model/push-apart'
 import { Size } from './model/values'
 import { makePieChart } from './pie-chart/pie-chart'
@@ -26,10 +27,21 @@ const COLORS = ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd'
 const SIDES = [3, 4, 5, 6, 7, 8]
 const EYES = [1, 2, 3, 4, 5] as Array<1 | 2 | 3 | 4 | 5>
 const SCALAR = 0.01 as const
-const COUNT = 25 as const
 const DENSITY = 0.5 as const
 
+const DEFAULT_POPULATION: PopulationModel = {
+  colors: ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff'],
+  count:  25,
+  eyes:   [1, 2, 3, 4, 5],
+  sides:  [3, 4, 5, 6, 7, 8],
+}
+
 export function App(): ReactElement {
+  const [population, setPopulation] = useState<PopulationModel>(DEFAULT_POPULATION)
+  const [showDialog, setShowDialog] = useState(false)
+
+  const { count } = population
+
   const size = useWindowSize({ marginBottom: 100 })
   const { width, height } = size
 
@@ -41,16 +53,16 @@ export function App(): ReactElement {
 
   const random = useMemo(() => makeTwister(), [])
 
-  const radius = useRadius({ count: COUNT, density: DENSITY, size })
-  const creatures = useMemo(() => makeCreatures({ brush: BRUSH, colors: COLORS, count: COUNT, eyes: EYES, radius, random, sides: SIDES, size }), [])
+  const radius = useRadius({ count, density: DENSITY, size })
+  const creatures = useMemo(() => makeCreatures({ brush: BRUSH, colors: COLORS, count, eyes: EYES, radius, random, sides: SIDES, size }), [count])
   const pushApart = useMemo(() => makePushApart(creatures), [])
   const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius, random }), [bounds, creatures])
-  const pieChart = useMemo(() => makePieChart({ count: COUNT, creatures, radius, random, size }), [creatures, radius, size])
+  const pieChart = useMemo(() => makePieChart({ count, creatures, radius, random, size }), [creatures, radius, size])
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
   const chart = useCurrentChart({ type: state.chart, barChart, pieChart })
-  useCreaturesDrag({ chart, creatures, setPointer, setTarget })
+  useCreaturesDrag({ chart, creatures, enabled: !showDialog, setPointer, setTarget })
 
   const tick = useCallback((deltaTime: number) => {
     dispatchAppState(iterate(deltaTime))
@@ -68,7 +80,16 @@ export function App(): ReactElement {
       <div className="layer">
         <canvas ref={setCanvas} width={width} height={height} style={{ width, height }}/>
       </div>
-      <Ui barChart={barChart} pieChart={pieChart} state={state} dispatchAppState={dispatchAppState} />
+      <Ui
+        barChart={barChart}
+        dispatchAppState={dispatchAppState}
+        pieChart={pieChart}
+        population={population}
+        setPopulation={setPopulation}
+        setShowDialog={setShowDialog}
+        showDialog={showDialog}
+        state={state}
+      />
     </Fragment>
   )
 }

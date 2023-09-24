@@ -58,6 +58,7 @@ export function makePieChart(props: Props): Chart {
   function getRadius(): number {
     return radius
   }
+
   function getScale(): number {
     return scale
   }
