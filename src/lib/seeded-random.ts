@@ -4,11 +4,10 @@ import { SeededRandom } from 'src/model/random'
  * Uses the source below (from https://gist.github.com/aradzie/c12da8c537e83c0fae52)
  * to generate pseudo-random numbers based on a seed.
  */
-export function makeTwister(seed = NaN): SeededRandom {
-  const value = isNaN(seed) ? 1812433253 * Math.random() : seed
-  const twister = mersenneTwister(value)
+export function makeSeededRandom(seed: number): SeededRandom {
+  const twister = mersenneTwister(seed)
 
-  return { float, int, list, from, shuffle }
+  return { float, int, list, from, seed, shuffle }
 
   function float(min: number, max: number): number {
     return min + twister.real2() * (max - min)

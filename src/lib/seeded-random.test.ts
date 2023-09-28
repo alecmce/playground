@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { makeTwister } from './mersenne-twister'
+import { makeSeededRandom } from './seeded-random'
 
-describe('makeTwister', () => {
+describe('makeSeededRandom', () => {
 
   it('produces values in the integer range that include min and max', () => {
-    const rnd = makeTwister(12345)
+    const rnd = makeSeededRandom(12345)
     const values = Array.from({ length: 100 }).map(() => rnd.int(3, 5))
     expect(values.filter(n => n === 3).length).toBeGreaterThan(30)
     expect(values.filter(n => n === 4).length).toBeGreaterThan(30)
