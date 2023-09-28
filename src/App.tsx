@@ -34,7 +34,7 @@ export function App(): ReactElement {
   const [population, setPopulation] = useState<PopulationModel>(DEFAULT_POPULATION)
   const [showDialog, setShowDialog] = useState(false)
 
-  const { colors, count, seed } = population
+  const { count, seed } = population
   const random = useMemo(() => makeSeededRandom(seed), [seed])
 
   const size = useWindowSize({ marginBottom: 100 })
@@ -47,9 +47,8 @@ export function App(): ReactElement {
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
 
-
   const radius = useRadius({ count, density: DENSITY, size })
-  const creatures = useMemo(() => makeCreatures({ brush: BRUSH, population, radius, size }), [colors, count])
+  const creatures = useMemo(() => makeCreatures({ brush: BRUSH, population, radius, size }), [population, radius, size])
   const pushApart = useMemo(() => makePushApart(creatures), [])
   const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius, random }), [bounds, creatures])
   const pieChart = useMemo(() => makePieChart({ count, creatures, radius, random, size }), [creatures, radius, size])

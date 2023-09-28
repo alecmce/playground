@@ -11,7 +11,7 @@ export interface Creature {
   center:  Point
   color:   string
   draw:    (props: CreatureDrawProps) => void
-  eyes:    1 | 2 | 3 | 4 | 5
+  eyes:    number
   isUnder: (pointer: Point) => boolean
   sides:   number
 }
@@ -29,6 +29,6 @@ export interface Categorized {
 
 export interface CategoryValues {
   [CATEGORY.COLOR]: string
-  [CATEGORY.EYES]:  1 | 2 | 3 | 4 | 5
+  [CATEGORY.EYES]:  number
   [CATEGORY.SIDES]: number
 }

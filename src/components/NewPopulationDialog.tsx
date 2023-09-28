@@ -2,7 +2,9 @@ import { Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 import { PopulationModel } from 'src/model/population'
 import { ColorToggles } from './ColorToggles'
+import { EyesToggles } from './EyesToggles'
 import { PopulationCountSlider } from './PopulationCountSlider'
+import { SidesToggles } from './SidesToggles'
 
 interface Props {
   population:    PopulationModel
@@ -23,6 +25,8 @@ export function NewPopulationDialog(props: Props): ReactElement {
       <DialogContent>
         <PopulationCountSlider population={population} setPopulation={setPopulation} />
         <ColorToggles population={population} setPopulation={setPopulation} />
+        <EyesToggles population={population} setPopulation={setPopulation} />
+        <SidesToggles population={population} setPopulation={setPopulation} />
       </DialogContent>
     </Dialog>
   )

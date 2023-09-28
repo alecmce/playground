@@ -1,9 +1,8 @@
-import Circle from '@mui/icons-material/Circle'
-import ColorLensIcon from '@mui/icons-material/ColorLens'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { produce } from 'immer'
 import { Dispatch, MouseEvent, ReactElement, SetStateAction } from 'react'
-import { COLORS, DEFAULT_COLORS } from 'src/constants'
+import { DEFAULT_EYES, EYES } from 'src/constants'
 import { PopulationModel } from 'src/model/population'
 
 interface Props {
@@ -11,30 +10,30 @@ interface Props {
   setPopulation: Dispatch<SetStateAction<PopulationModel>>
 }
 
-const ID = 'population-colors'
+const ID = 'population-eyes'
 
-export function ColorToggles(props: Props): ReactElement {
+export function EyesToggles(props: Props): ReactElement {
   const { population, setPopulation } = props
-  const { colors } = population
+  const { eyes } = population
 
   return (
     <Box sx={{ mb: 1 }} >
       <Typography id={ID} gutterBottom>
-        Colors
+        Eyes
       </Typography>
       <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
         <Grid item>
-          <ColorLensIcon />
+          <VisibilityIcon />
         </Grid>
         <Grid item xs>
           <ToggleButtonGroup
-            value={colors}
-            onChange={onColorChange}
+            value={eyes}
+            onChange={onEyesChange}
             color="primary"
           >
-            { COLORS.map(({ name, value }) => (
+            { EYES.map(({ name, value }) => (
               <ToggleButton key={name} value={value} aria-label={name}>
-                <Circle sx={{ color: value }} />
+                <Eyes count={value} />
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
@@ -43,9 +42,21 @@ export function ColorToggles(props: Props): ReactElement {
     </Box>
   )
 
-  function onColorChange(_: MouseEvent, value: string[]): void {
+  function onEyesChange(_: MouseEvent, value: number[]): void {
     setPopulation(model => produce(model, draft => {
-      draft.colors = value.length ? value : DEFAULT_COLORS
+      draft.eyes = value.length ? value : DEFAULT_EYES
     }))
   }
+}
+
+interface EyesProps {
+  count: number
+}
+
+function Eyes(props: EyesProps): ReactElement {
+  const { count } = props
+
+  return <div>{ count }</div>
+
+  // drawEyes({ brush, center, context, eyes, pointer, scale: scale * baseScalar })
 }

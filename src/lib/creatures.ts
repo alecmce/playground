@@ -42,7 +42,7 @@ export function makeCreatureFactory(maxCount: number): MakeCreatures {
     function makeCreature(center: Point): Creature {
       const sides = random.from(sidesList)
       const color = random.from(colorsList)
-      const eyes = random.from(eyesList) as 1 | 2 | 3 | 4 | 5
+      const eyes = random.from(eyesList) as 0 | 1 | 2 | 3 | 4 | 5
       const rotation = random.float(0, 2 * Math.PI)
       const polygon = makeRegularPolygon({ center: { x: 0, y: 0 }, radius, rotation, sides })
       const baseFill = { color }
