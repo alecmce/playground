@@ -1,14 +1,13 @@
-import { Fragment, ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
-import PlayArrow from '@mui/icons-material/PlayArrow'
 import { AppStateAction, CHART_TYPE, STATE_TYPE, jump } from 'src/model/app-state'
-import { Chart } from 'src/model/charts'
+import { CategorisationChart } from 'src/model/charts'
 import { CATEGORY } from 'src/model/creatures'
 import { CategoryOptions } from './CategoryOptions'
 
 
 interface Props {
-  pieChart:         Chart
+  pieChart:         CategorisationChart
   dispatchAppState: (action: AppStateAction) => void
 }
 
@@ -17,11 +16,7 @@ export function PieChartConfig(props: Props): ReactElement {
   const [categories, setCategories] = useState<Set<CATEGORY>>(new Set([CATEGORY.COLOR]))
 
   return (
-    <Fragment>
-      <CategoryOptions aria-label="pie-chart" categories={categories} setCategories={setCategories} onClick={onClick}>
-        <PlayArrow />
-      </CategoryOptions>
-    </Fragment>
+    <CategoryOptions aria-label="pie-chart" categories={categories} setCategories={setCategories} onClick={onClick} />
   )
 
   function onClick(): void {

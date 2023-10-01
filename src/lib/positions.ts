@@ -1,14 +1,13 @@
-import { Point } from 'src/model/geometry'
-import { Size } from 'src/model/values'
+import { Point, Rectangle } from 'src/model/geometry'
 import { makeSeededRandom } from './seeded-random'
 
 
 interface Props {
+  bounds:   Rectangle
   count:    number
   maxCount: number
   radius:   number
   seed:     number
-  size:     Size
 }
 
 
@@ -21,8 +20,8 @@ export function makePositionFactory(): MakePositions {
   let cache: Point[] = []
 
   return function makePositions(props: Props): Point[] {
-    const { count, maxCount, radius, seed, size } = props
-    const { height, width } = size
+    const { bounds, count, maxCount, radius, seed } = props
+    const { bottom, left, right, top } = bounds
 
     if (cacheSeed !== seed) {
       cache = makeRandomPoints(seed, maxCount)
@@ -31,8 +30,8 @@ export function makePositionFactory(): MakePositions {
     return cache.slice(0, count).map(configurePosition)
 
     function configurePosition(point: Point): Point {
-      const x = point.x * (width - 2 * radius) + radius
-      const y = point.y * (height - 2 * radius) + radius
+      const x = left + point.x * ((right - left) - 2 * radius) + radius
+      const y = top + point.y * ((bottom - top) - 2 * radius) + radius
       return { x, y }
     }
   }

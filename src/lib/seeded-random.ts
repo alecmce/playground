@@ -4,7 +4,7 @@ import { SeededRandom } from 'src/model/random'
  * Uses the source below (from https://gist.github.com/aradzie/c12da8c537e83c0fae52)
  * to generate pseudo-random numbers based on a seed.
  */
-export function makeSeededRandom(seed: number): SeededRandom {
+export function makeSeededRandom(seed = getRandomSeed()): SeededRandom {
   const twister = mersenneTwister(seed)
 
   return { float, int, list, from, seed, shuffle }
@@ -35,6 +35,10 @@ export function makeSeededRandom(seed: number): SeededRandom {
   function shuffle<T>(data: T[]): T[] {
     return list(data, data.length)
   }
+}
+
+export function getRandomSeed(): number {
+  return Math.round(Number.MAX_SAFE_INTEGER * Math.random())
 }
 
 

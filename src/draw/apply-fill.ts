@@ -1,20 +1,50 @@
 import { Fill } from 'src/model/drawing'
+import { GetGradient } from './gradients'
 
 interface Props {
-  context: CanvasRenderingContext2D
-  draw:    VoidFunction
-  fill:    Fill
+  context:     CanvasRenderingContext2D
+  getGradient: GetGradient
 }
 
-export function applyFill(props: Props): void {
-  const { context, draw, fill } = props
+export interface ApplyFill {
+  (props: ApplyFillProps): void
+}
 
-  context.save()
-  context.globalAlpha = fill.alpha ?? 1
-  context.fillStyle = fill.color
+interface ApplyFillProps {
+  draw:        VoidFunction | Path2D
+  fill:        Fill
+}
 
-  draw()
-  context.fill()
+export function makeApplyFill(props: Props): ApplyFill {
+  const { context, getGradient } = props
 
-  context.restore()
+  return function applyFill(props: ApplyFillProps): void {
+    const { draw, fill } = props
+    const { alpha, color } = fill
+
+    context.save()
+    context.globalAlpha = alpha ?? 1
+    context.fillStyle = getFillStyle(color)
+
+    if (draw instanceof Path2D) {
+      context.fill(draw)
+    } else {
+      draw()
+      context.fill()
+    }
+
+    context.restore()
+  }
+
+  function getFillStyle(color: string | string[]): string | CanvasGradient | CanvasPattern {
+    return Array.isArray(color)
+      ? getFillStyleFromArray(color)
+      : color
+
+    function getFillStyleFromArray(color: string[]): string | CanvasGradient | CanvasPattern {
+      return color.length > 1
+        ? getGradient(color)
+        : color.at(0) ?? '#999'
+    }
+  }
 }

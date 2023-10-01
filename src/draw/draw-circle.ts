@@ -1,22 +1,22 @@
-import { Drawing } from 'src/model/drawing'
-import { Circle } from 'src/model/geometry'
-import { applyBrush } from './apply-brush'
-import { applyFill } from './apply-fill'
+import { DrawCircle, DrawCircleProps, DrawingPrerequisites } from 'src/model/drawing'
 
-interface Props extends Drawing {
-  circle: Circle
-}
 
-export function drawCircle(props: Props): void {
-  const { brush, context, fill, circle } = props
-  const { center, radius } = circle
+export function makeDrawCircle(props: DrawingPrerequisites): DrawCircle {
+  const { applyBrush, applyFill, brush: defaultBrush = null, context } = props
 
-  fill && applyFill({ fill, context, draw })
-  brush && applyBrush({ brush, context, draw })
+  return function drawCircle(props: DrawCircleProps): void {
+    const { brush = defaultBrush, circle, fill } = props
+    const { center, radius } = circle
 
-  function draw(): void {
-    context.beginPath()
-    context.arc(center.x, center.y, radius, 0, 2 * Math.PI)
-    context.closePath()
+    fill && applyFill({ fill, draw })
+    brush && applyBrush({ brush, draw })
+
+    function draw(): void {
+      if (radius > 0) {
+        context.beginPath()
+        context.arc(center.x, center.y, radius, 0, 2 * Math.PI)
+        context.closePath()
+      }
+    }
   }
 }

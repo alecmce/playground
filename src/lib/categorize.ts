@@ -7,10 +7,10 @@ interface Props {
 }
 
 /** Categorises creatures based on the given categories. */
-export function categorize(props: Props): Categorized[] {
+export function categorize(props: Props): Categorized<CategoryValues>[] {
   const { categories, creatures } = props
 
-  const categoryMap = new Map<string, Categorized>()
+  const categoryMap = new Map<string, Categorized<CategoryValues>>()
   creatures.forEach(categorizeCreature)
   return Array.from(categoryMap.values())
 

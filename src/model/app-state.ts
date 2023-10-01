@@ -1,18 +1,20 @@
 export enum STATE_TYPE {
-  FREE              = 'free',
-  BAR_CHART_CONFIG  = 'bar-chart-config',
-  PIE_CHART_CONFIG  = 'pie-chart-config',
-  ENTER_PLACES      = 'enter-places',
-  ENTER_OVERLAY     = 'enter-overlay',
-  FULL_OVERLAY      = 'pie-overlaid',
-  EXIT_OVERLAY      = 'exit-overlay',
-  LEAVE_PLACES      = 'leave-places',
-  CLOSE_CHART       = 'close-chart',
+  FREE                    = 'free',
+  BAR_CHART_CONFIG        = 'bar-chart-config',
+  CARROLL_DIAGRAM_CONFIG  = 'carroll-diagram-config',
+  PIE_CHART_CONFIG        = 'pie-chart-config',
+  ENTER_PLACES            = 'enter-places',
+  ENTER_OVERLAY           = 'enter-overlay',
+  FULL_OVERLAY            = 'pie-overlaid',
+  EXIT_OVERLAY            = 'exit-overlay',
+  LEAVE_PLACES            = 'leave-places',
+  CLOSE_CHART             = 'close-chart',
 }
 
 export enum CHART_TYPE {
-  BAR_CHART = 'bar-chart',
-  PIE_CHART = 'pie-chart',
+  BAR_CHART       = 'bar-chart',
+  CARROLL_DIAGRAM = 'carroll-diagram',
+  PIE_CHART       = 'pie-chart',
 }
 
 export interface AppState {

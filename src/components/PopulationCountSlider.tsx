@@ -7,12 +7,13 @@ import { PopulationModel } from 'src/model/population'
 interface Props {
   population:    PopulationModel
   setPopulation: Dispatch<SetStateAction<PopulationModel>>
+  maxCount:      number
 }
 
 const ID = 'population-count-slider'
 
 export function PopulationCountSlider(props: Props): ReactElement {
-  const { population, setPopulation } = props
+  const { population, setPopulation, maxCount } = props
   const { count } = population
 
   return (
@@ -27,7 +28,7 @@ export function PopulationCountSlider(props: Props): ReactElement {
         <Grid item xs>
           <Slider
             min={1}
-            max={100}
+            max={maxCount}
             value={count}
             onChange={onSliderChange}
             aria-labelledby={ID}
@@ -38,7 +39,7 @@ export function PopulationCountSlider(props: Props): ReactElement {
             value={count}
             size="small"
             onChange={onInputChange}
-            inputProps={{ 'aria-labelledby': ID, max: 100, min: 1, step: 5, type: 'number' }}
+            inputProps={{ 'aria-labelledby': ID, max: maxCount, min: 1, step: 5, type: 'number' }}
           />
         </Grid>
       </Grid>

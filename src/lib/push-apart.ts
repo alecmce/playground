@@ -1,9 +1,21 @@
+import { useMemo } from 'react'
 import { Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { PushApart, PushApartProps } from 'src/model/push-apart'
 import { makePairs } from './array-util'
 import { quadIn } from './ease'
 
+interface Props {
+  creatures: Creature[]
+}
+
+export function usePushApart(props: Partial<Props>): PushApart | undefined {
+  const { creatures } = props
+
+  return useMemo(() => {
+    return creatures ? makePushApart(creatures) : undefined
+  }, [creatures])
+}
 
 export function makePushApart(creatures: Creature[]): PushApart {
   const pairs = makePairs(creatures)

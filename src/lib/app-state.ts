@@ -52,15 +52,16 @@ interface TransitionState {
 }
 
 export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
-  [STATE_TYPE.CLOSE_CHART]:       500,
-  [STATE_TYPE.ENTER_OVERLAY]:     3000,
-  [STATE_TYPE.ENTER_PLACES]:      3000,
-  [STATE_TYPE.EXIT_OVERLAY]:      3000,
-  [STATE_TYPE.LEAVE_PLACES]:      2000,
-  [STATE_TYPE.FREE]:              Infinity,
-  [STATE_TYPE.BAR_CHART_CONFIG]:  Infinity,
-  [STATE_TYPE.PIE_CHART_CONFIG]:  Infinity,
-  [STATE_TYPE.FULL_OVERLAY]:      Infinity,
+  [STATE_TYPE.CLOSE_CHART]:            500,
+  [STATE_TYPE.ENTER_OVERLAY]:          3000,
+  [STATE_TYPE.ENTER_PLACES]:           3000,
+  [STATE_TYPE.EXIT_OVERLAY]:           3000,
+  [STATE_TYPE.LEAVE_PLACES]:           2000,
+  [STATE_TYPE.FREE]:                   Infinity,
+  [STATE_TYPE.BAR_CHART_CONFIG]:       Infinity,
+  [STATE_TYPE.CARROLL_DIAGRAM_CONFIG]: Infinity,
+  [STATE_TYPE.PIE_CHART_CONFIG]:       Infinity,
+  [STATE_TYPE.FULL_OVERLAY]:           Infinity,
 }
 
 const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {

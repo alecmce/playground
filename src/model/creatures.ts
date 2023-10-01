@@ -1,7 +1,8 @@
-import { Point } from './geometry'
+import { Brush } from './drawing'
+import { Point, Rectangle } from './geometry'
+import { PopulationModel } from './population'
 
 export interface CreatureDrawProps {
-  context: CanvasRenderingContext2D
   pointer: Point | null
   scale:   number
   target:  Creature | null
@@ -22,13 +23,37 @@ export enum CATEGORY {
   SIDES = 'sides',
 }
 
-export interface Categorized {
+export interface Categorized<Values> {
   creatures: Creature[]
-  values:    Partial<CategoryValues>
+  values:    Values
 }
 
 export interface CategoryValues {
-  [CATEGORY.COLOR]: string
-  [CATEGORY.EYES]:  number
-  [CATEGORY.SIDES]: number
+  [CATEGORY.COLOR]?: string
+  [CATEGORY.EYES]?:  string
+  [CATEGORY.SIDES]?: string
+}
+
+export interface SetInclusionState {
+  [CATEGORY.COLOR]?: string
+  [CATEGORY.EYES]?:  string
+  [CATEGORY.SIDES]?: string
+}
+
+export interface SetInclusionValues {
+  [CATEGORY.COLOR]?: string[]
+  [CATEGORY.EYES]?:  string[]
+  [CATEGORY.SIDES]?: string[]
+}
+
+
+export interface MakeCreaturesProps {
+  bounds:     Rectangle
+  brush:      Brush
+  population: PopulationModel
+  radius:     number
+}
+
+export interface MakeCreatures {
+  (props: MakeCreaturesProps): Creature[]
 }

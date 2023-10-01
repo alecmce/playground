@@ -5,6 +5,7 @@ import Palette from '@mui/icons-material/Palette'
 import PaletteOutlined from '@mui/icons-material/PaletteOutlined'
 import Pentagon from '@mui/icons-material/Pentagon'
 import PentagonOutlined from '@mui/icons-material/PentagonOutlined'
+import PlayArrow from '@mui/icons-material/PlayArrow'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined'
 import { CATEGORY } from 'src/model/creatures'
@@ -14,12 +15,11 @@ interface Props {
   ['aria-label']: string
   categories:     Set<CATEGORY>
   setCategories:  Dispatch<SetStateAction<Set<CATEGORY>>>
-  children:       ReactElement | ReactElement[]
   onClick:        VoidFunction
 }
 
 export function CategoryOptions(props: Props): ReactElement {
-  const { categories, setCategories, children, onClick } = props
+  const { categories, setCategories, onClick } = props
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
@@ -48,7 +48,7 @@ export function CategoryOptions(props: Props): ReactElement {
         onChange={(_, isChecked) => toggleCategory(CATEGORY.EYES, isChecked)}
       />
       <IconButton aria-label={props['aria-label']} size="large" onClick={onClick}>
-        {children}
+        <PlayArrow />
       </IconButton>
     </Stack>
   )

@@ -1,12 +1,10 @@
-import { drawCircleSector } from 'src/draw/draw-segment'
+import { useMemo } from 'react'
 import { makeColorScale } from 'src/lib/color-scale'
-import { Assignment, BackgroundDrawProps, Chart, MainDrawProps } from 'src/model/charts'
-import { CATEGORY, Creature } from 'src/model/creatures'
-import { Fill } from 'src/model/drawing'
-import { ArcPlace, Point } from 'src/model/geometry'
+import { Assignment, BackgroundDrawProps, CategorisationChart, MainDrawProps } from 'src/model/charts'
+import { CATEGORY, CategoryValues, Creature } from 'src/model/creatures'
+import { DrawingApi, Fill } from 'src/model/drawing'
+import { ArcPlace, Point, Rectangle } from 'src/model/geometry'
 import { POINTER_ACTION } from 'src/model/interaction'
-import { SeededRandom } from 'src/model/random'
-import { Size } from 'src/model/values'
 import { makeChartState } from 'src/util/chart-state'
 import { assignOptions } from '../lib/assign-options'
 import { categorize } from '../lib/categorize'
@@ -15,22 +13,35 @@ import { makePieChartOptions } from './pie-chart-options'
 import { CategorySector, makePieChartSectors } from './pie-chart-sectors'
 
 interface Props {
-  creatures: Creature[]
-  count:     number
-  radius:    number
-  random:    SeededRandom
-  size:      Size
+  bounds:     Rectangle
+  count:      number
+  creatures:  Creature[]
+  drawingApi: DrawingApi
+  radius:     number
+}
+
+export function usePieChart(props: Partial<Props>): CategorisationChart | undefined {
+  const { bounds, count, creatures, drawingApi, radius } = props
+
+  return useMemo(() => {
+    return count && creatures && drawingApi && radius && bounds
+      ? makePieChart({ bounds, count, creatures, drawingApi, radius })
+      : undefined
+  }, [count, creatures, drawingApi, radius, bounds])
 }
 
 /**
  * Generates a ring of points around the origin such that circles with the given radius at those points touch but do not
  * intersect.
  */
-export function makePieChart(props: Props): Chart {
-  const { creatures, count, radius: inputRadius, random, size } = props
-  const { width, height } = size
+export function makePieChart(props: Props): CategorisationChart {
+  const { bounds, count, creatures, drawingApi, radius: inputRadius } = props
+  const { drawCircleSector } = drawingApi
+  const { left, right, top, bottom } = bounds
+  const width = right - left
+  const height = bottom - top
 
-  const center = { x: width / 2, y: height / 2 }
+  const center = { x: left + width / 2, y: top + height / 2 }
   const maxDistance = Math.min(width / 2, height / 2) - inputRadius
   const theta = 2 * Math.PI / count
   const start = -Math.PI / 2 - theta / 2
@@ -42,7 +53,7 @@ export function makePieChart(props: Props): Chart {
   const places = Array.from({ length: count }, makePlace)
   const state = makeChartState({ getItem: getSectorUnderPoint })
 
-  let assignments: Assignment<ArcPlace>[] | null = null
+  let assignments: Assignment<ArcPlace, CategoryValues>[] | null = null
   let categorySectors: CategorySector[] | null = null
   let colors: string[] | null = null
 
@@ -51,8 +62,8 @@ export function makePieChart(props: Props): Chart {
   function init(categories: CATEGORY[]): void {
     const categorized = categorize({ categories, creatures })
     assignments = assignOptions(makePieChartOptions({ categorized, places, radius }))
-    categorySectors = makePieChartSectors(categorized, assignments)
-    colors = makeColorScale({ count: categorized.length, random })
+    categorySectors = makePieChartSectors({ assignments, categorized })
+    colors = makeColorScale({ count: categorized.length })
   }
 
   function getRadius(): number {
@@ -74,7 +85,7 @@ export function makePieChart(props: Props): Chart {
     const p = quadInOut(proportion)
     assignments?.forEach(gotoAssignment)
 
-    function gotoAssignment(assignment: Assignment<ArcPlace>): void {
+    function gotoAssignment(assignment: Assignment<ArcPlace, CategoryValues>): void {
       const { creature, start, place } = assignment
       const { center } = creature
 
@@ -91,7 +102,7 @@ export function makePieChart(props: Props): Chart {
   }
 
   function drawMain(props: MainDrawProps): void {
-    const { alpha: mainAlpha = 1, brush, context } = props
+    const { alpha: mainAlpha = 1, brush } = props
     const circle = { center, radius: distance + radius }
     categorySectors?.forEach(drawCategory)
 
@@ -99,19 +110,19 @@ export function makePieChart(props: Props): Chart {
       const { angle, theta, values } = sector
       const alpha = mainAlpha * state.getAlpha(sector)
       const fill: Fill = { color: values.color ?? colors![i], alpha }
-      drawCircleSector({ angle, brush, circle, context, fill, theta })
+      drawCircleSector({ angle, brush, circle, fill, theta })
     }
   }
 
   function drawBackground(props: BackgroundDrawProps): void {
-    const { context, brush, fill } = props
+    const { brush, fill } = props
     assignments?.forEach(drawPlace)
 
-    function drawPlace(assignment: Assignment<ArcPlace>): void {
+    function drawPlace(assignment: Assignment<ArcPlace, CategoryValues>): void {
       const { place: { angle, theta } } = assignment
       const circle = { radius: distance + radius, center }
       const inner = distance - radius
-      drawCircleSector({ angle, brush, circle, context, fill, theta, inner })
+      drawCircleSector({ angle, brush, circle, fill, theta, inner })
     }
   }
 

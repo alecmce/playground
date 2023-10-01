@@ -1,74 +1,28 @@
 import PentagonIcon from '@mui/icons-material/Pentagon'
-import Button from '@mui/joy/Button'
-import { produce } from 'immer'
-import { Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react'
-import { DEFAULT_SIDES, SIDES } from 'src/constants'
-import { drawPolygon } from 'src/draw/draw-polygon'
-import { makeRegularPolygon } from 'src/lib/regular-polygon'
-import { PopulationModel } from 'src/model/population'
+import { ReactElement, useMemo } from 'react'
+import { SIDES } from 'src/constants'
+import { SidesIcon } from './SidesIcon'
 import { TogglesGroup } from './TogglesGroup'
 
 interface Props {
-  population:    PopulationModel
-  setPopulation: Dispatch<SetStateAction<PopulationModel>>
-  size:          number
+  onChange:   (sides: string | string[] | null) => void
+  options?:   Set<string>
+  size:       number
+  value:      string | string[] | null
 }
 
 export function SidesToggles(props: Props): ReactElement {
-  const { population, setPopulation, size } = props
-  const { sides } = population
+  const { options } = props
+
+  const activeOptions = useMemo(() => options ? SIDES.filter(o => options.has(o.value)) : SIDES, [options])
 
   return (
-    <TogglesGroup label="Sides" Icon={<PentagonIcon />} value={sides} onChange={onSidesChange}>
-      { SIDES.map(renderSidesButton) }
-    </TogglesGroup>
-  )
-
-  function renderSidesButton({ name, value }: { name: string, value: string }): ReactElement {
-    return (
-      <Button key={name} value={value} aria-label={name}>
-        <Sides sides={value} size={size} />
-      </Button>
-    )
-  }
-
-  function onSidesChange(_: unknown, value: string[]): void {
-    setPopulation(model => produce(model, draft => {
-      draft.sides = value.length ? value : DEFAULT_SIDES
-    }))
-  }
-}
-
-const BRUSH = { alpha: 1, color: 'black', width: 2 } as const
-
-interface SidesProps {
-  sides: string
-  size:  number
-}
-
-function Sides(props: SidesProps): ReactElement {
-  const { sides, size } = props
-
-  const polygon = useMemo(() => makeRegularPolygon({
-    center: { x: 0, y: 0 },
-    radius: size / 2,
-    sides: parseInt(sides, 10),
-  }), [sides, size])
-
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
-
-  const context = canvas?.getContext('2d')
-  if (context) {
-    drawPolygon({
-      brush: BRUSH,
-      center: { x: size / 2, y: size / 2 },
-      context,
-      polygon,
-      scale: size / 70,
-    })
-  }
-
-  return (
-    <canvas ref={setCanvas} width={size} height={size} style={{width: size, height: size }} />
+    <TogglesGroup
+      {...props}
+      Icon={<PentagonIcon />}
+      label="Sides"
+      Option={SidesIcon}
+      options={activeOptions}
+    />
   )
 }

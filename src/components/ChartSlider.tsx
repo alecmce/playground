@@ -1,6 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close'
 import Pause from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
+import IconButton from '@mui/joy/IconButton'
 import { Stack } from '@mui/material'
 import Slider from '@mui/material/Slider'
 import { styled } from '@mui/material/styles'
@@ -15,7 +16,8 @@ interface Props {
 
 const SLIDER_STYLES = {
   '&.MuiSlider-root': {
-    width: 'calc(100% - 114px)' // TODO: This isn't right.
+    maxWidth: '100%',
+    width:    '600px',
   },
   '& .MuiSlider-thumb': {
     transition: 'none'
@@ -38,7 +40,9 @@ export function ChartSlider(props: Props): ReactElement {
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 1, alignItems: 'center' }}>
-      <CloseIcon onClick={onClose} />
+      <IconButton aria-label="Close current chart" onClick={onClose}>
+        <CloseIcon />
+      </IconButton>
       <ImmediateSlider
         aria-label="Volume"
         value={time}
@@ -47,7 +51,9 @@ export function ChartSlider(props: Props): ReactElement {
         onChange={onChange}
         marks={marks}
       />
-      { isPlay ? <Pause onClick={onPause} /> : <PlayArrow onClick={onPlay} /> }
+      <IconButton aria-label="Toggle play state" onClick={isPlay ? onPause : onPlay}>
+        { isPlay ? <Pause /> : <PlayArrow /> }
+      </IconButton>
     </Stack>
   )
 

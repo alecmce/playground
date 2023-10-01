@@ -1,12 +1,15 @@
-import { Fragment, ReactElement, useCallback, useMemo, useState } from 'react'
+import { Fragment, ReactElement, useCallback, useState } from 'react'
 import './App.css'
-import { makeBarChart } from './bar-chart/bar-chart'
+import { useBarChart } from './bar-chart/bar-chart'
+import { useCarrollDiagram } from './carroll-diagram/carroll-diagram'
 import { Ui } from './components/UI'
+import { makeDefaultPopulation } from './constants'
 import { draw } from './draw'
+import { useDrawingApi } from './draw/drawing-api'
 import { useAppState } from './lib/app-state'
-import { makeCreatureFactory } from './lib/creatures'
-import { makePushApart } from './lib/push-apart'
-import { makeSeededRandom } from './lib/seeded-random'
+import { useCreatureFactory } from './lib/creature-factory'
+import { useCreatures } from './lib/creatures'
+import { usePushApart } from './lib/push-apart'
 import { useCreaturesDrag } from './lib/use-creatures-drag'
 import { useRadius } from './lib/use-radius'
 import { useTick } from './lib/use-tick'
@@ -15,47 +18,41 @@ import { iterate } from './model/app-state'
 import { Creature } from './model/creatures'
 import { Point } from './model/geometry'
 import { PopulationModel } from './model/population'
-import { makePieChart } from './pie-chart/pie-chart'
+import { usePieChart } from './pie-chart/pie-chart'
+import { useBounds } from './use-bounds'
 import { useCurrentChart } from './use-current-chart'
+import { useInitCanvas } from './use-init-canvas'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const DENSITY = 0.5 as const
-const MAX_COUNT = 100 as const
-
-const DEFAULT_POPULATION: PopulationModel = {
-  colors: ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff'],
-  count:  25,
-  eyes:   ['1', '2', '3', '4', '5'],
-  seed:   Math.round(Number.MAX_SAFE_INTEGER * Math.random()),
-  sides:  ['3', '4', '5', '6', '7', '8'],
-}
+const MAX_COUNT = 400 as const
 
 export function App(): ReactElement {
-  const [population, setPopulation] = useState<PopulationModel>(DEFAULT_POPULATION)
   const [showDialog, setShowDialog] = useState(false)
 
-  const { count, seed } = population
-  const random = useMemo(() => makeSeededRandom(seed), [seed])
+  const [population, setPopulation] = useState<PopulationModel>(makeDefaultPopulation())
+  const { count } = population
 
-  const size = useWindowSize({ marginBottom: 100 })
+  const size = useWindowSize()
   const { width, height } = size
 
-  const bounds = useMemo(() => ({ left: 30, top: 30, right: width - 60, bottom: height - 60 }), [width, height])
-  const makeCreatures = useMemo(() => makeCreatureFactory(MAX_COUNT), [])
-
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
+  const [, context, setCanvas] = useInitCanvas({ alpha: false })
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
 
+  const drawingApi = useDrawingApi({ context })
+  const bounds = useBounds(size)
+  const makeCreatures = useCreatureFactory({ drawingApi, maxCount: MAX_COUNT })
   const radius = useRadius({ count, density: DENSITY, size })
-  const creatures = useMemo(() => makeCreatures({ brush: BRUSH, population, radius, size }), [population, radius, size])
-  const pushApart = useMemo(() => makePushApart(creatures), [creatures])
-  const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius, random }), [bounds, creatures])
-  const pieChart = useMemo(() => makePieChart({ count, creatures, radius, random, size }), [creatures, radius, size])
+  const creatures = useCreatures({ brush: BRUSH, makeCreatures, population, radius, bounds })
+  const pushApart = usePushApart({ creatures })
+  const barChart = useBarChart({ bounds, creatures, drawingApi, radius })
+  const pieChart = usePieChart({ bounds, count, creatures, drawingApi, radius })
+  const carrollDiagram = useCarrollDiagram({ bounds, creatures, drawingApi, radius })
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
-  const chart = useCurrentChart({ type: state.chart, barChart, pieChart })
+  const chart = useCurrentChart({ type: state.chart, barChart, carrollDiagram, pieChart })
   useCreaturesDrag({ chart, creatures, enabled: !showDialog, setPointer, setTarget })
 
   const tick = useCallback((deltaTime: number) => {
@@ -64,18 +61,19 @@ export function App(): ReactElement {
 
   useTick(tick)
 
-  const context = canvas?.getContext('2d')
-  if (context) {
-    draw({ context, creatures, barChart, pieChart, pushApart, pointer, radius, size, state, target })
-  }
+  draw({ barChart, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, radius, size, state, target })
 
   return (
     <Fragment>
-      <div className="layer">
-        <canvas ref={setCanvas} width={width} height={height} style={{ width, height }}/>
-      </div>
+      <canvas
+        ref={setCanvas}
+        width={width}
+        height={height}
+        style={{ position: 'absolute', width, height: height, left: 0, top: 0 }}
+      />
       <Ui
         barChart={barChart}
+        carrollDiagram={carrollDiagram}
         dispatchAppState={dispatchAppState}
         pieChart={pieChart}
         population={population}
@@ -83,6 +81,7 @@ export function App(): ReactElement {
         setShowDialog={setShowDialog}
         showDialog={showDialog}
         state={state}
+        maxCount={MAX_COUNT}
       />
     </Fragment>
   )

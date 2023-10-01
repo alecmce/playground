@@ -1,21 +1,29 @@
-import { Drawing } from 'src/model/drawing'
+import { Brush, DrawingPrerequisites, Fill } from 'src/model/drawing'
 import { Rectangle } from 'src/model/geometry'
-import { applyBrush } from './apply-brush'
-import { applyFill } from './apply-fill'
 
-interface Props extends Drawing {
+export interface DrawRectangle {
+  (props: DrawRectangleProps): void
+}
+
+interface DrawRectangleProps {
+  brush?:    Brush
+  fill?:     Fill
   rectangle: Rectangle
 }
 
-export function drawRectangle(props: Props): void {
-  const { brush, context, fill, rectangle } = props
-  const { left, right, top, bottom } = rectangle
+export function makeDrawRectangle(props: DrawingPrerequisites): DrawRectangle {
+  const { applyBrush, applyFill, brush: defaultBrush = null, context } = props
 
-  fill && applyFill({ fill, context, draw })
-  brush && applyBrush({ brush, context, draw })
+  return function drawRectangle(props: DrawRectangleProps): void {
+    const { brush = defaultBrush, fill, rectangle } = props
+    const { left, right, top, bottom } = rectangle
 
-  function draw(): void {
-    context.beginPath()
-    context.rect(left, top, right - left, bottom - top)
+    fill && applyFill({ fill, draw })
+    brush && applyBrush({ brush, draw })
+
+    function draw(): void {
+      context.beginPath()
+      context.rect(left, top, right - left, bottom - top)
+    }
   }
 }

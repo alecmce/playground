@@ -3,6 +3,7 @@ import Box from '@mui/joy/Box'
 import Button from '@mui/material/Button'
 import { produce } from 'immer'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { getRandomSeed } from 'src/lib/seeded-random'
 import { PopulationModel } from 'src/model/population'
 
 interface Props {
@@ -27,7 +28,7 @@ export function RandomizeButton(props: Props): ReactElement {
 
   function randomize(): void {
     setPopulation(model => produce(model, draft => {
-      draft.seed = Math.round(Number.MAX_SAFE_INTEGER * Math.random())
+      draft.seed = getRandomSeed()
     }))
   }
 }

@@ -6,13 +6,13 @@ import { Point } from 'src/model/geometry'
  * creature with the longest possible assignment, and assigning to it the shortest avaialable place,
  * and repreating.
  */
-export function assignOptions<T extends Point>(options: Assignment<T>[]): Assignment<T>[] {
-  const consumed = new Set<Assignment<T>>()
-  const assignments: Assignment<T>[] = []
+export function assignOptions<T extends Point, C>(options: Assignment<T, C>[]): Assignment<T, C>[] {
+  const consumed = new Set<Assignment<T, C>>()
+  const assignments: Assignment<T, C>[] = []
   options.forEach(assignOrSkip)
   return assignments
 
-  function assignOrSkip(option: Assignment<T>): void {
+  function assignOrSkip(option: Assignment<T, C>): void {
     const { creature } = option
     if (!consumed.has(option)) {
       const creatureOptions = filterOptions(o => o.creature === creature)
@@ -23,11 +23,11 @@ export function assignOptions<T extends Point>(options: Assignment<T>[]): Assign
       consumeOptions(placeOptions)
     }
 
-    function filterOptions(fn: (option: Assignment<T>) => boolean): Assignment<T>[] {
+    function filterOptions(fn: (option: Assignment<T, C>) => boolean): Assignment<T, C>[] {
       return options.filter(o => !consumed.has(o) && fn(o))
     }
 
-    function consumeOptions(options: Assignment<T>[]): void {
+    function consumeOptions(options: Assignment<T, C>[]): void {
       options.forEach(o => consumed.add(o))
     }
   }
