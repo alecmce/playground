@@ -25,9 +25,9 @@ const MAX_COUNT = 100 as const
 const DEFAULT_POPULATION: PopulationModel = {
   colors: ['#ff0000', '#ffa500', '#ffee00', '#00ff00', '#1e90ff', '#0000cd', '#9900ff'],
   count:  25,
-  eyes:   [1, 2, 3, 4, 5],
-  seed:   1812433253 * Math.random(),
-  sides:  [3, 4, 5, 6, 7, 8],
+  eyes:   ['1', '2', '3', '4', '5'],
+  seed:   Math.round(Number.MAX_SAFE_INTEGER * Math.random()),
+  sides:  ['3', '4', '5', '6', '7', '8'],
 }
 
 export function App(): ReactElement {
@@ -49,7 +49,7 @@ export function App(): ReactElement {
 
   const radius = useRadius({ count, density: DENSITY, size })
   const creatures = useMemo(() => makeCreatures({ brush: BRUSH, population, radius, size }), [population, radius, size])
-  const pushApart = useMemo(() => makePushApart(creatures), [])
+  const pushApart = useMemo(() => makePushApart(creatures), [creatures])
   const barChart = useMemo(() => makeBarChart({ bounds, creatures, radius, random }), [bounds, creatures])
   const pieChart = useMemo(() => makePieChart({ count, creatures, radius, random, size }), [creatures, radius, size])
 

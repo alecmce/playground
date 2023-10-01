@@ -17,7 +17,7 @@ interface Props {
   brush:   Brush
   center:  Point
   context: CanvasRenderingContext2D
-  eyes:    number
+  eyes:    string
   pointer: Point | null
   scale:   number
 }
@@ -39,12 +39,12 @@ export function drawEyes(props: Props): void {
 
   function getOffsets(): Point[] {
     switch (eyes) {
-      case 1:  return ONE_EYE
-      case 2:  return TWO_EYES
-      case 3:  return THREE_EYES
-      case 4:  return FOUR_EYES
-      case 5:  return FIVE_EYES
-      default: return []
+      case '1': return ONE_EYE
+      case '2': return TWO_EYES
+      case '3': return THREE_EYES
+      case '4': return FOUR_EYES
+      case '5': return FIVE_EYES
+      default:  return []
     }
   }
 

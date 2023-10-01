@@ -2,15 +2,21 @@ import { Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { PushApart, PushApartProps } from 'src/model/push-apart'
 import { makePairs } from './array-util'
+import { quadIn } from './ease'
 
 
 export function makePushApart(creatures: Creature[]): PushApart {
   const pairs = makePairs(creatures)
   const forces = new Map<Creature, Point>(creatures.map(p => [p, { x: 0, y: 0 }]))
 
+  let ease = 0
+
   return function pushApart(props: PushApartProps): void {
     const { radius, scalar = 0.001 } = props
     let isForceApplied = false
+
+    ease = Math.min(ease + 0.01, 1)
+    const easeScalar = quadIn(ease)
 
     forces.forEach(reset)
     pairs.forEach(gatherForce)
@@ -35,8 +41,8 @@ export function makePushApart(creatures: Creature[]): PushApart {
       if (delta < 0) {
         isForceApplied = true
         const force = delta * scalar
-        const fx = force * dx / delta
-        const fy = force * dy / delta
+        const fx = easeScalar * force * dx / delta
+        const fy = easeScalar * force * dy / delta
         forceA.x -= fx
         forceA.y -= fy
         forceB.x += fx

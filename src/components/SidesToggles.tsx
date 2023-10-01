@@ -1,11 +1,13 @@
 import PentagonIcon from '@mui/icons-material/Pentagon'
-import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import Button from '@mui/joy/Button'
+import { Box, Grid, Typography } from '@mui/material'
 import { produce } from 'immer'
-import { Dispatch, MouseEvent, ReactElement, SetStateAction, useMemo, useState } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react'
 import { DEFAULT_SIDES, SIDES } from 'src/constants'
 import { drawPolygon } from 'src/draw/draw-polygon'
 import { makeRegularPolygon } from 'src/lib/regular-polygon'
 import { PopulationModel } from 'src/model/population'
+import { TogglesGroup } from './StyledToggleGroup'
 
 interface Props {
   population:    PopulationModel
@@ -29,35 +31,34 @@ export function SidesToggles(props: Props): ReactElement {
           <PentagonIcon />
         </Grid>
         <Grid item xs>
-          <ToggleButtonGroup
-            value={sides}
-            onChange={onSidesChange}
-            color="primary"
-            sx={{ flexWrap: 'wrap', padding: 2 }}
-          >
-            { SIDES.map(({ name, value }) => (
-              <ToggleButton key={name} value={value} aria-label={name}>
-                <Sides sides={value} size={size} />
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+          <TogglesGroup value={sides} onChange={onSidesChange}>
+            { SIDES.map(renderSidesButton) }
+          </TogglesGroup>
         </Grid>
       </Grid>
     </Box>
   )
 
-  function onSidesChange(_: MouseEvent, value: number[]): void {
+  function renderSidesButton({ name, value }: { name: string, value: string }): ReactElement {
+    return (
+      <Button key={name} value={value} aria-label={name}>
+        <Sides sides={value} size={size} />
+      </Button>
+    )
+  }
+
+  function onSidesChange(_: unknown, value: string[]): void {
     setPopulation(model => produce(model, draft => {
       draft.sides = value.length ? value : DEFAULT_SIDES
     }))
   }
 }
 
-const BRUSH = { alpha: 1, color: 'black', width: 1 } as const
+const BRUSH = { alpha: 1, color: 'black', width: 2 } as const
 
 interface SidesProps {
-  sides: number
-  size: number
+  sides: string
+  size:  number
 }
 
 function Sides(props: SidesProps): ReactElement {
@@ -66,7 +67,7 @@ function Sides(props: SidesProps): ReactElement {
   const polygon = useMemo(() => makeRegularPolygon({
     center: { x: 0, y: 0 },
     radius: size / 2,
-    sides,
+    sides: parseInt(sides, 10),
   }), [sides, size])
 
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)

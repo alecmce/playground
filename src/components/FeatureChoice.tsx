@@ -1,4 +1,4 @@
-import { Button, IconButton, Stack } from '@mui/material'
+import { Button, Stack } from '@mui/material'
 import { Dispatch, Fragment, ReactElement, SetStateAction, memo } from 'react'
 
 import BarChart from '@mui/icons-material/BarChart'
@@ -7,7 +7,6 @@ import PieChart from '@mui/icons-material/PieChart'
 import { AppStateAction, STATE_TYPE, jump } from 'src/model/app-state'
 import { PopulationModel } from 'src/model/population'
 import { NewPopulationDialog } from './NewPopulationDialog'
-
 
 interface Props {
   disabled?:        true
@@ -26,17 +25,19 @@ function Component(props: Props): ReactElement {
   return (
     <Fragment>
       <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
-        <IconButton
-          aria-label="new-population"
+        <Button
+          aria-label="setup population"
+          color="primary"
           onClick={onPopulationToggle}
           size="large"
-          color="secondary"
+          startIcon={<Groups3Icon />}
+          variant="contained"
         >
-          <Groups3Icon />
-        </IconButton>
+          Population
+        </Button>
         <Button
-          aria-label="bar-chart"
-          color="primary"
+          aria-label="bar chart"
+          color="secondary"
           disabled={disabled}
           onClick={selectBarChart}
           size="large"
@@ -46,8 +47,8 @@ function Component(props: Props): ReactElement {
         Bar Chart
         </Button>
         <Button
-          aria-label="pie-chart"
-          color="primary"
+          aria-label="pie chart"
+          color="secondary"
           disabled={disabled}
           onClick={selectPieChart}
           size="large"

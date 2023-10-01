@@ -26,6 +26,8 @@ export function PopulationCountSlider(props: Props): ReactElement {
         </Grid>
         <Grid item xs>
           <Slider
+            min={1}
+            max={100}
             value={count}
             onChange={onSliderChange}
             aria-labelledby={ID}

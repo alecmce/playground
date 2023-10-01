@@ -11,9 +11,9 @@ export interface Creature {
   center:  Point
   color:   string
   draw:    (props: CreatureDrawProps) => void
-  eyes:    number
+  eyes:    string
   isUnder: (pointer: Point) => boolean
-  sides:   number
+  sides:   string
 }
 
 export enum CATEGORY {

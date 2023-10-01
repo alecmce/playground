@@ -1,9 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useRef } from 'react'
 import { PopulationModel } from 'src/model/population'
 import { ColorToggles } from './ColorToggles'
 import { EyesToggles } from './EyesToggles'
 import { PopulationCountSlider } from './PopulationCountSlider'
+import { RandomizeButton } from './RandomizeButton'
 import { SidesToggles } from './SidesToggles'
 
 interface Props {
@@ -16,6 +17,8 @@ const SIZE = 50
 
 export function NewPopulationDialog(props: Props): ReactElement {
   const { onClose, population, setPopulation } = props
+
+  const original = useRef<PopulationModel>(population)
 
   return (
     <Dialog
@@ -30,13 +33,18 @@ export function NewPopulationDialog(props: Props): ReactElement {
         <ColorToggles population={population} setPopulation={setPopulation} size={SIZE} />
         <EyesToggles population={population} setPopulation={setPopulation} size={SIZE} />
         <SidesToggles population={population} setPopulation={setPopulation} size={SIZE} />
+        <RandomizeButton setPopulation={setPopulation} />
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={onClose}>
-            Save changes
-        </Button>
+        <Button autoFocus onClick={onCancel} color="secondary">Cancel</Button>
+        <Button autoFocus onClick={onClose}>OK</Button>
       </DialogActions>
 
     </Dialog>
   )
+
+  function onCancel(): void {
+    setPopulation(original.current)
+    onClose()
+  }
 }

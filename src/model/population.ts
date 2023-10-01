@@ -1,7 +1,7 @@
 export interface PopulationModel {
   colors: string[]
   count:  number
-  eyes:   number[]
+  eyes:   string[]
   seed:   number
-  sides:  number[]
+  sides:  string[]
 }

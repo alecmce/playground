@@ -1,10 +1,12 @@
 import Circle from '@mui/icons-material/Circle'
 import ColorLensIcon from '@mui/icons-material/ColorLens'
-import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import Button from '@mui/joy/Button'
+import { Box, Grid, Typography } from '@mui/material'
 import { produce } from 'immer'
-import { Dispatch, MouseEvent, ReactElement, SetStateAction } from 'react'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 import { COLORS, DEFAULT_COLORS } from 'src/constants'
 import { PopulationModel } from 'src/model/population'
+import { TogglesGroup } from './StyledToggleGroup'
 
 interface Props {
   population:    PopulationModel
@@ -28,28 +30,23 @@ export function ColorToggles(props: Props): ReactElement {
           <ColorLensIcon />
         </Grid>
         <Grid item xs>
-          <ToggleButtonGroup
-            value={colors}
-            onChange={onColorChange}
-            color="primary"
-            sx={{ flexWrap: 'wrap', padding: 2 }}
-          >
-            { COLORS.map(renderColor) }
-          </ToggleButtonGroup>
+          <TogglesGroup value={colors} onChange={onColorChange}>
+            { COLORS.map(renderColorButton) }
+          </TogglesGroup>
         </Grid>
       </Grid>
     </Box>
   )
 
-  function renderColor({ name, value }: { name: string, value: string }): ReactElement {
+  function renderColorButton({ name, value }: { name: string, value: string }): ReactElement {
     return (
-      <ToggleButton key={name} value={value} aria-label={name}>
+      <Button key={name} value={value} aria-label={name}>
         <Circle sx={{ color: value, width: size, height: size }} />
-      </ToggleButton>
+      </Button>
     )
   }
 
-  function onColorChange(_: MouseEvent, value: string[]): void {
+  function onColorChange(_: unknown, value: string[]): void {
     setPopulation(model => produce(model, draft => {
       draft.colors = value.length ? value : DEFAULT_COLORS
     }))

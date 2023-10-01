@@ -1,11 +1,13 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import Button from '@mui/joy/Button'
+import { Box, Grid, Typography } from '@mui/material'
 import { produce } from 'immer'
-import { Dispatch, MouseEvent, ReactElement, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react'
 import { DEFAULT_EYES, EYES } from 'src/constants'
 import { drawEyes } from 'src/draw/draw-eye'
 import { Point } from 'src/model/geometry'
 import { PopulationModel } from 'src/model/population'
+import { TogglesGroup } from './StyledToggleGroup'
 
 interface Props {
   population:    PopulationModel
@@ -29,34 +31,33 @@ export function EyesToggles(props: Props): ReactElement {
           <VisibilityIcon />
         </Grid>
         <Grid item xs>
-          <ToggleButtonGroup
-            value={eyes}
-            onChange={onEyesChange}
-            color="primary"
-            sx={{ flexWrap: 'wrap', padding: 2 }}
-          >
-            { EYES.map(({ name, value }) => (
-              <ToggleButton key={name} value={value} aria-label={name}>
-                <Eyes eyes={value} size={size} />
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+          <TogglesGroup value={eyes} onChange={onEyesChange}>
+            { EYES.map(renderEyeButton) }
+          </TogglesGroup>
         </Grid>
       </Grid>
     </Box>
   )
 
-  function onEyesChange(_: MouseEvent, value: number[]): void {
+  function renderEyeButton({ name, value }: { name: string, value: string }): ReactElement {
+    return (
+      <Button key={name} value={value} aria-label={name}>
+        <Eyes eyes={value} size={size} />
+      </Button>
+    )
+  }
+
+  function onEyesChange(_: unknown, value: string[]): void {
     setPopulation(model => produce(model, draft => {
       draft.eyes = value.length ? value : DEFAULT_EYES
     }))
   }
 }
 
-const BRUSH = { alpha: 1, color: 'black', width: 1 } as const
+const BRUSH = { alpha: 1, color: 'black', width: 2 } as const
 
 interface EyesProps {
-  eyes: number
+  eyes: string
   size: number
 }
 
@@ -89,7 +90,7 @@ function Eyes(props: EyesProps): ReactElement {
       brush: BRUSH,
       center: { x: size / 2, y: size / 2 },
       context,
-      eyes: eyes,
+      eyes,
       pointer,
       scale: size / 70,
     })
