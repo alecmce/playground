@@ -1,13 +1,12 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Button from '@mui/joy/Button'
-import { Box, Grid, Typography } from '@mui/material'
 import { produce } from 'immer'
 import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react'
 import { DEFAULT_EYES, EYES } from 'src/constants'
 import { drawEyes } from 'src/draw/draw-eye'
 import { Point } from 'src/model/geometry'
 import { PopulationModel } from 'src/model/population'
-import { TogglesGroup } from './StyledToggleGroup'
+import { TogglesGroup } from './TogglesGroup'
 
 interface Props {
   population:    PopulationModel
@@ -15,28 +14,14 @@ interface Props {
   size:          number
 }
 
-const ID = 'population-eyes'
-
 export function EyesToggles(props: Props): ReactElement {
   const { population, setPopulation, size } = props
   const { eyes } = population
 
   return (
-    <Box sx={{ mb: 1 }} >
-      <Typography id={ID} gutterBottom>
-        Eyes
-      </Typography>
-      <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
-        <Grid item>
-          <VisibilityIcon />
-        </Grid>
-        <Grid item xs>
-          <TogglesGroup value={eyes} onChange={onEyesChange}>
-            { EYES.map(renderEyeButton) }
-          </TogglesGroup>
-        </Grid>
-      </Grid>
-    </Box>
+    <TogglesGroup label="Eyes" Icon={<VisibilityIcon />} value={eyes} onChange={onEyesChange}>
+      { EYES.map(renderEyeButton) }
+    </TogglesGroup>
   )
 
   function renderEyeButton({ name, value }: { name: string, value: string }): ReactElement {

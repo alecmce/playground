@@ -30,5 +30,4 @@ export function RandomizeButton(props: Props): ReactElement {
       draft.seed = Math.round(Number.MAX_SAFE_INTEGER * Math.random())
     }))
   }
-
 }
