@@ -9,12 +9,13 @@ import { PopulationModel } from 'src/model/population'
 interface Props {
   population:    PopulationModel
   setPopulation: Dispatch<SetStateAction<PopulationModel>>
+  size:          number
 }
 
 const ID = 'population-colors'
 
 export function ColorToggles(props: Props): ReactElement {
-  const { population, setPopulation } = props
+  const { population, setPopulation, size } = props
   const { colors } = population
 
   return (
@@ -31,17 +32,22 @@ export function ColorToggles(props: Props): ReactElement {
             value={colors}
             onChange={onColorChange}
             color="primary"
+            sx={{ flexWrap: 'wrap', padding: 2 }}
           >
-            { COLORS.map(({ name, value }) => (
-              <ToggleButton key={name} value={value} aria-label={name}>
-                <Circle sx={{ color: value }} />
-              </ToggleButton>
-            ))}
+            { COLORS.map(renderColor) }
           </ToggleButtonGroup>
         </Grid>
       </Grid>
     </Box>
   )
+
+  function renderColor({ name, value }: { name: string, value: string }): ReactElement {
+    return (
+      <ToggleButton key={name} value={value} aria-label={name}>
+        <Circle sx={{ color: value, width: size, height: size }} />
+      </ToggleButton>
+    )
+  }
 
   function onColorChange(_: MouseEvent, value: string[]): void {
     setPopulation(model => produce(model, draft => {

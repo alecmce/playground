@@ -61,6 +61,7 @@ function Component(props: Props): ReactElement {
         <NewPopulationDialog
           population={population}
           setPopulation={setPopulation}
+          onClose={() => setShowDialog(false)}
         />
       )}
     </Fragment>
