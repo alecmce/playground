@@ -22,6 +22,7 @@ import { usePieChart } from './pie-chart/pie-chart'
 import { useBounds } from './use-bounds'
 import { useCurrentChart } from './use-current-chart'
 import { useInitCanvas } from './use-init-canvas'
+import { useVennDiagram } from './venn-diagram/venn-diagram'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const DENSITY = 0.5 as const
@@ -49,6 +50,7 @@ export function App(): ReactElement {
   const barChart = useBarChart({ bounds, creatures, drawingApi, radius })
   const pieChart = usePieChart({ bounds, count, creatures, drawingApi, radius })
   const carrollDiagram = useCarrollDiagram({ bounds, creatures, drawingApi, radius })
+  const vennDiagram = useVennDiagram({ bounds, creatures, drawingApi, radius })
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
@@ -61,7 +63,10 @@ export function App(): ReactElement {
 
   useTick(tick)
 
-  draw({ barChart, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, radius, size, state, target })
+  draw({
+    barChart, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, radius, size, state, vennDiagram,
+    target,
+  })
 
   return (
     <Fragment>
@@ -82,6 +87,7 @@ export function App(): ReactElement {
         showDialog={showDialog}
         state={state}
         maxCount={MAX_COUNT}
+        vennDiagram={vennDiagram}
       />
     </Fragment>
   )

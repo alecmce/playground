@@ -26,6 +26,14 @@ export enum CATEGORY {
 export interface Categorized<Values> {
   creatures: Creature[]
   values:    Values
+  type?:     CATEGORY_TYPE
+}
+
+export enum CATEGORY_TYPE {
+  EXCLUDED     = 'excluded',
+  FIRST        = 'first',
+  INTERSECTION = 'intersection',
+  SECOND       = 'second',
 }
 
 export interface CategoryValues {

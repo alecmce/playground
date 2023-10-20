@@ -1,4 +1,4 @@
-import { CATEGORY, Categorized, Creature, SetInclusionState, SetInclusionValues } from 'src/model/creatures'
+import { CATEGORY, CATEGORY_TYPE, Categorized, Creature, SetInclusionState, SetInclusionValues } from 'src/model/creatures'
 import { isDefined, prune } from 'src/util/object-util'
 
 
@@ -20,10 +20,10 @@ export function categorizeByValues(props: Props): Categorized<SetInclusionValues
   creatures.forEach(categorizeCreature)
 
   return [
-    { creatures: unionCreatures, values: makeUnionCategoryValues(first, second) },
-    { creatures: firstCreatures, values: makeCategoryValues(first) },
-    { creatures: secondCreatures, values: makeCategoryValues(second) },
-    { creatures: excludedCreatures, values: {} },
+    { creatures: unionCreatures, values: makeUnionCategoryValues(first, second), type: CATEGORY_TYPE.INTERSECTION },
+    { creatures: firstCreatures, values: makeCategoryValues(first), type: CATEGORY_TYPE.FIRST },
+    { creatures: secondCreatures, values: makeCategoryValues(second), type: CATEGORY_TYPE.SECOND },
+    { creatures: excludedCreatures, values: {}, type: CATEGORY_TYPE.EXCLUDED },
   ]
 
   function categorizeCreature(creature: Creature): void {

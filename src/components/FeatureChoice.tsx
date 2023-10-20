@@ -4,6 +4,7 @@ import { ReactElement, memo } from 'react'
 import BarChart from '@mui/icons-material/BarChart'
 import GridViewIcon from '@mui/icons-material/GridView'
 import Groups3Icon from '@mui/icons-material/Groups3'
+import JoinInnerIcon from '@mui/icons-material/JoinInner'
 import PieChart from '@mui/icons-material/PieChart'
 import { AppStateAction, STATE_TYPE, jump } from 'src/model/app-state'
 
@@ -63,6 +64,17 @@ function Component(props: Props): ReactElement {
       >
         Carroll Diagram
       </Button>
+      <Button
+        aria-label="venn diagram"
+        color="secondary"
+        disabled={disabled}
+        onClick={selectVennDiagram}
+        size="large"
+        startIcon={<JoinInnerIcon />}
+        variant="contained"
+      >
+        Venn Diagram
+      </Button>
     </Stack>
   )
 
@@ -80,5 +92,9 @@ function Component(props: Props): ReactElement {
 
   function selectCarrollDiagram(): void {
     dispatchAppState(jump({ type: STATE_TYPE.CARROLL_DIAGRAM_CONFIG, time: 0 }))
+  }
+
+  function selectVennDiagram(): void {
+    dispatchAppState(jump({ type: STATE_TYPE.VENN_DIAGRAM_CONFIG, time: 0 }))
   }
 }

@@ -15,13 +15,13 @@ export function makeDrawIcon(props: Props): DrawIcon {
   const { drawPath, drawPolygon, drawEyes } = props
 
   return function drawCreatureIcon(props: DrawIconProps): void {
-    const { brush, center, color, eyes, eyesScale, pointer, scale, sides } = props
+    const { alpha, brush, center, color, eyes, eyesScale, pointer, scale, sides } = props
 
-    const fill = isDefined(color) ? { color } : { color: 'gold' }
+    const fill = isDefined(color) ? { alpha, color } : undefined
 
     if (isDefined(sides)) {
       drawPolygon({ brush, fill, center, polygon: sides, scale })
-    } else {
+    } else if (isDefined(color)) {
       drawPath({ brush, center: { x: center.x - 36, y: center.y - 36 }, fill, path: BLOB })
     }
 

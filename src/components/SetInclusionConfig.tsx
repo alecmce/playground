@@ -11,12 +11,14 @@ import { SetInclusionStatePicker } from './SetInclusionStatePicker'
 
 
 interface Props {
+  chartType:        CHART_TYPE
   diagram:          SetInclusionChart
   dispatchAppState: (action: AppStateAction) => void
+  name:             string
 }
 
-export function CarrollDiagramConfig(props: Props): ReactElement {
-  const { diagram, dispatchAppState } = props
+export function SetInclusionDiagramConfig(props: Props): ReactElement {
+  const { chartType, diagram, dispatchAppState, name } = props
 
   const [first, setFirst] = useState<SetInclusionState>({})
   const [second, setSecond] = useState<SetInclusionState>({})
@@ -31,7 +33,7 @@ export function CarrollDiagramConfig(props: Props): ReactElement {
         <SetInclusionStatePicker Icon={<SecondCategoryView />} values={second} setValues={setSecond} size={30} />
       </Stack>
       <Box>
-        <IconButton aria-label="Select Carroll Diagram" size="large" onClick={onClick}>
+        <IconButton aria-label={`Select ${name} Diagram`} size="large" onClick={onClick}>
           <PlayArrow />
         </IconButton>
       </Box>
@@ -44,6 +46,6 @@ export function CarrollDiagramConfig(props: Props): ReactElement {
 
   function onClick(): void {
     diagram.init([first, second])
-    dispatchAppState(jump({ chart: CHART_TYPE.CARROLL_DIAGRAM, type: STATE_TYPE.ENTER_PLACES, time: 0 }))
+    dispatchAppState(jump({ chart: chartType, type: STATE_TYPE.ENTER_PLACES, time: 0 }))
   }
 }

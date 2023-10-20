@@ -22,6 +22,7 @@ interface Props {
   size:           Size
   state:          AppState
   target:         Creature | null
+  vennDiagram:    SetInclusionChart | undefined
 }
 
 interface Defined {
@@ -35,7 +36,10 @@ interface Defined {
 
 
 export function draw(props: Props): void {
-  const { barChart, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, radius, size, state, target } = props
+  const {
+    barChart, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, radius, size, state, target,
+    vennDiagram,
+  } = props
 
   if (barChart && carrollDiagram && creatures && drawingApi && pieChart && pushApart) {
     draw({ carrollDiagram, barChart, creatures, drawingApi, pieChart, pushApart })
@@ -54,7 +58,6 @@ export function draw(props: Props): void {
     function applyChartState(chart: Chart<any>): void {
       const p = time / duration
       switch (type) {
-        case STATE_TYPE.BAR_CHART_CONFIG: return drawFree()
         case STATE_TYPE.CLOSE_CHART:      return drawExitChart(chart, quadInOut(p))
         case STATE_TYPE.ENTER_OVERLAY:    return drawEnterChartOverlay(chart, quadOut(p))
         case STATE_TYPE.ENTER_PLACES:     return drawEnterChart(chart, quadInOut(p))
@@ -62,7 +65,7 @@ export function draw(props: Props): void {
         case STATE_TYPE.FREE:             return drawFree()
         case STATE_TYPE.FULL_OVERLAY:     return drawChartOverlay(chart, )
         case STATE_TYPE.LEAVE_PLACES:     return drawExitChart(chart, quadInOut(p))
-        case STATE_TYPE.PIE_CHART_CONFIG: return drawFree()
+        default:                          return drawFree()
       }
     }
 
@@ -111,6 +114,7 @@ export function draw(props: Props): void {
         case CHART_TYPE.BAR_CHART:       return barChart
         case CHART_TYPE.PIE_CHART:       return pieChart
         case CHART_TYPE.CARROLL_DIAGRAM: return carrollDiagram
+        case CHART_TYPE.VENN_DIAGRAM:    return vennDiagram
         default:                         return undefined
       }
     }
