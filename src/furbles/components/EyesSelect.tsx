@@ -1,5 +1,5 @@
 import { ReactElement, useMemo } from 'react'
-import { EYES } from 'src/constants'
+import { EYES } from 'src/furbles/constants'
 import { EyesIcon } from './Icons'
 import { NumberOfEyes } from './NumberOfEyes'
 import { SelectGroup } from './SelectGroup'

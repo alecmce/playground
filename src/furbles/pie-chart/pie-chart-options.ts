@@ -1,7 +1,7 @@
 import { Assignment } from 'src/model/charts'
 import { Categorized, CategoryValues, Creature } from 'src/model/creatures'
 import { ArcPlace } from 'src/model/geometry'
-import { getDistance } from '../lib/math-utils'
+import { getDistance } from 'src/lib/math-utils'
 
 
 interface Props {

@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
+import { assignOptions } from 'src/lib/assign-options'
+import { categorize } from 'src/lib/categorize'
 import { makeColorScale } from 'src/lib/color-scale'
+import { quadInOut } from 'src/lib/ease'
 import { rectangleContainsPoint } from 'src/lib/rectangle-contains-point'
 import { Assignment, BackgroundDrawProps, CategorisationChart, MainDrawProps } from 'src/model/charts'
 import { CATEGORY, CategoryValues, Creature } from 'src/model/creatures'
@@ -7,9 +10,6 @@ import { DrawingApi, Fill } from 'src/model/drawing'
 import { Point, Rectangle, RectanglePlace } from 'src/model/geometry'
 import { POINTER_ACTION } from 'src/model/interaction'
 import { makeChartState } from 'src/util/chart-state'
-import { assignOptions } from '../lib/assign-options'
-import { categorize } from '../lib/categorize'
-import { quadInOut } from '../lib/ease'
 import { BarChartConfig, CategorizedBarPlaces, makeCategoryBars } from './bar-chart-config'
 
 interface Props {

@@ -1,5 +1,5 @@
 import { ReactElement, useMemo } from 'react'
-import { COLORS } from 'src/constants'
+import { COLORS } from 'src/furbles/constants'
 import { ColorIcon } from './ColorIcon'
 import { ColorsIcon } from './Icons'
 import { SelectGroup } from './SelectGroup'

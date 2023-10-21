@@ -1,7 +1,7 @@
 import { Button, Modal, ModalDialog, Stack, Typography } from '@mui/joy'
 import { produce } from 'immer'
 import { Dispatch, ReactElement, SetStateAction, useRef } from 'react'
-import { DEFAULT_COLORS, DEFAULT_EYES, DEFAULT_SIDES } from 'src/constants'
+import { DEFAULT_COLORS, DEFAULT_EYES, DEFAULT_SIDES } from 'src/furbles/constants'
 import { PopulationModel } from 'src/model/population'
 import { isDefined } from 'src/util/object-util'
 import { ColorToggleChips } from './ColorToggleChips'

@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/joy'
 import Box from '@mui/joy/Box'
 import { ReactElement, useMemo } from 'react'
-import { SIDES } from 'src/constants'
+import { SIDES } from 'src/furbles/constants'
 import { SidesIcon } from './Icons'
 import { NumberOfSides } from './NumberOfSides'
 import { ToggleChips } from './ToggleChips'

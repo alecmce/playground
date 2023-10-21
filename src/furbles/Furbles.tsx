@@ -1,34 +1,33 @@
 import { Fragment, ReactElement, useCallback, useState } from 'react'
-import './App.css'
+import { draw } from '../draw'
+import { useDrawingApi } from '../draw/drawing-api'
+import { useAppState } from '../lib/app-state'
+import { useCreatureFactory } from '../lib/creature-factory'
+import { useCreatures } from '../lib/creatures'
+import { usePushApart } from '../lib/push-apart'
+import { useCreaturesDrag } from '../lib/use-creatures-drag'
+import { useRadius } from '../lib/use-radius'
+import { useTick } from '../lib/use-tick'
+import { useWindowSize } from '../lib/use-window-size'
+import { iterate } from '../model/app-state'
+import { Creature } from '../model/creatures'
+import { Point } from '../model/geometry'
+import { PopulationModel } from '../model/population'
+import { useBounds } from '../use-bounds'
+import { useCurrentChart } from '../use-current-chart'
+import { useInitCanvas } from '../use-init-canvas'
 import { useBarChart } from './bar-chart/bar-chart'
 import { useCarrollDiagram } from './carroll-diagram/carroll-diagram'
 import { Ui } from './components/UI'
 import { makeDefaultPopulation } from './constants'
-import { draw } from './draw'
-import { useDrawingApi } from './draw/drawing-api'
-import { useAppState } from './lib/app-state'
-import { useCreatureFactory } from './lib/creature-factory'
-import { useCreatures } from './lib/creatures'
-import { usePushApart } from './lib/push-apart'
-import { useCreaturesDrag } from './lib/use-creatures-drag'
-import { useRadius } from './lib/use-radius'
-import { useTick } from './lib/use-tick'
-import { useWindowSize } from './lib/use-window-size'
-import { iterate } from './model/app-state'
-import { Creature } from './model/creatures'
-import { Point } from './model/geometry'
-import { PopulationModel } from './model/population'
 import { usePieChart } from './pie-chart/pie-chart'
-import { useBounds } from './use-bounds'
-import { useCurrentChart } from './use-current-chart'
-import { useInitCanvas } from './use-init-canvas'
 import { useVennDiagram } from './venn-diagram/venn-diagram'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const DENSITY = 0.5 as const
 const MAX_COUNT = 400 as const
 
-export function App(): ReactElement {
+export function Furbles(): ReactElement {
   const [showDialog, setShowDialog] = useState(false)
 
   const [population, setPopulation] = useState<PopulationModel>(makeDefaultPopulation())

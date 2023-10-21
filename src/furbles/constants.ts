@@ -1,5 +1,5 @@
-import { getRandomSeed } from './lib/seeded-random'
-import { PopulationModel } from './model/population'
+import { getRandomSeed } from '../lib/seeded-random'
+import { PopulationModel } from '../model/population'
 
 export function makeDefaultPopulation(): PopulationModel {
   return {
