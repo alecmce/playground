@@ -20,11 +20,15 @@ export function BarChartConfig(props: Props): ReactElement {
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center', alignItems: 'center' }}>
-      <BarChartIcon />
-      <CloseButton dispatchAppState={dispatchAppState} />
+      <CloseButton onClose={onClose} />
+      <BarChartIcon color="info" />
       <CategoryOptions aria-label="bar-chart" categories={categories} setCategories={setCategories} onClick={onClick} />
     </Stack>
   )
+
+  function onClose(): void {
+    dispatchAppState(jump({ type: STATE_TYPE.FREE, time: 0 }))
+  }
 
   function onClick(): void {
     barChart.init(Array.from(categories))

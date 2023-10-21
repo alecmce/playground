@@ -1,4 +1,3 @@
-import CloseIcon from '@mui/icons-material/Close'
 import Pause from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import { Stack } from '@mui/joy'
@@ -8,6 +7,7 @@ import { styled } from '@mui/material/styles'
 import { ReactElement, ReactNode, useMemo } from 'react'
 import { STATE_DURATIONS } from 'src/lib/app-state'
 import { AppState, AppStateAction, STATE_TYPE, jump, togglePause } from 'src/model/app-state'
+import { CloseButton } from './CloseButton'
 
 interface Props {
   state:            AppState
@@ -40,9 +40,7 @@ export function ChartSlider(props: Props): ReactElement {
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 1, alignItems: 'center' }}>
-      <IconButton aria-label="Close current chart" onClick={onClose}>
-        <CloseIcon />
-      </IconButton>
+      <CloseButton onClose={onClose} />
       <ImmediateSlider
         aria-label="Volume"
         value={time}
@@ -51,7 +49,7 @@ export function ChartSlider(props: Props): ReactElement {
         onChange={onChange}
         marks={marks}
       />
-      <IconButton aria-label="Toggle play state" onClick={isPlay ? onPause : onPlay}>
+      <IconButton aria-label="Toggle play state" onClick={isPlay ? onPause : onPlay} variant="solid" color="primary">
         { isPlay ? <Pause /> : <PlayArrow /> }
       </IconButton>
     </Stack>

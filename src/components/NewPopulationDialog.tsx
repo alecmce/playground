@@ -4,11 +4,11 @@ import { Dispatch, ReactElement, SetStateAction, useRef } from 'react'
 import { DEFAULT_COLORS, DEFAULT_EYES, DEFAULT_SIDES } from 'src/constants'
 import { PopulationModel } from 'src/model/population'
 import { isDefined } from 'src/util/object-util'
-import { ColorToggles } from './ColorToggles'
-import { EyesToggles } from './EyesToggles'
+import { ColorToggleChips } from './ColorToggleChips'
+import { EyesToggleChips } from './EyesToggleChips'
 import { PopulationCountSlider } from './PopulationCountSlider'
 import { RandomizeButton } from './RandomizeButton'
-import { SidesToggles } from './SidesToggles'
+import { SidesToggleChips } from './SidesToggleChips'
 
 interface Props {
   population:    PopulationModel
@@ -33,9 +33,9 @@ export function NewPopulationDialog(props: Props): ReactElement {
             New Population
           </Typography>
           <PopulationCountSlider population={population} setPopulation={setPopulation} maxCount={maxCount} />
-          <ColorToggles value={colors} onChange={onColorChange} size={SIZE} />
-          <EyesToggles value={eyes} onChange={onEyesChange} size={SIZE} />
-          <SidesToggles value={sides} onChange={onSidesChange} size={SIZE} />
+          <ColorToggleChips value={colors} onChange={onColorChange} size={SIZE} />
+          <EyesToggleChips value={eyes} onChange={onEyesChange} size={SIZE} />
+          <SidesToggleChips value={sides} onChange={onSidesChange} size={SIZE} />
           <RandomizeButton setPopulation={setPopulation} />
           <Stack spacing={1} direction="row" justifyContent="flex-end">
             <Button color="danger" onClick={onCancel}>Cancel</Button>

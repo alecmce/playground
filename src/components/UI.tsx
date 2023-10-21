@@ -50,7 +50,7 @@ function Component(props: RenderedProps): ReactElement {
   const { type } = state
 
   return (
-    <Box sx={{ position: 'absolute', bottom: 0, display: 'flex', justifyContent: 'center', width: '100%' }}>
+    <Box sx={{ position: 'absolute', bottom: 20, display: 'flex', justifyContent: 'center', width: '100%' }}>
       <Card variant="soft" sx={{ '&': GLASS_SX }}>
         <CardContent sx={{
           '&.MuiCardContent-root': { backgroundColor: 'transparent' },

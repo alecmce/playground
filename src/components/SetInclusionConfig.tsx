@@ -25,7 +25,7 @@ export function SetInclusionDiagramConfig(props: Props): ReactElement {
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center', alignItems: 'center' }}>
-      <CloseButton dispatchAppState={dispatchAppState} />
+      <CloseButton onClose={onClose} />
       <Stack spacing={2} direction="column" sx={{ mb: 0, justifyContent: 'center' }}>
         <SetInclusionStatePicker Icon={FirstIcon} values={first} setValues={setFirst} size={30} />
         <SetInclusionStatePicker Icon={SecondIcon} values={second} setValues={setSecond} size={30} />
@@ -33,6 +33,10 @@ export function SetInclusionDiagramConfig(props: Props): ReactElement {
       <GoButton label={`Select ${name} Diagram`} onClick={onClick} />
     </Stack>
   )
+
+  function onClose(): void {
+    dispatchAppState(jump({ type: STATE_TYPE.FREE, time: 0 }))
+  }
 
   function onClick(): void {
     diagram.init([first, second])

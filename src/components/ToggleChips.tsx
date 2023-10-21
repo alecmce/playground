@@ -1,12 +1,9 @@
 import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
-import { Chip, Stack, Typography } from '@mui/joy'
-import Box from '@mui/joy/Box'
-import { ReactElement, useMemo, useRef } from 'react'
+import { Chip, Stack } from '@mui/joy'
+import { ReactElement, useMemo } from 'react'
 
 interface Props {
-  Icon:     ReactElement
-  label:    string
   onChange: (value: string | string[] | null) => void
   Option:   (props: OptionRenderProps) => ReactElement | null
   options:  OptionData[]
@@ -24,33 +21,23 @@ interface OptionRenderProps {
   size:  number
 }
 
-export function TogglesGroup(props: Props): ReactElement {
-  const { Icon, label, onChange, Option, options, size, value } = props
-
-  const CachedIcon = useRef(Icon)
+export function ToggleChips(props: Props): ReactElement {
+  const { onChange, Option, options, size, value } = props
 
   return (
-    <Box sx={{ mb: 1 }} >
-      <Typography id={label} gutterBottom>
-        { label }
-      </Typography>
-      <Stack spacing={1} direction="row">
-        { CachedIcon.current }
-        <Stack direction="row" flexWrap="wrap">
-          { options.map(({ name, value: chipValue }) => (
-            <ToggleChip
-              chipValue={chipValue}
-              key={name}
-              name={name}
-              onChange={onChange}
-              Option={Option}
-              size={size}
-              value={value}
-            />
-          )) }
-        </Stack>
-      </Stack>
-    </Box>
+    <Stack direction="row" flexWrap="wrap">
+      { options.map(({ name, value: chipValue }) => (
+        <ToggleChip
+          chipValue={chipValue}
+          key={name}
+          name={name}
+          onChange={onChange}
+          Option={Option}
+          size={size}
+          value={value}
+        />
+      )) }
+    </Stack>
   )
 }
 

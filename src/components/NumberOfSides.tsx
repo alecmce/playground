@@ -7,6 +7,7 @@ import { Polygon } from 'src/model/geometry'
 import { useInitCanvas } from 'src/use-init-canvas'
 
 const BRUSH = { alpha: 1, color: 'black', width: 2 } as const
+const RESOLUTION = 2
 
 interface Props {
   value: string
@@ -16,13 +17,17 @@ interface Props {
 export function NumberOfSides(props: Props): ReactElement | null {
   const { value, size } = props
 
+  const resSize = RESOLUTION * size
+  const rotation = useMemo(() => Math.random() * 2 * Math.PI, [])
+
   const polygon = useMemo(() => {
     return value ? makePolygon() : undefined
 
     function makePolygon(): Polygon {
       return makeRegularPolygon({
         center: { x: 0, y: 0 },
-        radius: size / 2,
+        radius: resSize,
+        rotation,
         sides: parseInt(value, 10),
       })
     }
@@ -35,13 +40,13 @@ export function NumberOfSides(props: Props): ReactElement | null {
   }, [context])
 
   if (drawPolygon && polygon) {
-    const center = { x: size / 2, y: size / 2 }
-    const scale = size / 70
+    const center = { x: resSize / 2, y: resSize / 2 }
+    const scale = size / 80
     drawPolygon({ center, polygon, scale })
   }
 
   return value
-    ? <canvas ref={setCanvas} width={size} height={size} style={{width: size, height: size }} />
+    ? <canvas ref={setCanvas} width={resSize} height={resSize} style={{width: size, height: size }} />
     : null
 }
 
