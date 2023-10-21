@@ -30,6 +30,7 @@ export function EyesToggleChips(props: Props): ReactElement {
           {...props}
           Option={NumberOfEyes}
           options={activeOptions}
+          multiline={true}
         />
       </Stack>
     </Box>

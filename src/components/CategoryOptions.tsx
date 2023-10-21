@@ -1,21 +1,16 @@
-import { Checkbox, FormControlLabel } from '@mui/material'
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { ReactElement } from 'react'
 
-import Palette from '@mui/icons-material/Palette'
-import PaletteOutlined from '@mui/icons-material/PaletteOutlined'
-import Pentagon from '@mui/icons-material/Pentagon'
-import PentagonOutlined from '@mui/icons-material/PentagonOutlined'
 import PlayArrow from '@mui/icons-material/PlayArrow'
-import Visibility from '@mui/icons-material/Visibility'
-import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined'
 import { IconButton, Stack } from '@mui/joy'
-import { CATEGORY } from 'src/model/creatures'
+import { CATEGORY, CategoryOptionList } from 'src/model/creatures'
+import { ColorsIcon, EyesIcon, SidesIcon } from './Icons'
+import { OptionRenderProps, ToggleChips } from './ToggleChips'
 
 
 interface Props {
   ['aria-label']: string
-  categories:     Set<CATEGORY>
-  setCategories:  Dispatch<SetStateAction<Set<CATEGORY>>>
+  categories:     CATEGORY[]
+  setCategories:  (categories: CATEGORY[]) => void
   onClick:        VoidFunction
 }
 
@@ -24,29 +19,12 @@ export function CategoryOptions(props: Props): ReactElement {
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
-      <FormControlLabel
-        checked={categories.has(CATEGORY.COLOR)}
-        control={ <Checkbox icon={<PaletteOutlined />} checkedIcon={<Palette />} />}
-        label="Colour"
-        labelPlacement="end"
-        color="secondary"
-        onChange={(_, isChecked) => toggleCategory(CATEGORY.COLOR, isChecked)}
-      />
-      <FormControlLabel
-        checked={categories.has(CATEGORY.SIDES)}
-        control={ <Checkbox icon={<PentagonOutlined />} checkedIcon={<Pentagon />} />}
-        label="Shape"
-        labelPlacement="end"
-        color="secondary"
-        onChange={(_, isChecked) => toggleCategory(CATEGORY.SIDES, isChecked)}
-      />
-      <FormControlLabel
-        checked={categories.has(CATEGORY.EYES)}
-        control={ <Checkbox icon={<VisibilityOutlined />} checkedIcon={<Visibility />} />}
-        label="Eyes"
-        labelPlacement="end"
-        color="secondary"
-        onChange={(_, isChecked) => toggleCategory(CATEGORY.EYES, isChecked)}
+      <ToggleChips<CATEGORY>
+        onChange={toggleCategory}
+        Option={Option}
+        options={CategoryOptionList}
+        size={50}
+        value={categories}
       />
       <IconButton aria-label={props['aria-label']} onClick={onClick}>
         <PlayArrow />
@@ -54,14 +32,28 @@ export function CategoryOptions(props: Props): ReactElement {
     </Stack>
   )
 
-  function toggleCategory(category: CATEGORY, isChecked: boolean): void {
-    setCategories(categories => {
-      const set = new Set(categories)
-      isChecked ? set.add(category) : set.delete(category)
-      if (set.size === 0) {
-        set.add(CATEGORY.COLOR)
+  function toggleCategory(categories: CATEGORY | CATEGORY[] | null): void {
+    setCategories(getValue())
+
+    function getValue(): CATEGORY[] {
+      if (Array.isArray(categories)) {
+        return categories
+      } else if (categories) {
+        return [categories]
+      } else {
+        return []
       }
-      return set
-    })
+    }
+  }
+}
+
+function Option(props: OptionRenderProps<CATEGORY>): ReactElement | null {
+  const { value } = props
+
+  switch (value) {
+    case CATEGORY.COLOR: return <ColorsIcon color="primary" />
+    case CATEGORY.SIDES: return <SidesIcon color="primary" />
+    case CATEGORY.EYES:  return <EyesIcon color="primary" />
+    default:             return null
   }
 }

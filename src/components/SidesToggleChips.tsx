@@ -30,6 +30,7 @@ export function SidesToggleChips(props: Props): ReactElement {
           {...props}
           Option={NumberOfSides}
           options={activeOptions}
+          multiline={true}
         />
       </Stack>
     </Box>

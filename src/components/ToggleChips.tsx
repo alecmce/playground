@@ -3,26 +3,27 @@ import Close from '@mui/icons-material/Close'
 import { Chip, Stack } from '@mui/joy'
 import { ReactElement, useMemo } from 'react'
 
-interface Props {
-  onChange: (value: string | string[] | null) => void
-  Option:   (props: OptionRenderProps) => ReactElement | null
-  options:  OptionData[]
-  size:     number
-  value:    string | string[] | null
+interface Props<T extends string = string> {
+  multiline?: boolean
+  onChange:   (value: T | T[] | null) => void
+  Option:     (props: OptionRenderProps<T>) => ReactElement | null
+  options:    OptionData<T>[]
+  size:       number
+  value:      T | T[] | null
 }
 
-interface OptionData {
-  value: string
+export interface OptionData<T extends string = string> {
   name:  string
+  value: T
 }
 
-interface OptionRenderProps {
-  value: string
+export interface OptionRenderProps<T> {
   size:  number
+  value: T
 }
 
-export function ToggleChips(props: Props): ReactElement {
-  const { onChange, Option, options, size, value } = props
+export function ToggleChips<T extends string = string>(props: Props<T>): ReactElement {
+  const { multiline, onChange, Option, options, size, value } = props
 
   return (
     <Stack direction="row" flexWrap="wrap">
@@ -30,6 +31,7 @@ export function ToggleChips(props: Props): ReactElement {
         <ToggleChip
           chipValue={chipValue}
           key={name}
+          multiline={multiline}
           name={name}
           onChange={onChange}
           Option={Option}
@@ -41,30 +43,30 @@ export function ToggleChips(props: Props): ReactElement {
   )
 }
 
-interface ToggleChipProps {
-  chipValue: string
-  name:      string
-  onChange:  (value: string | string[] | null) => void
-  Option:    (props: OptionRenderProps) => ReactElement | null
-  size:      number
-  value:     string | string[] | null
+interface ToggleChipProps<T extends string = string> {
+  chipValue:  T
+  multiline?: boolean
+  name:       string
+  onChange:   (value: T | T[] | null) => void
+  Option:     (props: OptionRenderProps<T>) => ReactElement | null
+  size:       number
+  value:      T | T[] | null
 }
 
-function ToggleChip(props: ToggleChipProps): ReactElement {
-  const { name, onChange, Option, size, chipValue, value } = props
+function ToggleChip<T extends string = string>(props: ToggleChipProps<T>): ReactElement {
+  const { chipValue, multiline, name, onChange, Option, size, value } = props
 
-  const endDecorator = useMemo(() => {
+  const isSelected = useMemo(() => {
     return chipValue === value || Array.isArray(value) && value.includes(chipValue)
-      ? <Check fontSize="small" />
-      : <Close fontSize="small" />
   }, [chipValue, value])
 
   return (
     <Chip
-      endDecorator={endDecorator}
+      endDecorator={isSelected ? <Check fontSize="small" /> : <Close fontSize="small" />}
       onClick={onClick}
       startDecorator={<Option value={chipValue} size={size} />}
-      sx={{ marginBottom: '4px', marginRight: '4px' }}
+      sx={{ marginBottom: multiline ? '4px' : 0, marginRight: '4px' }}
+      color={isSelected ? 'primary' : 'neutral'}
     >
       {name}
     </Chip>
@@ -74,7 +76,7 @@ function ToggleChip(props: ToggleChipProps): ReactElement {
     onChange(toggleValue())
   }
 
-  function toggleValue(): string | string[] | null {
+  function toggleValue(): T | T[] | null {
     if (Array.isArray(value)) {
       return value.includes(chipValue) ? value.filter(v => v !== chipValue) : [...value, chipValue]
     } else {

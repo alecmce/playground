@@ -16,15 +16,24 @@ interface Props {
 
 export function BarChartConfig(props: Props): ReactElement {
   const { barChart, dispatchAppState } = props
-  const [categories, setCategories] = useState<Set<CATEGORY>>(new Set([CATEGORY.COLOR]))
+  const [categories, setCategories] = useState<CATEGORY[]>([CATEGORY.COLOR])
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center', alignItems: 'center' }}>
       <CloseButton onClose={onClose} />
-      <BarChartIcon color="info" />
-      <CategoryOptions aria-label="bar-chart" categories={categories} setCategories={setCategories} onClick={onClick} />
+      <BarChartIcon color="warning" />
+      <CategoryOptions
+        aria-label="bar-chart"
+        categories={categories}
+        setCategories={wrappedSetCategories}
+        onClick={onClick}
+      />
     </Stack>
   )
+
+  function wrappedSetCategories(newCategories: CATEGORY[]): void {
+    setCategories(newCategories.length ? newCategories : [CATEGORY.COLOR])
+  }
 
   function onClose(): void {
     dispatchAppState(jump({ type: STATE_TYPE.FREE, time: 0 }))

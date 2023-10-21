@@ -23,6 +23,12 @@ export enum CATEGORY {
   SIDES = 'sides',
 }
 
+export const CategoryOptionList = [
+  { name: 'Colour', value: CATEGORY.COLOR },
+  { name: 'Eyes',   value: CATEGORY.EYES  },
+  { name: 'Sides',  value: CATEGORY.SIDES },
+]
+
 export interface Categorized<Values> {
   creatures: Creature[]
   values:    Values

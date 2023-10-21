@@ -1,15 +1,15 @@
 import { Box, Card, CardContent } from '@mui/joy'
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
-import { AppState, AppStateAction, CHART_TYPE, STATE_TYPE } from 'src/model/app-state'
+import { AppState, AppStateAction, STATE_TYPE } from 'src/model/app-state'
 import { CategorisationChart, SetInclusionChart } from 'src/model/charts'
 import { PopulationModel } from 'src/model/population'
 import { BarChartConfig } from './BarChartConfig'
+import { CarrollDiagramConfig } from './CarrollDiagramConfig'
 import { ChartSlider } from './ChartSlider'
 import { FeatureChoice } from './FeatureChoice'
-import { CarollDiagramSecondIcon, CarrollDiagramFirstIcon, VennDiagramLeftIcon, VennDiagramRightIcon } from './Icons'
 import { NewPopulationDialog } from './NewPopulationDialog'
 import { PieChartConfig } from './PieChartConfig'
-import { SetInclusionDiagramConfig } from './SetInclusionConfig'
+import { VennDiagramConfig } from './VennDiagramConfig'
 import { GLASS_SX } from './glass-sx'
 
 
@@ -94,33 +94,4 @@ function Component(props: RenderedProps): ReactElement {
       </Fragment>
     )
   }
-}
-
-interface SetInclusionProps {
-  diagram:          SetInclusionChart
-  dispatchAppState: (action: AppStateAction) => void
-}
-
-function CarrollDiagramConfig(props: SetInclusionProps): ReactElement {
-  return (
-    <SetInclusionDiagramConfig
-      {...props}
-      name="Carroll"
-      FirstIcon={<CarrollDiagramFirstIcon />}
-      SecondIcon={<CarollDiagramSecondIcon />}
-      chartType={CHART_TYPE.CARROLL_DIAGRAM}
-    />
-  )
-}
-
-function VennDiagramConfig(props: SetInclusionProps): ReactElement {
-  return (
-    <SetInclusionDiagramConfig
-      {...props}
-      name="Venn"
-      chartType={CHART_TYPE.VENN_DIAGRAM}
-      FirstIcon={<VennDiagramLeftIcon />}
-      SecondIcon={<VennDiagramRightIcon />}
-    />
-  )
 }

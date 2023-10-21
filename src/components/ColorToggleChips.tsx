@@ -28,6 +28,7 @@ export function ColorToggleChips(props: Props): ReactElement {
           { ...props}
           Option={ColorIcon}
           options={activeOptions}
+          multiline={true}
         />
       </Stack>
     </Box>

@@ -16,15 +16,24 @@ interface Props {
 
 export function PieChartConfig(props: Props): ReactElement {
   const { pieChart, dispatchAppState } = props
-  const [categories, setCategories] = useState<Set<CATEGORY>>(new Set([CATEGORY.COLOR]))
+  const [categories, setCategories] = useState<CATEGORY[]>([CATEGORY.COLOR])
 
   return (
     <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center', alignItems: 'center' }}>
       <CloseButton onClose={onClose} />
-      <PieChartIcon />
-      <CategoryOptions aria-label="pie-chart" categories={categories} setCategories={setCategories} onClick={onClick} />
+      <PieChartIcon color="warning" />
+      <CategoryOptions
+        aria-label="pie-chart"
+        categories={categories}
+        setCategories={wrappedSetCategories}
+        onClick={onClick}
+      />
     </Stack>
   )
+
+  function wrappedSetCategories(newCategories: CATEGORY[]): void {
+    setCategories(newCategories.length ? newCategories : [CATEGORY.COLOR])
+  }
 
   function onClose(): void {
     dispatchAppState(jump({ type: STATE_TYPE.FREE, time: 0 }))
