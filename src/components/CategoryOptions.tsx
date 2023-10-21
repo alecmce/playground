@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel, IconButton, Stack } from '@mui/material'
+import { Checkbox, FormControlLabel } from '@mui/material'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import Palette from '@mui/icons-material/Palette'
@@ -8,6 +8,7 @@ import PentagonOutlined from '@mui/icons-material/PentagonOutlined'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined'
+import { IconButton, Stack } from '@mui/joy'
 import { CATEGORY } from 'src/model/creatures'
 
 
@@ -47,7 +48,7 @@ export function CategoryOptions(props: Props): ReactElement {
         color="secondary"
         onChange={(_, isChecked) => toggleCategory(CATEGORY.EYES, isChecked)}
       />
-      <IconButton aria-label={props['aria-label']} size="large" onClick={onClick}>
+      <IconButton aria-label={props['aria-label']} onClick={onClick}>
         <PlayArrow />
       </IconButton>
     </Stack>

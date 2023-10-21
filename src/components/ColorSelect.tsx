@@ -1,7 +1,7 @@
-import ColorLensIcon from '@mui/icons-material/ColorLens'
 import { ReactElement, useMemo } from 'react'
 import { COLORS } from 'src/constants'
 import { ColorIcon } from './ColorIcon'
+import { ColorsIcon } from './Icons'
 import { SelectGroup } from './SelectGroup'
 
 interface Props {
@@ -19,7 +19,7 @@ export function ColorSelect(props: Props): ReactElement {
   return (
     <SelectGroup
       {...props}
-      Icon={<ColorLensIcon />}
+      Icon={<ColorsIcon color="info" />}
       name="Colour"
       Option={ColorIcon}
       options={activeOptions}

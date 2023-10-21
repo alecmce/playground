@@ -1,9 +1,12 @@
 import { ReactElement, useState } from 'react'
 
+import { Stack } from '@mui/joy'
 import { AppStateAction, CHART_TYPE, STATE_TYPE, jump } from 'src/model/app-state'
 import { CategorisationChart } from 'src/model/charts'
 import { CATEGORY } from 'src/model/creatures'
 import { CategoryOptions } from './CategoryOptions'
+import { CloseButton } from './CloseButton'
+import { BarChartIcon } from './Icons'
 
 
 interface Props {
@@ -16,7 +19,11 @@ export function BarChartConfig(props: Props): ReactElement {
   const [categories, setCategories] = useState<Set<CATEGORY>>(new Set([CATEGORY.COLOR]))
 
   return (
-    <CategoryOptions aria-label="bar-chart" categories={categories} setCategories={setCategories} onClick={onClick} />
+    <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center', alignItems: 'center' }}>
+      <BarChartIcon />
+      <CloseButton dispatchAppState={dispatchAppState} />
+      <CategoryOptions aria-label="bar-chart" categories={categories} setCategories={setCategories} onClick={onClick} />
+    </Stack>
   )
 
   function onClick(): void {

@@ -47,12 +47,11 @@ export function makeVennCircles(props: Props): VennCircles {
 
   const { first, intersection } = circles
   const second = first.map(toSecondCircle)
-  const excluded = getExcluded((first[0] ?? intersection[0]).radius)
+  const excluded = getExcluded()
   return { first, intersection, second, excluded }
 
   function getCircles(count: number): SubVennCircles {
     const circles = makeFibonacciCircles({ center: { x: fx, y: fy }, count, radius })
-
     const intersection = circles.filter(isInsideOtherCircle)
     const first = circles.filter(isOutsideOtherCircle)
     return { first, intersection }
@@ -75,10 +74,11 @@ export function makeVennCircles(props: Props): VennCircles {
     return { center: { x: sx + dx, y: sy + dy }, radius }
   }
 
-  function getExcluded(cRadius: number): Circle[] {
+  function getExcluded(): Circle[] {
+    const cRadius = getRadius()
     const bRadius = radius + cRadius
     const theta = 2 * Math.asin(cRadius / bRadius)
-    const start = -3 * Math.PI / 4
+    const start = -5 * Math.PI / 8
     const count = Math.floor(Math.PI / theta)
 
     return Array.from({ length: count }, (_, i) => {
@@ -90,5 +90,16 @@ export function makeVennCircles(props: Props): VennCircles {
         { center: { x: sx - dx, y: sy + dy }, radius: cRadius }
       ]
     }).flat()
+  }
+
+  function getRadius(): number {
+    const template = first[0] ?? intersection[0]
+    return template ? template.radius : getEdgeCaseRadius()
+  }
+
+  function getEdgeCaseRadius(): number {
+    const theta = 2 * Math.PI / count
+    const value = Math.sin(theta / 2)
+    return (-radius * value) / (value - 1)
   }
 }

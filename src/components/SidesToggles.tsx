@@ -1,7 +1,7 @@
 import PentagonIcon from '@mui/icons-material/Pentagon'
 import { ReactElement, useMemo } from 'react'
 import { SIDES } from 'src/constants'
-import { SidesIcon } from './SidesIcon'
+import { NumberOfSides } from './NumberOfSides'
 import { TogglesGroup } from './TogglesGroup'
 
 interface Props {
@@ -21,7 +21,7 @@ export function SidesToggles(props: Props): ReactElement {
       {...props}
       Icon={<PentagonIcon />}
       label="Sides"
-      Option={SidesIcon}
+      Option={NumberOfSides}
       options={activeOptions}
     />
   )

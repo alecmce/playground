@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { Button, Modal, ModalDialog, Stack, Typography } from '@mui/joy'
 import { produce } from 'immer'
 import { Dispatch, ReactElement, SetStateAction, useRef } from 'react'
 import { DEFAULT_COLORS, DEFAULT_EYES, DEFAULT_SIDES } from 'src/constants'
@@ -17,7 +17,7 @@ interface Props {
   maxCount:      number
 }
 
-const SIZE = 50
+const SIZE = 30
 
 export function NewPopulationDialog(props: Props): ReactElement {
   const { onClose, population, setPopulation, maxCount } = props
@@ -26,25 +26,24 @@ export function NewPopulationDialog(props: Props): ReactElement {
   const original = useRef<PopulationModel>(population)
 
   return (
-    <Dialog
-      open={true}
-      onClose={onClose}
-      fullWidth
-      maxWidth="sm"
-    >
-      <DialogTitle>New Population</DialogTitle>
-      <DialogContent>
-        <PopulationCountSlider population={population} setPopulation={setPopulation} maxCount={maxCount} />
-        <ColorToggles value={colors} onChange={onColorChange} size={SIZE} />
-        <EyesToggles value={eyes} onChange={onEyesChange} size={SIZE} />
-        <SidesToggles value={sides} onChange={onSidesChange} size={SIZE} />
-        <RandomizeButton setPopulation={setPopulation} />
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={onCancel} color="secondary">Cancel</Button>
-        <Button autoFocus onClick={onClose}>OK</Button>
-      </DialogActions>
-    </Dialog>
+    <Modal open={true}>
+      <ModalDialog>
+        <Stack>
+          <Typography level="h2" gutterBottom>
+            New Population
+          </Typography>
+          <PopulationCountSlider population={population} setPopulation={setPopulation} maxCount={maxCount} />
+          <ColorToggles value={colors} onChange={onColorChange} size={SIZE} />
+          <EyesToggles value={eyes} onChange={onEyesChange} size={SIZE} />
+          <SidesToggles value={sides} onChange={onSidesChange} size={SIZE} />
+          <RandomizeButton setPopulation={setPopulation} />
+          <Stack spacing={1} direction="row" justifyContent="flex-end">
+            <Button color="danger" onClick={onCancel}>Cancel</Button>
+            <Button autoFocus color="primary" onClick={onClose}>OK</Button>
+          </Stack>
+        </Stack>
+      </ModalDialog>
+    </Modal>
   )
 
   function onColorChange(value: string | string[] | null): void {

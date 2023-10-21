@@ -1,8 +1,8 @@
-import Groups3Icon from '@mui/icons-material/Groups3'
-import { Box, Grid, Input, Slider, Typography } from '@mui/material'
+import { Box, Input, Slider, Stack, Typography } from '@mui/joy'
 import { produce } from 'immer'
 import { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react'
 import { PopulationModel } from 'src/model/population'
+import { PopulationIcon } from './Icons'
 
 interface Props {
   population:    PopulationModel
@@ -18,31 +18,25 @@ export function PopulationCountSlider(props: Props): ReactElement {
 
   return (
     <Box sx={{ mb: 1 }}>
-      <Typography id={ID} gutterBottom>
+      <Typography gutterBottom>
         Count
       </Typography>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item>
-          <Groups3Icon />
-        </Grid>
-        <Grid item xs>
-          <Slider
-            min={1}
-            max={maxCount}
-            value={count}
-            onChange={onSliderChange}
-            aria-labelledby={ID}
-          />
-        </Grid>
-        <Grid item>
-          <Input
-            value={count}
-            size="small"
-            onChange={onInputChange}
-            inputProps={{ 'aria-labelledby': ID, max: maxCount, min: 1, step: 5, type: 'number' }}
-          />
-        </Grid>
-      </Grid>
+      <Stack spacing={2} direction="row" sx={{ mb: 1, alignItems: 'center' }}>
+        <PopulationIcon />
+        <Slider
+          min={1}
+          max={maxCount}
+          value={count}
+          onChange={onSliderChange}
+          aria-labelledby={ID}
+        />
+        <Input
+          value={count}
+          onChange={onInputChange}
+          slotProps={{ input: { max: maxCount, min: 1, step: 1, type: 'number' }}}
+          sx={{ width: 100 }}
+        />
+      </Stack>
     </Box>
   )
 

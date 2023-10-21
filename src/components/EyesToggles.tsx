@@ -1,7 +1,7 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { ReactElement, useMemo } from 'react'
 import { EYES } from 'src/constants'
-import { EyesIcon } from './EyesIcon'
+import { NumberOfEyes } from './NumberOfEyes'
 import { TogglesGroup } from './TogglesGroup'
 
 interface Props {
@@ -22,7 +22,7 @@ export function EyesToggles(props: Props): ReactElement {
       {...props}
       Icon={<VisibilityIcon />}
       label="Eyes"
-      Option={EyesIcon}
+      Option={NumberOfEyes}
       options={activeOptions}
     />
   )

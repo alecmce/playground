@@ -1,6 +1,6 @@
-import { Stack } from '@mui/material'
 import { Dispatch, ReactElement, SetStateAction, memo } from 'react'
 
+import { Stack } from '@mui/joy'
 import Sheet from '@mui/joy/Sheet'
 import { produce } from 'immer'
 import { CATEGORY, SetInclusionState } from 'src/model/creatures'
@@ -24,9 +24,9 @@ function Component(props: Props): ReactElement {
   return (
     <Stack spacing={1} direction="row" sx={{ alignItems: 'center' }}>
       { Icon }
-      <Sheet variant="outlined" color="neutral" sx={{ alignItems: 'center', padding: 1 }}>
+      <Sheet variant="soft" color="neutral" sx={{ alignItems: 'center', padding: 2 }}>
         <Stack spacing={1} direction="column">
-          <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
+          <Stack spacing={3} direction="row" sx={{ mb: 0, justifyContent: 'center' }}>
             <ColorSelect value={values.color ?? null} onChange={onColorChange} size={size} />
             <EyesSelect value={values.eyes ?? null} onChange={onEyesChange} size={size} />
             <SidesSelect value={values.sides ?? null} onChange={onSidesChange} size={size} />

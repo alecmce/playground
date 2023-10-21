@@ -101,11 +101,5 @@ export function makeVennDiagram(props: Props): SetInclusionChart {
 
   function getCroupUnderPoint(): VennDiagramPlaces | null {
     return null
-    // return config?.categorized.find(groupContainsPoint) ?? null
-
-    // function groupContainsPoint(group: VennDiagramPlaces): boolean {
-    //   const { rectangle } = group
-    //   return rectangleContainsPoint({ point, rectangle })
-    // }
   }
 }

@@ -1,12 +1,8 @@
-import { Button, Stack } from '@mui/material'
 import { ReactElement, memo } from 'react'
 
-import BarChart from '@mui/icons-material/BarChart'
-import GridViewIcon from '@mui/icons-material/GridView'
-import Groups3Icon from '@mui/icons-material/Groups3'
-import JoinInnerIcon from '@mui/icons-material/JoinInner'
-import PieChart from '@mui/icons-material/PieChart'
+import { Button, ListItemDecorator, Option, Select, Stack } from '@mui/joy'
 import { AppStateAction, STATE_TYPE, jump } from 'src/model/app-state'
+import { BarChartIcon, CarrollDiagramIcon, PieChartIcon, PopulationIcon, VennDiagramIcon } from './Icons'
 
 interface Props {
   disabled?:        true
@@ -23,58 +19,46 @@ function Component(props: Props): ReactElement {
     <Stack spacing={2} direction="row" sx={{mb: 0, alignItems: 'center', justifyContent: 'center' }}>
       <Button
         aria-label="setup population"
-        color="primary"
+        color="success"
         onClick={onPopulationToggle}
-        size="large"
-        startIcon={<Groups3Icon />}
-        variant="contained"
+        startDecorator={<PopulationIcon />}
+        variant="solid"
       >
-          Population
+        Population
       </Button>
-      <Button
-        aria-label="bar chart"
-        color="secondary"
+      <Select
+        color="primary"
         disabled={disabled}
-        onClick={selectBarChart}
-        size="large"
-        startIcon={<BarChart />}
-        variant="contained"
+        onChange={selectChart}
+        placeholder="Show Chart…"
+        sx={{ width: 150 }}
+        variant="solid"
       >
-        Bar Chart
-      </Button>
-      <Button
-        aria-label="pie chart"
-        color="secondary"
-        disabled={disabled}
-        onClick={selectPieChart}
-        size="large"
-        startIcon={<PieChart />}
-        variant="contained"
-      >
-        Pie Chart
-      </Button>
-      <Button
-        aria-label="carroll diagram"
-        color="secondary"
-        disabled={disabled}
-        onClick={selectCarrollDiagram}
-        size="large"
-        startIcon={<GridViewIcon />}
-        variant="contained"
-      >
-        Carroll Diagram
-      </Button>
-      <Button
-        aria-label="venn diagram"
-        color="secondary"
-        disabled={disabled}
-        onClick={selectVennDiagram}
-        size="large"
-        startIcon={<JoinInnerIcon />}
-        variant="contained"
-      >
-        Venn Diagram
-      </Button>
+        <Option value={STATE_TYPE.BAR_CHART_CONFIG} label="Bar Chart">
+          <ListItemDecorator>
+            <BarChartIcon />
+          </ListItemDecorator>
+            Bar Chart
+        </Option>
+        <Option value={STATE_TYPE.PIE_CHART_CONFIG} label="Pie Chart">
+          <ListItemDecorator>
+            <PieChartIcon />
+          </ListItemDecorator>
+            Pie Chart
+        </Option>
+        <Option value={STATE_TYPE.CARROLL_DIAGRAM_CONFIG} label="Carroll Diagram">
+          <ListItemDecorator>
+            <CarrollDiagramIcon />
+          </ListItemDecorator>
+            Carroll Diagram
+        </Option>
+        <Option value={STATE_TYPE.VENN_DIAGRAM_CONFIG} label="Venn Diagram">
+          <ListItemDecorator>
+            <VennDiagramIcon />
+          </ListItemDecorator>
+            Venn Diagram
+        </Option>
+      </Select>
     </Stack>
   )
 
@@ -82,19 +66,9 @@ function Component(props: Props): ReactElement {
     setShowDialog(true)
   }
 
-  function selectBarChart(): void {
-    dispatchAppState(jump({ type: STATE_TYPE.BAR_CHART_CONFIG, time: 0 }))
-  }
-
-  function selectPieChart(): void {
-    dispatchAppState(jump({ type: STATE_TYPE.PIE_CHART_CONFIG, time: 0 }))
-  }
-
-  function selectCarrollDiagram(): void {
-    dispatchAppState(jump({ type: STATE_TYPE.CARROLL_DIAGRAM_CONFIG, time: 0 }))
-  }
-
-  function selectVennDiagram(): void {
-    dispatchAppState(jump({ type: STATE_TYPE.VENN_DIAGRAM_CONFIG, time: 0 }))
+  function selectChart(_: unknown, type: STATE_TYPE | null): void {
+    if (type !== null) {
+      dispatchAppState(jump({ type, time: 0 }))
+    }
   }
 }

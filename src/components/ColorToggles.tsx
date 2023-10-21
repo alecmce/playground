@@ -1,7 +1,7 @@
-import ColorLensIcon from '@mui/icons-material/ColorLens'
 import { ReactElement, useMemo } from 'react'
 import { COLORS } from 'src/constants'
 import { ColorIcon } from './ColorIcon'
+import { ColorsIcon } from './Icons'
 import { TogglesGroup } from './TogglesGroup'
 
 interface Props {
@@ -19,7 +19,7 @@ export function ColorToggles(props: Props): ReactElement {
   return (
     <TogglesGroup
       { ...props}
-      Icon={<ColorLensIcon />}
+      Icon={<ColorsIcon />}
       label="Colours"
       Option={ColorIcon}
       options={activeOptions}

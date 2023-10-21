@@ -55,7 +55,7 @@ export function makeVennDiagramConfig(props: Props): VennDiagramConfig {
   const firstCircle = { radius: circleRadius, center: { x: center.x - circleRadius / 2, y: center.y } }
   const secondCircle = { radius: circleRadius, center: { x: center.x + circleRadius / 2, y: center.y } }
 
-  const longestCategory = getLongestCategorySize(categorized.filter(c => c.type !== CATEGORY_TYPE.EXCLUDED))
+  const longestCategory = getLongestCategorySize(categorized)
   const vennCircles = makeVennCircles({ first: firstCircle, second: secondCircle, count: longestCategory })
   const radius = getRadius(vennCircles)
 

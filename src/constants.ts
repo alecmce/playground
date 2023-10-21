@@ -22,7 +22,7 @@ export const COLORS = [
   { name: 'pink',   value: '#ffc0cb' },
   { name: 'brown',  value: '#a52a2a' },
   { name: 'black',  value: '#000000' },
-  { name: 'gray',   value: '#808080' },
+  { name: 'grey',   value: '#808080' },
 ]
 
 export const COLOR_VALUES = [{ name: 'None', value: 'none' }, ...COLORS]

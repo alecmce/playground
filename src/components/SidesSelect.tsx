@@ -1,8 +1,8 @@
-import PentagonIcon from '@mui/icons-material/Pentagon'
 import { ReactElement, useMemo } from 'react'
 import { SIDES } from 'src/constants'
+import { SidesIcon } from './Icons'
+import { NumberOfSides } from './NumberOfSides'
 import { SelectGroup } from './SelectGroup'
-import { SidesIcon } from './SidesIcon'
 
 interface Props {
   onChange:   (sides: string | null) => void
@@ -20,8 +20,8 @@ export function SidesSelect(props: Props): ReactElement {
     <SelectGroup
       {...props}
       name="Sides"
-      Icon={<PentagonIcon />}
-      Option={SidesIcon}
+      Icon={<SidesIcon color="info" />}
+      Option={NumberOfSides}
       options={activeOptions}
     />
   )

@@ -13,7 +13,7 @@ interface Props {
   size:  number
 }
 
-export function EyesIcon(props: Props): ReactElement | null {
+export function NumberOfEyes(props: Props): ReactElement | null {
   const { value: eyes, size } = props
 
   const [canvas, context, setCanvas] = useInitCanvas({ alpha: true })

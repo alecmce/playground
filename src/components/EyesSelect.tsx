@@ -1,7 +1,7 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
 import { ReactElement, useMemo } from 'react'
 import { EYES } from 'src/constants'
-import { EyesIcon } from './EyesIcon'
+import { EyesIcon } from './Icons'
+import { NumberOfEyes } from './NumberOfEyes'
 import { SelectGroup } from './SelectGroup'
 
 interface Props {
@@ -19,9 +19,9 @@ export function EyesSelect(props: Props): ReactElement {
   return (
     <SelectGroup
       {...props}
-      Icon={<VisibilityIcon />}
+      Icon={<EyesIcon color="info" />}
       name="Eyes"
-      Option={EyesIcon}
+      Option={NumberOfEyes}
       options={activeOptions}
     />
   )

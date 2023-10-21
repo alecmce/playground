@@ -1,9 +1,10 @@
-import { ListItemDecorator } from '@mui/joy'
+import { CloseRounded } from '@mui/icons-material'
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
+import { Grid, IconButton, ListItemDecorator } from '@mui/joy'
 import Box from '@mui/joy/Box'
 import MuiOption from '@mui/joy/Option'
 import Select, { SelectOption } from '@mui/joy/Select'
-import { Grid } from '@mui/material'
-import { ReactElement, useRef } from 'react'
+import { MouseEvent, ReactElement } from 'react'
 
 interface Props {
   Icon:     ReactElement
@@ -28,27 +29,23 @@ interface OptionRenderProps {
 export function SelectGroup(props: Props): ReactElement {
   const { Icon, onChange, Option, options, size, value } = props
 
-  const CachedIcon = useRef(Icon)
-
   return (
     <Box sx={{ mb: 1 }} >
       <Grid container spacing={2} alignItems="center" sx={{ justifyContent: 'center', flexWrap: 'nowrap' }}>
-        <Grid item xs>
-          { CachedIcon.current }
-        </Grid>
-        <Grid item xs>
-          <Select<string>
-            color="neutral"
-            onChange={onToggleGroupChange}
-            value={value}
-            variant="plain"
-            renderValue={renderValue}
-            sx={{ width: 90 }}
-          >
-            <MuiOption label="None" value={null} />
-            { options.map(renderOption) }
-          </Select>
-        </Grid>
+        <Select<string>
+          color="neutral"
+          onChange={onToggleGroupChange}
+          value={value}
+          variant="plain"
+          renderValue={renderValue}
+          sx={{ width: 120 }}
+          startDecorator={value ? null : Icon}
+          endDecorator={value ? EndDecorator() : null}
+          indicator={value ? null : <KeyboardArrowDown />}
+        >
+          <MuiOption label="None" value={null} />
+          { options.map(renderOption) }
+        </Select>
       </Grid>
     </Box>
   )
@@ -76,5 +73,28 @@ export function SelectGroup(props: Props): ReactElement {
         {name}
       </MuiOption>
     )
+  }
+
+  function EndDecorator(): ReactElement | null {
+    return (
+      <IconButton
+        size="sm"
+        variant="plain"
+        color="neutral"
+        onMouseDown={onMouseDown}
+        onClick={onClick}
+      >
+        <CloseRounded />
+      </IconButton>
+    )
+
+    // don't open the popup when clicking on this button
+    function onMouseDown(event: MouseEvent<unknown>): void {
+      event.stopPropagation()
+    }
+
+    function onClick(): void {
+      onChange(null)
+    }
   }
 }

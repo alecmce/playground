@@ -13,7 +13,7 @@ interface Props {
   size:  number
 }
 
-export function SidesIcon(props: Props): ReactElement | null {
+export function NumberOfSides(props: Props): ReactElement | null {
   const { value, size } = props
 
   const polygon = useMemo(() => {

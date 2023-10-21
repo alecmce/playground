@@ -1,8 +1,8 @@
+import Check from '@mui/icons-material/Check'
+import Close from '@mui/icons-material/Close'
+import { Chip, Stack, Typography } from '@mui/joy'
 import Box from '@mui/joy/Box'
-import Button from '@mui/joy/Button'
-import ToggleButtonGroup from '@mui/joy/ToggleButtonGroup'
-import { Grid, Typography } from '@mui/material'
-import { ReactElement, useRef } from 'react'
+import { ReactElement, useMemo, useRef } from 'react'
 
 interface Props {
   Icon:     ReactElement
@@ -34,35 +34,64 @@ export function TogglesGroup(props: Props): ReactElement {
       <Typography id={label} gutterBottom>
         { label }
       </Typography>
-      <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
-        <Grid item>
-          { CachedIcon.current }
-        </Grid>
-        <Grid item xs>
-          <ToggleButtonGroup
-            color="neutral"
-            onChange={onToggleGroupChange}
-            spacing={{ xs: 0.2 }}
-            sx={{ flexWrap: 'wrap' }}
-            value={value}
-            variant="plain"
-          >
-            { options.map(renderButton) }
-          </ToggleButtonGroup>
-        </Grid>
-      </Grid>
+      <Stack spacing={1} direction="row">
+        { CachedIcon.current }
+        <Stack direction="row" flexWrap="wrap">
+          { options.map(({ name, value: chipValue }) => (
+            <ToggleChip
+              chipValue={chipValue}
+              key={name}
+              name={name}
+              onChange={onChange}
+              Option={Option}
+              size={size}
+              value={value}
+            />
+          )) }
+        </Stack>
+      </Stack>
     </Box>
   )
+}
 
-  function onToggleGroupChange(_: unknown, value: string | string[] | null): void {
-    onChange(value)
+interface ToggleChipProps {
+  chipValue: string
+  name:      string
+  onChange:  (value: string | string[] | null) => void
+  Option:    (props: OptionRenderProps) => ReactElement | null
+  size:      number
+  value:     string | string[] | null
+}
+
+function ToggleChip(props: ToggleChipProps): ReactElement {
+  const { name, onChange, Option, size, chipValue, value } = props
+
+  const endDecorator = useMemo(() => {
+    return chipValue === value || Array.isArray(value) && value.includes(chipValue)
+      ? <Check fontSize="small" />
+      : <Close fontSize="small" />
+  }, [chipValue, value])
+
+  return (
+    <Chip
+      endDecorator={endDecorator}
+      onClick={onClick}
+      startDecorator={<Option value={chipValue} size={size} />}
+      sx={{ marginBottom: '4px', marginRight: '4px' }}
+    >
+      {name}
+    </Chip>
+  )
+
+  function onClick(): void {
+    onChange(toggleValue())
   }
 
-  function renderButton({ name, value }: OptionData): ReactElement {
-    return (
-      <Button aria-label={name} key={name} value={value}>
-        <Option value={value} size={size} />
-      </Button>
-    )
+  function toggleValue(): string | string[] | null {
+    if (Array.isArray(value)) {
+      return value.includes(chipValue) ? value.filter(v => v !== chipValue) : [...value, chipValue]
+    } else {
+      return value === chipValue ? null : chipValue
+    }
   }
 }
