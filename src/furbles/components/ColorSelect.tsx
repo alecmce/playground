@@ -19,7 +19,7 @@ export function ColorSelect(props: Props): ReactElement {
   return (
     <SelectGroup
       {...props}
-      Icon={<ColorsIcon color="neutral" />}
+      Icon={<ColorsIcon color="info" />}
       name="Colour"
       Option={ColorIcon}
       options={activeOptions}

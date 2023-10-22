@@ -19,7 +19,7 @@ export function EyesSelect(props: Props): ReactElement {
   return (
     <SelectGroup
       {...props}
-      Icon={<EyesIcon color="neutral" />}
+      Icon={<EyesIcon color="info" />}
       name="Eyes"
       Option={NumberOfEyes}
       options={activeOptions}

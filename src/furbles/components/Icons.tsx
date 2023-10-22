@@ -9,11 +9,11 @@ import JoinRight from '@mui/icons-material/JoinRight'
 import Pentagon from '@mui/icons-material/Pentagon'
 import PieChart from '@mui/icons-material/PieChart'
 import Visibility from '@mui/icons-material/Visibility'
-import { SvgIcon } from '@mui/joy'
+import { createSvgIcon } from '@mui/material'
 import { ReactElement } from 'react'
 
 interface Props {
-  color?: 'danger' | 'inherit' | 'neutral' | 'primary' | 'success' | 'warning'
+  color?: 'inherit' | 'action' | 'disabled' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
 }
 
 export function HomeIcon(props: Props): ReactElement {
@@ -37,26 +37,26 @@ export function CarrollDiagramIcon(props: Props): ReactElement {
 }
 
 export function CarrollDiagramFirstIcon(props: Props): ReactElement {
-  return (
-    <SvgIcon {...props}>
-      <path
-        d="M 3 3 v 8 h 8 V 3 H 3 z M 3 13 v 8 h 8 v -8 H 3 z M 9 19 H 5 v -4 h 4 v 4 z M 13 3 v 8 h 8 V 3 h -8 z M 13 13 v 8 h 8 v -8 h -8 z M 19 19 h -4 v -4 h 4 v 4 z"
-        fillRule="evenodd"
-      />
-    </SvgIcon>
-  )
+  return <CarrollDiagramFirst {...props} />
 }
 
+const CarrollDiagramFirst = createSvgIcon((
+  <path
+    d="M 3 3 v 8 h 8 V 3 H 3 z M 3 13 v 8 h 8 v -8 H 3 z M 9 19 H 5 v -4 h 4 v 4 z M 13 3 v 8 h 8 V 3 h -8 z M 13 13 v 8 h 8 v -8 h -8 z M 19 19 h -4 v -4 h 4 v 4 z"
+    fillRule="evenodd"
+  />
+), 'CarrollDiagramFirst')
+
 export function CarollDiagramSecondIcon(props: Props): ReactElement {
-  return (
-    <SvgIcon {...props}>
-      <path
-        d="M 3 3 v 8 h 8 V 3 H 3 z M 3 13 v 8 h 8 v -8 H 3 z M 13 3 v 8 h 8 V 3 h -8 z M 19 9 h -4 V 5 h 4 v 4 z M 13 13 v 8 h 8 v -8 h -8 z M 19 19 h -4 v -4 h 4 v 4 z"
-        fillRule="evenodd"
-      />
-    </SvgIcon>
-  )
+  return <CarollDiagramSecond {...props} />
 }
+
+const CarollDiagramSecond = createSvgIcon((
+  <path
+    d="M 3 3 v 8 h 8 V 3 H 3 z M 3 13 v 8 h 8 v -8 H 3 z M 13 3 v 8 h 8 V 3 h -8 z M 19 9 h -4 V 5 h 4 v 4 z M 13 13 v 8 h 8 v -8 h -8 z M 19 19 h -4 v -4 h 4 v 4 z"
+    fillRule="evenodd"
+  />
+), 'CarollDiagramSecond')
 
 
 export function VennDiagramIcon(props: Props): ReactElement {
