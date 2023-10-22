@@ -1,5 +1,5 @@
 import { CSSObject } from '@emotion/react'
-import { Button, Card, CardActions, CardContent, Theme, Typography } from '@mui/joy'
+import { Button, Card, CardActions, CardContent, Stack, Theme, Typography } from '@mui/joy'
 import { ReactElement } from 'react'
 import { CurriculumRefs } from './CurriculumRefs'
 
@@ -18,13 +18,15 @@ export function AppCard(props: Props): ReactElement {
   return (
     <Card size="sm" variant="soft" sx={{width: 300, height: '100%'}}>
       <CardContent>
-        <Typography level="h2">{ name }</Typography>
-        <Typography level="body-md">
-          { description }
-        </Typography>
-        <Typography level="body-sm" color="neutral" gutterBottom>
-          { tags }
-        </Typography>
+        <Stack direction="column" sx={{height: '100%'}}>
+          <Typography level="h2">{ name }</Typography>
+          <Typography level="body-md">
+            { description }
+          </Typography>
+          <Typography level="body-sm" color="primary" gutterBottom>
+            { tags }
+          </Typography>
+        </Stack>
         <CurriculumRefs scottishRef={scottishRef} englishRef={englishRef} />
       </CardContent>
       <CardActions>

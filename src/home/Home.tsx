@@ -28,6 +28,13 @@ export function Home(): ReactElement {
               tags="Number, Factors, Primes, Multiples"
             />
           </Grid>
+          <Grid>
+            <PlaceholderCard
+              name="Soroban"
+              description="Explores place value using the Soroban Abacus."
+              tags="Numeracy, Number, Place Value, Arithmetic"
+            />
+          </Grid>
         </Grid>
       </Stack>
       <Footer size={40} />

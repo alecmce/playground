@@ -13,13 +13,15 @@ export function PlaceholderCard(props: Props): ReactElement {
   return (
     <Card size="sm" variant="soft" sx={{width: 300, height: '100%' }}>
       <CardContent>
-        <Typography level="h2">{ name }</Typography>
-        <Typography level="body-md">
-          { description }
-        </Typography>
-        <Typography level="body-sm" color="neutral" gutterBottom>
-          { tags }
-        </Typography>
+        <Stack direction="column" sx={{height: '100%'}}>
+          <Typography level="h2">{ name }</Typography>
+          <Typography level="body-md">
+            { description }
+          </Typography>
+          <Typography level="body-sm" color="primary" gutterBottom>
+            { tags }
+          </Typography>
+        </Stack>
         <Stack alignItems="center" justifyContent="center" sx={{height: '100%'}}>
           <HourglassTop sx={{ width: 100, height: 100}} />
         </Stack>
