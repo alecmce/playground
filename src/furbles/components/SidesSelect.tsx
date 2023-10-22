@@ -20,7 +20,7 @@ export function SidesSelect(props: Props): ReactElement {
     <SelectGroup
       {...props}
       name="Sides"
-      Icon={<SidesIcon color="info" />}
+      Icon={<SidesIcon color="neutral" />}
       Option={NumberOfSides}
       options={activeOptions}
     />

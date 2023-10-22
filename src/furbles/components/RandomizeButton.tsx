@@ -1,6 +1,6 @@
 import CasinoIcon from '@mui/icons-material/Casino'
+import { Button } from '@mui/joy'
 import Box from '@mui/joy/Box'
-import Button from '@mui/material/Button'
 import { produce } from 'immer'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 import { getRandomSeed } from 'src/lib/seeded-random'
@@ -17,9 +17,9 @@ export function RandomizeButton(props: Props): ReactElement {
     <Box sx={{ display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
       <Button
         aria-label="randomize"
-        variant="contained"
-        startIcon={<CasinoIcon />}
         onClick={randomize}
+        startDecorator={<CasinoIcon />}
+        variant="solid"
       >
         Randomize
       </Button>

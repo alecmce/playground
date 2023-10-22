@@ -6,8 +6,8 @@ import { DrawPolygon } from 'src/model/drawing'
 import { Polygon } from 'src/model/geometry'
 import { useInitCanvas } from 'src/use-init-canvas'
 
-const BRUSH = { alpha: 1, color: 'black', width: 2 } as const
 const RESOLUTION = 2
+const BRUSH = { alpha: 1, color: 'black', width: 2 * RESOLUTION } as const
 
 interface Props {
   value: string

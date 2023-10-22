@@ -18,7 +18,7 @@ export function ChartSelect(props: Props): ReactElement {
       disabled={disabled}
       onChange={selectChart}
       placeholder="Show Chart…"
-      sx={{ width: 150 }}
+      sx={{ width: 150, fontSize: 'sm' }}
       variant="solid"
     >
       <Option value={STATE_TYPE.BAR_CHART_CONFIG} label="Bar Chart">

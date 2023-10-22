@@ -29,7 +29,7 @@ export function NewPopulationDialog(props: Props): ReactElement {
     <Modal open={true}>
       <ModalDialog>
         <Stack>
-          <Typography level="h2" gutterBottom>
+          <Typography level="h2" sx={{display: 'flex', justifyContent: 'center'}} alignItems="center" gutterBottom>
             New Population
           </Typography>
           <PopulationCountSlider population={population} setPopulation={setPopulation} maxCount={maxCount} />

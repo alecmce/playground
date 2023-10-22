@@ -27,7 +27,7 @@ interface Props {
   vennDiagram:      SetInclusionChart | undefined
 }
 
-interface RenderedProps extends Props {
+export interface RenderedProps extends Props {
   barChart:         CategorisationChart
   carrollDiagram:   SetInclusionChart
   pieChart:         CategorisationChart
