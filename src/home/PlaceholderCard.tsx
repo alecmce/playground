@@ -11,9 +11,9 @@ interface Props {
 export function PlaceholderCard(props: Props): ReactElement {
   const { name, description, tags } = props
   return (
-    <Card size="sm" variant="soft" sx={{width: 300, height: '100%' }}>
+    <Card size="sm" variant="soft" sx={{width: 300 }}>
       <CardContent>
-        <Stack direction="column" sx={{height: '100%'}}>
+        <Stack direction="column">
           <Typography level="h2">{ name }</Typography>
           <Typography level="body-md">
             { description }
@@ -22,18 +22,10 @@ export function PlaceholderCard(props: Props): ReactElement {
             { tags }
           </Typography>
         </Stack>
-        <Stack alignItems="center" justifyContent="center" sx={{height: '100%'}}>
-          <HourglassTop sx={{ width: 100, height: 100}} />
+        <Stack alignItems="center" justifyContent="center">
+          <HourglassTop sx={{ width: 100, height: 100, padding: '8px 0'}} />
         </Stack>
       </CardContent>
     </Card>
   )
 }
-
-// function sx(theme: Theme): CSSObject {
-//   return {
-//     width: '100px',
-//     height: '100px',
-//     color: theme.palette.primary.solidColor,
-//   }
-// }
