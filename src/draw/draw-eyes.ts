@@ -1,9 +1,6 @@
 import { DrawCircle, DrawEyes, DrawEyesProps, Fill } from 'src/model/drawing'
 import { Circle, Point } from 'src/model/geometry'
 
-// closed lid?
-// const PATH = new Path2D('M-12.5 1C-9.5 10.5 10 11.5 12.5 1')
-
 const FILL: Fill = { alpha: 1, color: '#fff' }
 const RADIUS = 14
 

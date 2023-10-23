@@ -62,7 +62,7 @@ function ToggleChip<T extends string = string>(props: ToggleChipProps<T>): React
 
   return (
     <Chip
-      endDecorator={isSelected ? <Check fontSize="sm" /> : <Close fontSize="sm" />}
+      endDecorator={isSelected ? <Check fontSize="small" /> : <Close fontSize="small" />}
       onClick={onClick}
       startDecorator={<Option value={chipValue} size={size} />}
       sx={{ marginBottom: multiline ? '4px' : 0, marginRight: '4px' }}

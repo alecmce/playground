@@ -12,6 +12,7 @@ interface Props {
   enabled:    boolean
   setPointer: Dispatch<SetStateAction<Point | null>>
   setTarget:  Dispatch<SetStateAction<Creature | null>>
+  onClick?:   (creature: Creature | null) => void
 }
 
 const NULL_HANDLERS: InteractionHandlers<Creature | null> = {
@@ -24,8 +25,8 @@ const NULL_HANDLERS: InteractionHandlers<Creature | null> = {
   onUp:    () => void 0,
 }
 
-export function useCreaturesDrag(props: Props): void {
-  const { chart, creatures, enabled, setPointer, setTarget } = props
+export function useCreatureInteraction(props: Props): void {
+  const { chart, creatures, enabled, onClick, setPointer, setTarget } = props
 
   const initial = useRef<Point>({ x: 0, y: 0 })
 
@@ -61,6 +62,7 @@ export function useCreaturesDrag(props: Props): void {
 
       function onUp(point: Point): void {
         chart?.setPointer(point, POINTER_ACTION.UP)
+        onClick?.(isOver(point))
       }
 
       function onDrag(start: Point, current: Point, target: Creature | null): void {

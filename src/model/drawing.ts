@@ -31,14 +31,17 @@ export interface DrawingPrerequisites {
 }
 
 export interface DrawingApi {
+  applyBrush:       ApplyBrush
+  applyFill:        ApplyFill
   clear:            ClearDrawing
+  context:          CanvasRenderingContext2D
   drawCircle:       DrawCircle
   drawCircleSector: DrawCircleSector
   drawEyes:         DrawEyes
+  drawIcon:         DrawIcon
   drawPath:         DrawPath
   drawPolygon:      DrawPolygon
   drawRectangle:    DrawRectangle
-  drawIcon:         DrawIcon
 }
 
 export interface ClearDrawing {

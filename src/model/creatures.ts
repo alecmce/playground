@@ -14,6 +14,7 @@ export interface Creature {
   draw:    (props: CreatureDrawProps) => void
   eyes:    string
   isUnder: (pointer: Point) => boolean
+  radius:  number
   sides:   string
 }
 

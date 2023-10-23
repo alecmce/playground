@@ -1,13 +1,13 @@
-import { mix } from 'chroma-js'
 import { useMemo } from 'react'
 import { Creature, CreatureDrawProps, MakeCreatures, MakeCreaturesProps } from 'src/model/creatures'
 import { DrawingApi } from 'src/model/drawing'
 import { Point } from 'src/model/geometry'
+import { makeBaseBrush } from './base-brush'
+import { lighten } from './color-utils'
 import { getDistance } from './math-utils'
 import { makePositionFactory } from './positions'
 import { makeRegularPolygon } from './regular-polygon'
 import { makeSeededRandom } from './seeded-random'
-import { makeBaseBrush } from './base-brush'
 
 const UNIT_SCALAR = 60
 
@@ -48,15 +48,18 @@ export function makeCreatureFactory(props: Props): MakeCreatures {
       const polygon = makeRegularPolygon({ center: { x: 0, y: 0 }, radius, rotation, sides: parseInt(sides, 10) })
       const baseFill = { color }
 
-      const self = { center, color, draw, eyes, isUnder, sides }
+      const self = { center, color, draw, eyes, radius, isUnder, sides }
       return self
 
       function draw(props: CreatureDrawProps): void {
-        const { pointer, scale, target } = props
+        const { pointer: givenPointer, scale, target } = props
+        const isTarget = target === self
 
-        const fill = target === self
-          ? { color: mix(color, 'white', 0.3).hex() }
+        const fill = isTarget
+          ? { color: lighten(color) }
           : baseFill
+
+        const pointer = isTarget ? null : givenPointer
 
         drawPolygon({ brush, fill, center, polygon, scale })
         drawEyes({ brush, center, eyes, pointer, scale: scale * baseScalar })

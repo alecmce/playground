@@ -1,11 +1,11 @@
 import { Fragment, ReactElement, useCallback, useState } from 'react'
-import { draw } from '../draw'
+import { useDrawFurbles } from '../draw-furbles'
 import { useDrawingApi } from '../draw/drawing-api'
 import { useAppState } from '../lib/app-state'
 import { useCreatureFactory } from '../lib/creature-factory'
 import { useCreatures } from '../lib/creatures'
 import { usePushApart } from '../lib/push-apart'
-import { useCreaturesDrag } from '../lib/use-creatures-drag'
+import { useCreatureInteraction } from '../lib/use-creature-interaction'
 import { useRadius } from '../lib/use-radius'
 import { useTick } from '../lib/use-tick'
 import { useWindowSize } from '../lib/use-window-size'
@@ -20,12 +20,15 @@ import { useBarChart } from './bar-chart/bar-chart'
 import { useCarrollDiagram } from './carroll-diagram/carroll-diagram'
 import { Ui } from './components/UI'
 import { makeDefaultPopulation } from './constants'
+import { HANDS } from './lib/draw-hands'
+import { useWaves } from './lib/waves'
 import { usePieChart } from './pie-chart/pie-chart'
 import { useVennDiagram } from './venn-diagram/venn-diagram'
 
 const BRUSH = { alpha: 1, color: 'black', width: 3 } as const
 const DENSITY = 0.5 as const
 const MAX_COUNT = 400 as const
+const WAVE_DURATION = 1.5 as const
 
 export function Furbles(): ReactElement {
   const [showDialog, setShowDialog] = useState(false)
@@ -50,11 +53,14 @@ export function Furbles(): ReactElement {
   const pieChart = usePieChart({ bounds, count, creatures, drawingApi, radius })
   const carrollDiagram = useCarrollDiagram({ bounds, creatures, drawingApi, radius })
   const vennDiagram = useVennDiagram({ bounds, creatures, drawingApi, radius })
+  const waves = useWaves({ brush: BRUSH, drawingApi, duration: WAVE_DURATION })
+  const draw = useDrawFurbles({ barChart, carrollDiagram, creatures, drawingApi, pieChart, pushApart, vennDiagram })
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
   const chart = useCurrentChart({ type: state.chart, barChart, carrollDiagram, pieChart })
-  useCreaturesDrag({ chart, creatures, enabled: !showDialog, setPointer, setTarget })
+  const onClick = useCallback((creature: Creature | null) => creature && waves?.apply(creature, HANDS.BOTH), [waves])
+  useCreatureInteraction({ chart, creatures, enabled: !showDialog, onClick, setPointer, setTarget })
 
   const tick = useCallback((deltaTime: number) => {
     dispatchAppState(iterate(deltaTime))
@@ -62,10 +68,8 @@ export function Furbles(): ReactElement {
 
   useTick(tick)
 
-  draw({
-    barChart, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, radius, size, state, vennDiagram,
-    target,
-  })
+  draw?.({ pointer, radius, size, state, target })
+  waves?.update(Date.now() / 1000)
 
   return (
     <Fragment>
@@ -90,4 +94,5 @@ export function Furbles(): ReactElement {
       />
     </Fragment>
   )
+
 }

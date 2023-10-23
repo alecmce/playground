@@ -29,6 +29,7 @@ export function usePointerHandlers<T>(props: Props<T>): void {
       window.addEventListener('pointerdown', onPointerDown)
 
       return function unmount(): void {
+        state.current = { down: null, isDrag: false, item: null }
         window.removeEventListener('pointermove', onPointerMove)
         window.removeEventListener('pointerdown', onPointerDown)
         window.removeEventListener('pointerup', onPointerUp)

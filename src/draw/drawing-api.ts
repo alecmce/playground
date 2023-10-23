@@ -43,7 +43,7 @@ export function makeDrawingApi(props: DrawingApiProps): DrawingApi {
   const drawRectangle = makeDrawRectangle(config)
   const drawIcon = makeDrawIcon({ drawEyes, drawPath, drawPolygon })
 
-  return { clear, drawCircle, drawCircleSector, drawEyes, drawIcon, drawPath, drawPolygon, drawRectangle }
+  return { ...config, clear, drawCircle, drawCircleSector, drawEyes, drawIcon, drawPath, drawPolygon, drawRectangle }
 
   function clear(size: Size): void {
     const {width, height } = size
