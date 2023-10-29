@@ -1,3 +1,4 @@
+import { CATEGORY } from 'src/model/creatures'
 import { getRandomSeed } from '../lib/seeded-random'
 import { PopulationModel } from '../model/population'
 
@@ -52,3 +53,9 @@ export const SIDES = [
 export const SIDES_VALUES = [{ name: 'None', value: 'none' }, ...SIDES]
 
 export const DEFAULT_SIDES = ['4']
+
+export const ALL_CATEGORIES = [
+  COLOR_VALUES.map(color => [CATEGORY.COLOR, color.value]),
+  EYES_VALUES.map(eyes => [CATEGORY.EYES, eyes.value]),
+  SIDES_VALUES.map(sides => [CATEGORY.SIDES, sides.value]),
+]

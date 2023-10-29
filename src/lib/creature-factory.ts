@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { Creature, CreatureDrawProps, MakeCreatures, MakeCreaturesProps } from 'src/model/creatures'
-import { DrawingApi } from 'src/model/drawing'
-import { Point } from 'src/model/geometry'
+import { Creature, CreatureDrawProps, MakeCreatures } from 'src/model/creatures'
+import { Brush, DrawingApi } from 'src/model/drawing'
+import { Point, Rectangle } from 'src/model/geometry'
+import { PopulationModel } from 'src/model/population'
 import { makeBaseBrush } from './base-brush'
 import { lighten } from './color-utils'
 import { getDistance } from './math-utils'
@@ -12,27 +13,31 @@ import { makeSeededRandom } from './seeded-random'
 const UNIT_SCALAR = 60
 
 interface Props {
+  bounds:     Rectangle
   drawingApi: DrawingApi
+  brush:      Brush
   maxCount:   number
+  radius:     number
 }
 
 export function useCreatureFactory(props: Partial<Props>): MakeCreatures | undefined {
-  const { drawingApi, maxCount } = props
+  const { bounds, brush, drawingApi, maxCount, radius } = props
 
   return useMemo(() => {
-    return drawingApi && maxCount ? makeCreatureFactory({ drawingApi, maxCount }) : undefined
-  }, [drawingApi, maxCount])
+    return bounds && brush && drawingApi && maxCount && radius
+      ? makeCreatureFactory({ bounds, brush, drawingApi, maxCount, radius })
+      : undefined
+  }, [bounds, brush, drawingApi, maxCount, radius])
 }
 
 export function makeCreatureFactory(props: Props): MakeCreatures {
-  const { drawingApi, maxCount } = props
+  const { bounds, brush: baseBrush, drawingApi, maxCount, radius } = props
   const { drawPolygon, drawEyes } = drawingApi
 
   const makePositions = makePositionFactory()
 
-  return  function makeCreatures(props: MakeCreaturesProps): Creature[] {
-    const { bounds, brush: baseBrush, population, radius } = props
-    const { colors: colorsList, count, eyes: eyesList, seed, sides: sidesList } = population
+  return  function makeCreatures(model: PopulationModel): Creature[] {
+    const { colors: colorsList, count, eyes: eyesList, seed, sides: sidesList } = model
     const random = makeSeededRandom(seed)
 
     const baseScalar = Math.min(1, radius / UNIT_SCALAR)

@@ -16,3 +16,23 @@ export function makePairs<T>(items: T[]): [T, T][] {
   }
   return pairs
 }
+
+export function removeDuplicates<T>(items: T[]): T[] {
+  return Array.from(new Set(items))
+}
+
+interface Filter<T> {
+  (item: T, index: number, list: T[]): boolean
+}
+
+/** Splits an array into two arrays based on a filter function. */
+export function splitArray<T>(array: T[], inGroupFilter: Filter<T>): [T[], T[]] {
+  const inGroup: T[] = []
+  const outGroup: T[] = []
+
+  array.forEach((item, i, array) => {
+    const group = inGroupFilter(item, i, array) ? inGroup : outGroup
+    group.push(item)
+  })
+  return [inGroup, outGroup]
+}

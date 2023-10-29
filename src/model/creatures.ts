@@ -1,5 +1,4 @@
-import { Brush } from './drawing'
-import { Point, Rectangle } from './geometry'
+import { Point } from './geometry'
 import { PopulationModel } from './population'
 
 export interface CreatureDrawProps {
@@ -61,14 +60,6 @@ export interface SetInclusionValues {
   [CATEGORY.SIDES]?: string[]
 }
 
-
-export interface MakeCreaturesProps {
-  bounds:     Rectangle
-  brush:      Brush
-  population: PopulationModel
-  radius:     number
-}
-
 export interface MakeCreatures {
-  (props: MakeCreaturesProps): Creature[]
+  (model: PopulationModel): Creature[]
 }
