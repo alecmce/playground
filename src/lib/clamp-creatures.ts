@@ -3,7 +3,7 @@ import { Size } from 'src/model/values'
 import { clamp } from './math-utils'
 
 interface Props {
-  creatures: Creature[]
+  creatures: Creature[] | undefined
   radius:    number
   scale?:    number
   size:      Size
@@ -17,7 +17,7 @@ export function clampCreatures(props: Props): void {
   const right = width - min
   const bottom = height - min
 
-  creatures.forEach(clampCreature)
+  creatures?.forEach(clampCreature)
 
   function clampCreature(creature: Creature): void {
     const { center } = creature

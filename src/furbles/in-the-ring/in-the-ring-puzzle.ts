@@ -1,21 +1,27 @@
 import { splitArray } from 'src/lib/array-util'
 import { getRandomSeed, makeSeededRandom } from 'src/lib/seeded-random'
 import { CATEGORY, Creature, MakeCreatures } from 'src/model/creatures'
-import { SetInclusionPuzzle } from 'src/model/puzzle'
+import { DrawFurblesProps, DrawingApi } from 'src/model/drawing'
+import { Rectangle } from 'src/model/geometry'
+import { InTheRingPuzzle } from 'src/model/puzzle'
 import { prune } from 'src/util/object-util'
-import { COLOR_VALUES, EYES_VALUES, SIDES_VALUES } from '../constants'
+import { COLORS as COLOR_VALUES, EYES as EYES_VALUES, SIDES as SIDES_VALUES } from '../constants'
+import { makeInTheRingConfig } from './in-the-ring-config'
 
 interface Props {
+  bounds:        Rectangle
   complexity:    1 | 2 | 3
-  seed?:         number
+  drawingApi:    DrawingApi
   makeCreatures: MakeCreatures
+  seed?:         number
 }
 
 const { COLOR, EYES, SIDES } = CATEGORY
 
-export function makeSetInclusionPuzzle(props: Props): SetInclusionPuzzle {
-  const { complexity, makeCreatures, seed = getRandomSeed()} = props
+export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
+  const { bounds, complexity, drawingApi, makeCreatures, seed = getRandomSeed()} = props
 
+  const name = `In The Ring • Level ${complexity}`
   const random = makeSeededRandom(seed)
 
   const primary = random.from([COLOR, COLOR, COLOR, SIDES, SIDES, EYES])
@@ -42,7 +48,9 @@ export function makeSetInclusionPuzzle(props: Props): SetInclusionPuzzle {
 
   const [inGroupCreatures, outGroupCreatures] = splitArray(creatures, isInGroup)
 
-  return { creatures, inGroup, outGroup, inGroupCreatures, outGroupCreatures }
+  const puzzle: InTheRingPuzzle = { creatures, drawEnter, drawMain, drawExit, inGroup, inGroupCreatures, name, outGroup, outGroupCreatures, seed }
+  const config = makeInTheRingConfig({ bounds, puzzle })
+  return puzzle
 
   function getValues(values: string[], target: CATEGORY): string[] {
     return random.list(values, getColorCount())
@@ -77,5 +85,35 @@ export function makeSetInclusionPuzzle(props: Props): SetInclusionPuzzle {
       (!groupEyes || eyes === groupEyes) &&
       (!groupSides || sides === groupSides)
     )
+  }
+
+  function drawEnter(props: DrawFurblesProps, proportion: number): void {
+    const { brush, pointer } = props
+    const { drawCircle } = drawingApi
+
+    drawCircle({ brush: { ...brush, alpha: proportion }, circle: config.circle })
+    creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
+
+    console.log('drawEnter InTheRingPuzzle', proportion)
+  }
+
+  function drawMain(props: DrawFurblesProps): void {
+    const { brush, pointer } = props
+    const { drawCircle } = drawingApi
+
+    drawCircle({ brush, circle: config.circle })
+    creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
+
+    console.log('drawMain InTheRingPuzzle')
+  }
+
+  function drawExit(props: DrawFurblesProps, proportion: number): void {
+    const { brush, pointer } = props
+    const { drawCircle } = drawingApi
+
+    drawCircle({ brush: { ...brush, alpha: 1 - proportion }, circle: config.circle })
+    creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
+
+    console.log('drawExit InTheRingPuzzle', proportion)
   }
 }

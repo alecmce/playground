@@ -10,6 +10,10 @@ export enum STATE_TYPE {
   LEAVE_PLACES            = 'leave-places',
   PIE_CHART_CONFIG        = 'pie-chart-config',
   VENN_DIAGRAM_CONFIG     = 'venn-diagram-config',
+  IN_THE_RING_CONFIG      = 'in-the-ring-config',
+  ENTER_PUZZLE            = 'enter-puzzle',
+  PUZZLE_MAIN             = 'puzzle-main',
+  EXIT_PUZZLE             = 'exit-puzzle',
 }
 
 export enum CHART_TYPE {
@@ -19,12 +23,23 @@ export enum CHART_TYPE {
   VENN_DIAGRAM    = 'venn-diagram',
 }
 
+export enum PUZZLE_TYPE {
+  IN_THE_RING = 'in-the-ring',
+}
+
 export interface AppState {
   type:      STATE_TYPE
   duration:  number
   time:      number
   isPaused?: boolean
   chart?:    CHART_TYPE
+  puzzle?:   PuzzleSetupModel
+}
+
+export interface PuzzleSetupModel {
+  complexity: 1 | 2 | 3
+  seed?:      number
+  type:       PUZZLE_TYPE
 }
 
 export type AppStateAction = JumpAction | IterateAction | TriggerPieAction | TogglePauseAction

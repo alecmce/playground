@@ -5,6 +5,7 @@ import { AppStateAction } from 'src/model/app-state'
 import { ChartSelect } from './ChartSelect'
 import { HomeButton } from './HomeButton'
 import { PopulationButton } from './PopulationButton'
+import { PuzzleSelect } from './PuzzleSelect'
 
 interface Props {
   disabled?:        true
@@ -22,6 +23,7 @@ function Component(props: Props): ReactElement {
       <HomeButton />
       <PopulationButton setShowDialog={setShowDialog} />
       <ChartSelect disabled={disabled} dispatchAppState={dispatchAppState} />
+      <PuzzleSelect disabled={disabled} dispatchAppState={dispatchAppState} />
     </Stack>
   )
 }

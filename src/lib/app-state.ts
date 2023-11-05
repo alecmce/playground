@@ -1,5 +1,5 @@
 import { useReducer } from 'react'
-import { AppState, AppStateAction, CHART_TYPE, STATE_ACTION_TYPE, STATE_TYPE } from 'src/model/app-state'
+import { AppState, AppStateAction, CHART_TYPE, PuzzleSetupModel, STATE_ACTION_TYPE, STATE_TYPE } from 'src/model/app-state'
 
 
 export function useAppState(): [AppState, (state: AppStateAction) => void] {
@@ -63,6 +63,10 @@ export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
   [STATE_TYPE.LEAVE_PLACES]:           2000,
   [STATE_TYPE.PIE_CHART_CONFIG]:       Infinity,
   [STATE_TYPE.VENN_DIAGRAM_CONFIG]:    Infinity,
+  [STATE_TYPE.IN_THE_RING_CONFIG]:     Infinity,
+  [STATE_TYPE.ENTER_PUZZLE]:           500,
+  [STATE_TYPE.EXIT_PUZZLE]:            500,
+  [STATE_TYPE.PUZZLE_MAIN]:            Infinity,
 }
 
 const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
@@ -89,25 +93,33 @@ const TRANSITION_STATES: Partial<Record<STATE_TYPE, TransitionState>> = {
   [STATE_TYPE.CLOSE_CHART]: makeTransitionState({
     next: STATE_TYPE.FREE,
   }),
+  [STATE_TYPE.ENTER_PUZZLE]: makeTransitionState({
+    next: STATE_TYPE.PUZZLE_MAIN,
+    prev: STATE_TYPE.FREE,
+  }),
+  [STATE_TYPE.EXIT_PUZZLE]: makeTransitionState({
+    next: STATE_TYPE.FREE,
+    prev: STATE_TYPE.PUZZLE_MAIN,
+  }),
 }
 
 function makeTransitionState(props: TransitionProps): TransitionState {
   const { prev, next } = props
 
   return function transition(state: AppState): AppState {
-    const { chart, duration: outgoingDuration, time } = state
+    const { chart, puzzle, duration: outgoingDuration, time } = state
     if (time > outgoingDuration) {
-      return next ? resolve(chart, next, time - outgoingDuration) : state
+      return next ? resolve(chart, puzzle, next, time - outgoingDuration) : state
     } else if (time < 0) {
-      return prev ? resolve(chart, prev, outgoingDuration - time) : state
+      return prev ? resolve(chart, puzzle, prev, outgoingDuration - time) : state
     } else {
       return state
     }
 
-    function resolve(chart: CHART_TYPE | undefined, typeOrPartial: TransitionConfig, time: number): AppState {
+    function resolve(chart: CHART_TYPE | undefined, puzzle: PuzzleSetupModel | undefined, typeOrPartial: TransitionConfig, time: number): AppState {
       return typeof typeOrPartial === 'string'
-        ? withDuration({ chart, type: typeOrPartial, time })
-        : withDuration({ chart, ...typeOrPartial, time })
+        ? withDuration({ chart, puzzle, type: typeOrPartial, time })
+        : withDuration({ chart, puzzle, ...typeOrPartial, time })
     }
   }
 }

@@ -2,13 +2,16 @@ import { Box, Card, CardContent } from '@mui/joy'
 import { Dispatch, Fragment, ReactElement, SetStateAction } from 'react'
 import { AppState, AppStateAction, STATE_TYPE } from 'src/model/app-state'
 import { CategorisationChart, SetInclusionChart } from 'src/model/charts'
+import { MakeCreatures } from 'src/model/creatures'
 import { PopulationModel } from 'src/model/population'
 import { BarChartConfig } from './BarChartConfig'
 import { CarrollDiagramConfig } from './CarrollDiagramConfig'
 import { ChartSlider } from './ChartSlider'
 import { FeatureChoice } from './FeatureChoice'
+import { InTheRingConfig } from './InTheRingConfig'
 import { NewPopulationDialog } from './NewPopulationDialog'
 import { PieChartConfig } from './PieChartConfig'
+import { PuzzleActive } from './PuzzleActive'
 import { VennDiagramConfig } from './VennDiagramConfig'
 import { GLASS_SX } from './glass-sx'
 
@@ -17,6 +20,7 @@ interface Props {
   barChart:         CategorisationChart | undefined
   carrollDiagram:   SetInclusionChart | undefined
   dispatchAppState: (action: AppStateAction) => void
+  makeCreatures:    MakeCreatures | undefined
   maxCount:         number
   pieChart:         CategorisationChart | undefined
   population:       PopulationModel
@@ -25,27 +29,29 @@ interface Props {
   showDialog:       boolean
   state:            AppState
   vennDiagram:      SetInclusionChart | undefined
+  puzzleName:       string
 }
 
 export interface RenderedProps extends Props {
-  barChart:         CategorisationChart
-  carrollDiagram:   SetInclusionChart
-  pieChart:         CategorisationChart
-  vennDiagram:      SetInclusionChart
+  barChart:       CategorisationChart
+  carrollDiagram: SetInclusionChart
+  makeCreatures:  MakeCreatures
+  pieChart:       CategorisationChart
+  vennDiagram:    SetInclusionChart
 }
 
 export function Ui(props: Props): ReactElement | null {
-  const { barChart, carrollDiagram, pieChart, vennDiagram } = props
+  const { barChart, carrollDiagram, makeCreatures, pieChart, vennDiagram } = props
 
-  return barChart && carrollDiagram && pieChart && vennDiagram
-    ? <Component {...props} barChart={barChart} carrollDiagram={carrollDiagram} pieChart={pieChart} vennDiagram={vennDiagram} />
+  return barChart && carrollDiagram && makeCreatures && pieChart && vennDiagram
+    ? <Component {...props} barChart={barChart} carrollDiagram={carrollDiagram} makeCreatures={makeCreatures} pieChart={pieChart} vennDiagram={vennDiagram} />
     : null
 }
 
 function Component(props: RenderedProps): ReactElement {
   const {
-    barChart, carrollDiagram, dispatchAppState, pieChart, population, setPopulation, setShowDialog, showDialog, state,
-    maxCount, vennDiagram,
+    barChart, carrollDiagram, dispatchAppState, makeCreatures, maxCount, pieChart, population, setPopulation,
+    setShowDialog, showDialog, state, vennDiagram, puzzleName,
   } = props
   const { type } = state
 
@@ -75,6 +81,8 @@ function Component(props: RenderedProps): ReactElement {
       case STATE_TYPE.LEAVE_PLACES:           return <ChartSlider state={state} dispatchAppState={dispatchAppState} />
       case STATE_TYPE.PIE_CHART_CONFIG:       return <PieChartConfig pieChart={pieChart} dispatchAppState={dispatchAppState} />
       case STATE_TYPE.VENN_DIAGRAM_CONFIG:    return <VennDiagramConfig diagram={vennDiagram} dispatchAppState={dispatchAppState} />
+      case STATE_TYPE.IN_THE_RING_CONFIG:     return <InTheRingConfig dispatchAppState={dispatchAppState} makeCreatures={makeCreatures} />
+      case STATE_TYPE.PUZZLE_MAIN:            return <PuzzleActive dispatchAppState={dispatchAppState} state={state} name={puzzleName} />
       default:                                return null
     }
   }

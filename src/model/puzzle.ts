@@ -1,9 +1,18 @@
 import { Creature, SetInclusionState, SetInclusionValues } from './creatures'
+import { DrawFurblesProps } from './drawing'
 
-export interface SetInclusionPuzzle {
-  creatures:          Creature[]
-  inGroup:            SetInclusionState
-  outGroup:           SetInclusionValues
-  inGroupCreatures:   Creature[]
-  outGroupCreatures:  Creature[]
+export interface PuzzleModel {
+  creatures: Creature[]
+  name:      string
+  seed:      number
+  drawEnter: (props: DrawFurblesProps, p: number) => void
+  drawMain:  (props: DrawFurblesProps) => void
+  drawExit:  (props: DrawFurblesProps, p: number) => void
+}
+
+export interface InTheRingPuzzle extends PuzzleModel {
+  inGroup:           SetInclusionState
+  outGroup:          SetInclusionValues
+  inGroupCreatures:  Creature[]
+  outGroupCreatures: Creature[]
 }

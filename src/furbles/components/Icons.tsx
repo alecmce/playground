@@ -10,7 +10,12 @@ import Pentagon from '@mui/icons-material/Pentagon'
 import PieChart from '@mui/icons-material/PieChart'
 import Visibility from '@mui/icons-material/Visibility'
 import { createSvgIcon } from '@mui/material'
+import Adjust from '@mui/icons-material/Adjust'
 import { ReactElement } from 'react'
+import LooksOne from '@mui/icons-material/LooksOne'
+import LooksTwo from '@mui/icons-material/LooksTwo'
+import Looks3 from '@mui/icons-material/Looks3'
+
 
 interface Props {
   color?: 'inherit' | 'action' | 'disabled' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
@@ -81,4 +86,20 @@ export function EyesIcon(props: Props): ReactElement {
 
 export function SidesIcon(props: Props): ReactElement {
   return <Pentagon {...props} />
+}
+
+export function InTheRingIcon(props: Props): ReactElement {
+  return <Adjust {...props} />
+}
+
+export function OneIcon(props: Props): ReactElement {
+  return <LooksOne {...props} />
+}
+
+export function TwoIcon(props: Props): ReactElement {
+  return <LooksTwo {...props} />
+}
+
+export function ThreeIcon(props: Props): ReactElement {
+  return <Looks3 {...props} />
 }

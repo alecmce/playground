@@ -2,21 +2,18 @@ import { makeFibonacciCircles } from 'src/lib/fibonacci-circles'
 import { makeRectangleCircles } from 'src/lib/rectangle-circles'
 import { makeRegularPolygon } from 'src/lib/regular-polygon'
 import { Assignment } from 'src/model/charts'
-import { Creature, MakeCreatures } from 'src/model/creatures'
+import { Creature } from 'src/model/creatures'
 import { Circle, Point, Polygon, Rectangle } from 'src/model/geometry'
-import { SetInclusionPuzzle } from 'src/model/puzzle'
+import { InTheRingPuzzle, PuzzleModel } from 'src/model/puzzle'
 import { makePlaceAssignmentOptions } from 'src/util/make-place-assignment-options'
-import { makeSetInclusionPuzzle } from './set-inclusion-puzzle'
 
 interface Props {
-  bounds:        Rectangle
-  complexity:    1 | 2 | 3
-  makeCreatures: MakeCreatures
-  seed?:         number
+  bounds: Rectangle
+  puzzle: InTheRingPuzzle
 }
 
-export interface SetPuzzleConfig {
-  puzzle:       SetInclusionPuzzle
+export interface InTheRingConfig {
+  puzzle:       PuzzleModel
   creatures:    Creature[]
   options:      Assignment<Point, unknown>[]
   circle:       Circle
@@ -34,16 +31,14 @@ interface DiagramIcon {
 
 const DEG_45 = Math.PI / 4
 
-export function makeSetPuzzleConfig(props: Props): SetPuzzleConfig {
-  const { bounds, complexity, makeCreatures, seed } = props
-
-  const puzzle = makeSetInclusionPuzzle({ complexity, makeCreatures, seed })
+export function makeInTheRingConfig(props: Props): InTheRingConfig {
+  const { bounds, puzzle } = props
   const { creatures, inGroup, outGroup, inGroupCreatures, outGroupCreatures } = puzzle
 
   const boundsWidth = Math.abs(bounds.right - bounds.left)
   const boundsHeight = Math.abs(bounds.bottom - bounds.top)
 
-  const center = { x: bounds.left + 3 * boundsWidth / 2, y: bounds.top + boundsHeight / 2 }
+  const center = { x: bounds.left + 3 * boundsWidth / 4, y: bounds.top + boundsHeight / 2 }
   const circleRadius = boundsWidth / 4
   const circle = { center, radius: circleRadius }
 

@@ -1,5 +1,5 @@
 import { Fragment, ReactElement, useCallback, useState } from 'react'
-import { useDrawFurbles } from '../draw-furbles'
+import { drawFurbles } from 'src/draw-furbles'
 import { useDrawingApi } from '../draw/drawing-api'
 import { useAppState } from '../lib/app-state'
 import { useCreatureFactory } from '../lib/creature-factory'
@@ -19,6 +19,7 @@ import { useInitCanvas } from '../use-init-canvas'
 import { useBarChart } from './bar-chart/bar-chart'
 import { useCarrollDiagram } from './carroll-diagram/carroll-diagram'
 import { Ui } from './components/UI'
+import { useCurrentPuzzle } from './components/use-current-puzzle'
 import { makeDefaultPopulation } from './constants'
 import { HANDS } from './lib/draw-hands'
 import { useWaves } from './lib/waves'
@@ -43,18 +44,18 @@ export function Furbles(): ReactElement {
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
 
-  const drawingApi = useDrawingApi({ context })
+  const drawingApi = useDrawingApi({ brush: BRUSH, context })
   const bounds = useBounds(size)
-  const makeCreatures = useCreatureFactory({ drawingApi, maxCount: MAX_COUNT })
   const radius = useRadius({ count, density: DENSITY, size })
-  const creatures = useCreatures({ brush: BRUSH, makeCreatures, population, radius, bounds })
+  const makeCreatures = useCreatureFactory({ bounds, brush: BRUSH, drawingApi, maxCount: MAX_COUNT, radius })
+  const creatures = useCreatures({ makeCreatures, population })
   const pushApart = usePushApart({ creatures })
   const barChart = useBarChart({ bounds, creatures, drawingApi, radius })
   const pieChart = usePieChart({ bounds, count, creatures, drawingApi, radius })
   const carrollDiagram = useCarrollDiagram({ bounds, creatures, drawingApi, radius })
   const vennDiagram = useVennDiagram({ bounds, creatures, drawingApi, radius })
   const waves = useWaves({ brush: BRUSH, drawingApi, duration: WAVE_DURATION })
-  const draw = useDrawFurbles({ barChart, carrollDiagram, creatures, drawingApi, pieChart, pushApart, vennDiagram })
+  const puzzle = useCurrentPuzzle({ bounds, drawingApi, makeCreatures, puzzle: state.puzzle })
 
   const [pointer, setPointer] = useState<Point | null>(null)
 
@@ -68,7 +69,12 @@ export function Furbles(): ReactElement {
 
   useTick(tick)
 
-  draw?.({ pointer, radius, size, state, target })
+  if (drawingApi) {
+    drawFurbles({
+      barChart, brush: BRUSH, carrollDiagram, creatures, drawingApi, pieChart, pointer, pushApart, puzzle, radius, size,
+      state, target, vennDiagram,
+    })
+  }
   waves?.update(Date.now() / 1000)
 
   return (
@@ -83,14 +89,16 @@ export function Furbles(): ReactElement {
         barChart={barChart}
         carrollDiagram={carrollDiagram}
         dispatchAppState={dispatchAppState}
+        makeCreatures={makeCreatures}
+        maxCount={MAX_COUNT}
         pieChart={pieChart}
         population={population}
         setPopulation={setPopulation}
         setShowDialog={setShowDialog}
         showDialog={showDialog}
         state={state}
-        maxCount={MAX_COUNT}
         vennDiagram={vennDiagram}
+        puzzleName={puzzle?.name ?? ''}
       />
     </Fragment>
   )
