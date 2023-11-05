@@ -9,6 +9,7 @@ import { HANDS, makeDrawHands } from './draw-hands'
 
 interface Props {
   brush:      Brush
+  creatures:  Creature[] | undefined
   drawingApi: DrawingApi
   duration:   number
 }
@@ -29,14 +30,15 @@ interface WaveConfig {
 const SCALAR = 5
 const ANGLE = Math.PI / 20
 
+// Passed creatures in to make waves reset when characters change.
 export function useWaves(props: Optional<Props>): Waves | undefined {
-  const { brush, drawingApi, duration } = props
+  const { brush, creatures, drawingApi, duration } = props
 
   return useMemo(() => {
     return brush && drawingApi && duration
-      ? makeWaves({ brush, drawingApi, duration })
+      ? makeWaves({ brush, creatures, drawingApi, duration })
       : undefined
-  }, [brush, drawingApi, duration])
+  }, [brush, creatures, drawingApi, duration])
 }
 
 export function makeWaves(props: Props): Waves {

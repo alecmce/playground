@@ -64,8 +64,8 @@ export const STATE_DURATIONS: Record<STATE_TYPE, number> = {
   [STATE_TYPE.PIE_CHART_CONFIG]:       Infinity,
   [STATE_TYPE.VENN_DIAGRAM_CONFIG]:    Infinity,
   [STATE_TYPE.IN_THE_RING_CONFIG]:     Infinity,
-  [STATE_TYPE.ENTER_PUZZLE]:           500,
-  [STATE_TYPE.EXIT_PUZZLE]:            500,
+  [STATE_TYPE.ENTER_PUZZLE]:           2000,
+  [STATE_TYPE.EXIT_PUZZLE]:            1000,
   [STATE_TYPE.PUZZLE_MAIN]:            Infinity,
 }
 

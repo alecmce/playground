@@ -91,10 +91,9 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
     const { brush, pointer } = props
     const { drawCircle } = drawingApi
 
-    drawCircle({ brush: { ...brush, alpha: proportion }, circle: config.circle })
-    creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
-
-    console.log('drawEnter InTheRingPuzzle', proportion)
+    const alpha = proportion
+    drawCircle({ brush: { ...brush, alpha }, circle: config.circle })
+    creatures.forEach(creature => creature.draw({ alpha, pointer, scale: 1, target: null }))
   }
 
   function drawMain(props: DrawFurblesProps): void {
@@ -103,17 +102,14 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
 
     drawCircle({ brush, circle: config.circle })
     creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
-
-    console.log('drawMain InTheRingPuzzle')
   }
 
   function drawExit(props: DrawFurblesProps, proportion: number): void {
     const { brush, pointer } = props
     const { drawCircle } = drawingApi
 
-    drawCircle({ brush: { ...brush, alpha: 1 - proportion }, circle: config.circle })
-    creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
-
-    console.log('drawExit InTheRingPuzzle', proportion)
+    const alpha = 1 - proportion
+    drawCircle({ brush: { ...brush, alpha }, circle: config.circle })
+    creatures.forEach(creature => creature.draw({ alpha, pointer, scale: 1, target: null }))
   }
 }

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { makeDrawIcon } from 'src/lib/draw-icon'
-import { Brush, DrawingApi, DrawingPrerequisites } from 'src/model/drawing'
+import { DrawingApi, DrawingPrerequisites } from 'src/model/drawing'
 import { Size } from 'src/model/values'
 import { makeApplyBrush } from './apply-brush'
 import { makeApplyFill } from './apply-fill'
@@ -13,20 +13,18 @@ import { makeDrawRectangle } from './draw-rectangle'
 import { makeGetGradient } from './gradients'
 
 interface Props {
-  brush?:   Brush | null
   context?: CanvasRenderingContext2D | null
 }
 
 export function useDrawingApi(props: Props): DrawingApi | undefined {
-  const { brush = null, context } = props
+  const { context } = props
 
   return useMemo(()  => {
-    return context ? makeDrawingApi({ brush, context }) : undefined
-  }, [brush, context])
+    return context ? makeDrawingApi({ context }) : undefined
+  }, [context])
 }
 
 interface DrawingApiProps {
-  brush:   Brush | null
   context: CanvasRenderingContext2D
 }
 

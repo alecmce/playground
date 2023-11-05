@@ -12,10 +12,10 @@ interface DrawRectangleProps {
 }
 
 export function makeDrawRectangle(props: DrawingPrerequisites): DrawRectangle {
-  const { applyBrush, applyFill, brush: defaultBrush = null, context } = props
+  const { applyBrush, applyFill, context } = props
 
   return function drawRectangle(props: DrawRectangleProps): void {
-    const { brush = defaultBrush, fill, rectangle } = props
+    const { brush, fill, rectangle } = props
     const { left, right, top, bottom } = rectangle
 
     fill && applyFill({ fill, draw })

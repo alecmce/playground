@@ -7,7 +7,6 @@ import { Polygon } from 'src/model/geometry'
 import { useInitCanvas } from 'src/use-init-canvas'
 
 const RESOLUTION = 2
-const BRUSH = { alpha: 1, color: 'black', width: 2 * RESOLUTION } as const
 
 interface Props {
   value: string
@@ -51,6 +50,6 @@ export function NumberOfSides(props: Props): ReactElement | null {
 }
 
 function makeDrawPolygonFromContext(context: CanvasRenderingContext2D): DrawPolygon {
-  const props = makeDrawingPrerequisites({ brush: BRUSH, context })
+  const props = makeDrawingPrerequisites({ context })
   return makeDrawPolygon(props)
 }

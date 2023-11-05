@@ -7,7 +7,6 @@ import { Point } from 'src/model/geometry'
 import { useInitCanvas } from 'src/use-init-canvas'
 
 const RESOLUTION = 2
-const BRUSH = { alpha: 1, color: 'black', width: 2 * RESOLUTION } as const
 
 interface Props {
   value: string
@@ -55,7 +54,7 @@ export function NumberOfEyes(props: Props): ReactElement | null {
 }
 
 function makeDrawEyesromContext(context: CanvasRenderingContext2D): DrawEyes {
-  const props = makeDrawingPrerequisites({ brush: BRUSH, context })
+  const props = makeDrawingPrerequisites({ context })
   const drawCircle = makeDrawCircle(props)
   return makeDrawEyes({ drawCircle })
 }

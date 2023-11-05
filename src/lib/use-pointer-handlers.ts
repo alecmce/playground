@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Point } from 'src/model/geometry'
 import { InteractionHandlers } from 'src/model/interaction-handlers'
 
@@ -17,7 +17,7 @@ export function usePointerHandlers<T>(props: Props<T>): void {
 
   const state = useRef<State<T>>({ down: null, isDrag: false, item: null })
 
-  useMemo(() => {
+  useEffect(() => {
     return handlers
       ? makePointerHandlers(handlers)
       : undefined

@@ -2,10 +2,10 @@ import { DrawCircle, DrawCircleProps, DrawingPrerequisites } from 'src/model/dra
 
 
 export function makeDrawCircle(props: DrawingPrerequisites): DrawCircle {
-  const { applyBrush, applyFill, brush: defaultBrush = null, context } = props
+  const { applyBrush, applyFill, context } = props
 
   return function drawCircle(props: DrawCircleProps): void {
-    const { brush = defaultBrush, circle, fill } = props
+    const { brush, circle, fill } = props
     const { center, radius } = circle
 
     fill && applyFill({ fill, draw })

@@ -41,7 +41,7 @@ export function makeCreatureFactory(props: Props): MakeCreatures {
     const random = makeSeededRandom(seed)
 
     const baseScalar = Math.min(1, radius / UNIT_SCALAR)
-    const brush = makeBaseBrush({ brush: baseBrush, radius })
+    const mainBrush = makeBaseBrush({ brush: baseBrush, radius })
 
     return makePositions({ bounds, count, maxCount, radius, seed }).map(makeCreature)
 
@@ -57,17 +57,21 @@ export function makeCreatureFactory(props: Props): MakeCreatures {
       return self
 
       function draw(props: CreatureDrawProps): void {
-        const { pointer: givenPointer, scale, target } = props
+        const { alpha = 1, pointer: givenPointer, scale, target } = props
         const isTarget = target === self
 
         const fill = isTarget
-          ? { color: lighten(color) }
-          : baseFill
+          ? { alpha, color: lighten(color) }
+          : { ...baseFill, alpha }
+
+        const brush = alpha === 1
+          ? mainBrush
+          : { ...mainBrush, alpha }
 
         const pointer = isTarget ? null : givenPointer
 
         drawPolygon({ brush, fill, center, polygon, scale })
-        drawEyes({ brush, center, eyes, pointer, scale: scale * baseScalar })
+        drawEyes({ alpha, brush, center, eyes, pointer, scale: scale * baseScalar })
       }
 
       function isUnder(pointer: Point): boolean {

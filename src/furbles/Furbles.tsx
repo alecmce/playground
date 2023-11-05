@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useCallback, useState } from 'react'
+import { Fragment, ReactElement, useCallback, useEffect, useState } from 'react'
 import { drawFurbles } from 'src/draw-furbles'
 import { useDrawingApi } from '../draw/drawing-api'
 import { useAppState } from '../lib/app-state'
@@ -44,18 +44,21 @@ export function Furbles(): ReactElement {
   const [target, setTarget] = useState<Creature | null>(null)
   const [state, dispatchAppState] = useAppState()
 
-  const drawingApi = useDrawingApi({ brush: BRUSH, context })
+  const drawingApi = useDrawingApi({ context })
   const bounds = useBounds(size)
   const radius = useRadius({ count, density: DENSITY, size })
   const makeCreatures = useCreatureFactory({ bounds, brush: BRUSH, drawingApi, maxCount: MAX_COUNT, radius })
-  const creatures = useCreatures({ makeCreatures, population })
+  const puzzle = useCurrentPuzzle({ bounds, drawingApi, makeCreatures, puzzle: state.puzzle })
+  const creatures = useCreatures({ makeCreatures, population, puzzle })
+  useEffect(() => {
+    console.log(creatures)
+  }, [creatures])
   const pushApart = usePushApart({ creatures })
   const barChart = useBarChart({ bounds, creatures, drawingApi, radius })
   const pieChart = usePieChart({ bounds, count, creatures, drawingApi, radius })
   const carrollDiagram = useCarrollDiagram({ bounds, creatures, drawingApi, radius })
   const vennDiagram = useVennDiagram({ bounds, creatures, drawingApi, radius })
-  const waves = useWaves({ brush: BRUSH, drawingApi, duration: WAVE_DURATION })
-  const puzzle = useCurrentPuzzle({ bounds, drawingApi, makeCreatures, puzzle: state.puzzle })
+  const waves = useWaves({ brush: BRUSH, creatures, drawingApi, duration: WAVE_DURATION })
 
   const [pointer, setPointer] = useState<Point | null>(null)
 

@@ -2,10 +2,10 @@ import { DrawCircleSector, DrawCircleSectorProps, DrawingPrerequisites } from 's
 import { Point } from 'src/model/geometry'
 
 export function makeDrawCircleSector(props: DrawingPrerequisites): DrawCircleSector {
-  const { applyBrush, applyFill, brush: defaultBrush = null, context } = props
+  const { applyBrush, applyFill, context } = props
 
   return function drawCircleSector(props: DrawCircleSectorProps): void {
-    const { brush = defaultBrush, fill, circle, angle, theta, inner = 0 } = props
+    const { brush, fill, circle, angle, theta, inner = 0 } = props
     const { center, radius } = circle
 
     const a = getPoint(angle, inner)

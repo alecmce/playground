@@ -2,10 +2,10 @@ import { DrawPolygon, DrawPolygonProps, DrawingPrerequisites } from 'src/model/d
 import { Point } from 'src/model/geometry'
 
 export function makeDrawPolygon(props: DrawingPrerequisites): DrawPolygon {
-  const { applyBrush, applyFill, brush: defaultBrush = null, context } = props
+  const { applyBrush, applyFill, context } = props
 
   return function drawPolygon(props: DrawPolygonProps): void {
-    const { brush = defaultBrush, fill, center = { x: 0, y: 0 }, polygon, scale = 1 } = props
+    const { brush, fill, center = { x: 0, y: 0 }, polygon, scale = 1 } = props
 
     fill && applyFill({ fill, draw })
     brush && applyBrush({ brush, draw })

@@ -27,7 +27,11 @@ export function makeDrawEyes(props: Props): DrawEyes {
   const { drawCircle } = props
 
   return function drawEyes(props: DrawEyesProps): void {
-    const { brush, center: shapeCenter, eyes, pointer, scale } = props
+    const { alpha = 1, brush: baseBrush, center: shapeCenter, eyes, pointer, scale } = props
+
+    const brush = alpha !== 1 && baseBrush ? { ...baseBrush, alpha } : baseBrush
+    const fill = alpha === 1 ? FILL : { ...FILL, alpha }
+    const irisFill = alpha === 1 ? IRIS_FILL : { ...IRIS_FILL, alpha }
 
     getOffsets().forEach(drawEye)
 
@@ -45,9 +49,8 @@ export function makeDrawEyes(props: Props): DrawEyes {
     function drawEye(offset: Point): void {
       const origin = { x: shapeCenter.x + offset.x * scale, y: shapeCenter.y + offset.y * scale }
 
-      drawCircle({ fill: FILL, brush, circle: { center: origin, radius: RADIUS * scale } })
-      drawCircle({ fill: IRIS_FILL, circle: getIrisCircle() })
-
+      drawCircle({ brush, fill, circle: { center: origin, radius: RADIUS * scale } })
+      drawCircle({ fill: irisFill, circle: getIrisCircle() })
 
       function getIrisCircle(): Circle {
         const dx = pointer ? pointer.x - origin.x : 0

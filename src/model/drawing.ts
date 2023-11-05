@@ -27,7 +27,6 @@ export interface Fill {
 }
 
 export interface DrawingPrerequisites {
-  brush:      Brush | null
   applyBrush: ApplyBrush
   applyFill:  ApplyFill
   context:    CanvasRenderingContext2D
@@ -75,6 +74,7 @@ export interface DrawCircleSector {
 }
 
 export interface DrawEyesProps {
+  alpha?:  number
   brush?:  Brush
   center:  Point
   eyes:    string

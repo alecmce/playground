@@ -5,6 +5,7 @@ export interface CreatureDrawProps {
   pointer: Point | null
   scale:   number
   target:  Creature | null
+  alpha?:  number
 }
 
 export interface Creature {
