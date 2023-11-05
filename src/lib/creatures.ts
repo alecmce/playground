@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Creature, MakeCreatures } from 'src/model/creatures'
 import { PopulationModel } from 'src/model/population'
 import { PuzzleModel } from 'src/model/puzzle'
@@ -12,13 +12,18 @@ interface Props {
 export function useCreatures(props: Partial<Props> = {}): Creature[] | undefined {
   const { makeCreatures, population, puzzle } = props
 
-  return useMemo(() => {
-    if (puzzle) {
-      return puzzle.creatures
-    } else {
-      return makeCreatures && population
-        ? makeCreatures(population)
-        : undefined
-    }
+  const [creatures, setCreatures] = useState<Creature[] | undefined>(undefined)
+
+  useEffect(() => {
+    const creatures = makeCreatures && population
+      ? makeCreatures(population)
+      : undefined
+    setCreatures(creatures)
   }, [makeCreatures, population])
+
+  return useMemo(() => {
+    return puzzle
+      ? puzzle.creatures
+      : creatures
+  }, [creatures, puzzle])
 }

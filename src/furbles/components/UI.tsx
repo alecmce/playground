@@ -48,25 +48,28 @@ export function Ui(props: Props): ReactElement | null {
     : null
 }
 
-function Component(props: RenderedProps): ReactElement {
+function Component(props: RenderedProps): ReactElement | null {
   const {
     barChart, carrollDiagram, dispatchAppState, makeCreatures, maxCount, pieChart, population, setPopulation,
     setShowDialog, showDialog, state, vennDiagram, puzzleName,
   } = props
   const { type } = state
 
-  return (
-    <Box sx={{ position: 'absolute', bottom: 20, display: 'flex', justifyContent: 'center', width: '100%' }}>
-      <Card variant="soft" sx={{ '&': GLASS_SX }}>
-        <CardContent sx={{
-          '&.MuiCardContent-root': { backgroundColor: 'transparent' },
-          '&': { backgroundColor: 'transparent' },
-        }}>
-          { getContents() }
-        </CardContent>
-      </Card>
-    </Box>
-  )
+  const contents = getContents()
+
+  return contents
+    ? (
+      <Box sx={{ position: 'absolute', bottom: 20, display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <Card variant="soft" sx={{ '&': GLASS_SX }}>
+          <CardContent sx={{
+            '&.MuiCardContent-root': { backgroundColor: 'transparent' },
+            '&': { backgroundColor: 'transparent' },
+          }}>
+            { contents }
+          </CardContent>
+        </Card>
+      </Box>
+    ) : null
 
   function getContents(): ReactElement | null {
     switch (type) {
