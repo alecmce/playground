@@ -84,7 +84,7 @@ function Component(props: RenderedProps): ReactElement | null {
       case STATE_TYPE.LEAVE_PLACES:           return <ChartSlider state={state} dispatchAppState={dispatchAppState} />
       case STATE_TYPE.PIE_CHART_CONFIG:       return <PieChartConfig pieChart={pieChart} dispatchAppState={dispatchAppState} />
       case STATE_TYPE.VENN_DIAGRAM_CONFIG:    return <VennDiagramConfig diagram={vennDiagram} dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.IN_THE_RING_CONFIG:     return <InTheRingConfig dispatchAppState={dispatchAppState} makeCreatures={makeCreatures} />
+      case STATE_TYPE.IN_THE_RING_CONFIG:     return <InTheRingConfig dispatchAppState={dispatchAppState} />
       case STATE_TYPE.PUZZLE_MAIN:            return <PuzzleActive dispatchAppState={dispatchAppState} state={state} name={puzzleName} />
       default:                                return null
     }

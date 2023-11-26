@@ -1,3 +1,4 @@
+import { assignOptions } from 'src/lib/assign-options'
 import { makeFibonacciCircles } from 'src/lib/fibonacci-circles'
 import { makeRectangleCircles } from 'src/lib/rectangle-circles'
 import { makeRegularPolygon } from 'src/lib/regular-polygon'
@@ -15,10 +16,11 @@ interface Props {
 export interface InTheRingConfig {
   puzzle:       PuzzleModel
   creatures:    Creature[]
-  options:      Assignment<Point, unknown>[]
+  assignments:  Assignment<Point, unknown>[]
   circle:       Circle
   solution:     DiagramIcon
   radius:       number
+  outGroupCircles: Circle[]
 }
 
 interface DiagramIcon {
@@ -33,7 +35,7 @@ const DEG_45 = Math.PI / 4
 
 export function makeInTheRingConfig(props: Props): InTheRingConfig {
   const { bounds, puzzle } = props
-  const { creatures, inGroup, outGroup, inGroupCreatures, outGroupCreatures } = puzzle
+  const { creatures, inGroup, joinGroup, inGroupCreatures } = puzzle
 
   const boundsWidth = Math.abs(bounds.right - bounds.left)
   const boundsHeight = Math.abs(bounds.bottom - bounds.top)
@@ -44,22 +46,19 @@ export function makeInTheRingConfig(props: Props): InTheRingConfig {
 
   const inGroupCircles = makeFibonacciCircles({ center, count: inGroupCreatures.length, radius: circleRadius })
   const outGroupBounds = { ...bounds, right: bounds.left + boundsWidth / 2 }
-  const outGroupCircles = makeRectangleCircles({ count: outGroupCreatures.length, rectangle: outGroupBounds })
+  const outGroupCircles = makeRectangleCircles({ count: creatures.length, rectangle: outGroupBounds })
   const radius = Math.min(getRadius(inGroupCircles), getRadius(outGroupCircles))
 
-  const options = getOptions()
+  const assignments = assignOptions(getOptions())
+  assignments.forEach(setAssignment)
+
   const solution = getIcon()
 
-  return { creatures, options, puzzle, circle, solution, radius }
+  return { creatures, assignments, puzzle, circle, solution, radius, outGroupCircles }
 
   function getOptions(): Assignment<Point, unknown>[] {
-    const inGroupPlaces = inGroupCircles.map(toPoint)
-    const outGroupPlaces = outGroupCircles.map(toPoint)
-
-    return [
-      ...makePlaceAssignmentOptions({ categories: outGroup, creatures: outGroupCreatures, places: outGroupPlaces }),
-      ...makePlaceAssignmentOptions({ categories: inGroup, creatures: inGroupCreatures, places: inGroupPlaces }),
-    ]
+    const places = outGroupCircles.map(toPoint)
+    return makePlaceAssignmentOptions({ categories: joinGroup, creatures, places })
   }
 
   function getIcon(): DiagramIcon {
@@ -71,6 +70,12 @@ export function makeInTheRingConfig(props: Props): InTheRingConfig {
 
     return { ...inGroup, center: { x: x + dx, y: y + dy }, radius, sides }
   }
+}
+
+function setAssignment(assignment: Assignment<Point, unknown>): void {
+  const { creature, place } = assignment
+  creature.center.x = place.x
+  creature.center.y = place.y
 }
 
 function toPoint(circle: Circle): Point {

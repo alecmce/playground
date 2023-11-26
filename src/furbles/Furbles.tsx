@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useCallback, useEffect, useState } from 'react'
+import { Fragment, ReactElement, useCallback, useState } from 'react'
 import { drawFurbles } from 'src/draw-furbles'
 import { useDrawingApi } from '../draw/drawing-api'
 import { useAppState } from '../lib/app-state'
@@ -50,9 +50,6 @@ export function Furbles(): ReactElement {
   const makeCreatures = useCreatureFactory({ bounds, brush: BRUSH, drawingApi, maxCount: MAX_COUNT, radius })
   const puzzle = useCurrentPuzzle({ bounds, drawingApi, makeCreatures, puzzle: state.puzzle })
   const creatures = useCreatures({ makeCreatures, population, puzzle })
-  useEffect(() => {
-    console.log(creatures)
-  }, [creatures])
   const pushApart = usePushApart({ creatures })
   const barChart = useBarChart({ bounds, creatures, drawingApi, radius })
   const pieChart = usePieChart({ bounds, count, creatures, drawingApi, radius })

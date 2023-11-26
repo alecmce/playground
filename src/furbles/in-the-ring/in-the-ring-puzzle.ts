@@ -46,11 +46,17 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
     [SIDES]: isUsed(SIDES) ? sides.slice(1)  : undefined,
   })
 
+  const joinGroup = prune({
+    [COLOR]: colors,
+    [EYES]: eyes,
+    [SIDES]: sides,
+  })
+
   const [inGroupCreatures, outGroupCreatures] = splitArray(creatures, isInGroup)
 
-  const puzzle: InTheRingPuzzle = { creatures, drawEnter, drawMain, drawExit, inGroup, inGroupCreatures, name, outGroup, outGroupCreatures, seed }
+  const puzzle: InTheRingPuzzle = { creatures, drawEnter, drawMain, drawExit, inGroup, joinGroup, inGroupCreatures, name, outGroup, outGroupCreatures, seed }
   const config = makeInTheRingConfig({ bounds, puzzle })
-  return puzzle
+  return { ...puzzle }
 
   function getValues(values: string[], target: CATEGORY): string[] {
     return random.list(values, getColorCount())

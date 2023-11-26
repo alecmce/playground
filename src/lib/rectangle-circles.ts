@@ -19,7 +19,7 @@ export function makeRectangleCircles(props: Props): Circle[] {
   const height = Math.abs(bottom - top)
 
   const longestSide = Math.max(width, height)
-  const ratio = longestSide / Math.min(width, height)
+  const shortestSide = Math.min(width, height)
 
   const { radius, divisions } = Array.from({ length: count }, (_, i) => i + 1)
     .map(getRadiusForDivisions)
@@ -39,7 +39,7 @@ export function makeRectangleCircles(props: Props): Circle[] {
 
   function getRadiusForDivisions(divisions: number): RadiusForDivisions {
     const longest = longestSide / divisions
-    const shortest = Math.ceil(longest / ratio)
+    const shortest = shortestSide / Math.ceil(count / divisions)
 
     const longRadius = longest / 2
     const shortRadius = (shortest + 1) / 2

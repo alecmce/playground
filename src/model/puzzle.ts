@@ -13,6 +13,7 @@ export interface PuzzleModel {
 export interface InTheRingPuzzle extends PuzzleModel {
   inGroup:           SetInclusionState
   outGroup:          SetInclusionValues
+  joinGroup:         SetInclusionValues
   inGroupCreatures:  Creature[]
   outGroupCreatures: Creature[]
 }

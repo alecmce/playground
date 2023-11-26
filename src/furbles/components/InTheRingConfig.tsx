@@ -2,13 +2,11 @@ import { KeyboardArrowDown } from '@mui/icons-material'
 import { Option, Select, Stack } from '@mui/joy'
 import { ReactElement, useState } from 'react'
 import { AppStateAction, PUZZLE_TYPE, PuzzleSetupModel, STATE_TYPE, jump } from 'src/model/app-state'
-import { MakeCreatures } from 'src/model/creatures'
 import { CloseButton } from './CloseButton'
 import { GoButton } from './GoButton'
 
 export interface Props {
   dispatchAppState: (action: AppStateAction) => void
-  makeCreatures:    MakeCreatures
 }
 
 export function InTheRingConfig(props: Props): ReactElement {
@@ -33,7 +31,7 @@ export function InTheRingConfig(props: Props): ReactElement {
           <Option value={3}>Level 3</Option>
         </Select>
       </Stack>
-      <GoButton label={`Select ${name} Diagram`} onClick={onClick} />
+      <GoButton label={'Select Puzzle'} onClick={onClick} />
     </Stack>
   )
 
