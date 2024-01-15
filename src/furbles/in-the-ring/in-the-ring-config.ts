@@ -3,24 +3,24 @@ import { makeFibonacciCircles } from 'src/lib/fibonacci-circles'
 import { makeRectangleCircles } from 'src/lib/rectangle-circles'
 import { makeRegularPolygon } from 'src/lib/regular-polygon'
 import { Assignment } from 'src/model/charts'
-import { Creature } from 'src/model/creatures'
+import { Creature, SetInclusionState, SetInclusionValues } from 'src/model/creatures'
 import { Circle, Point, Polygon, Rectangle } from 'src/model/geometry'
-import { InTheRingPuzzle, PuzzleModel } from 'src/model/puzzle'
 import { makePlaceAssignmentOptions } from 'src/util/make-place-assignment-options'
 
 interface Props {
-  bounds: Rectangle
-  puzzle: InTheRingPuzzle
+  bounds:           Rectangle
+  creatures:        Creature[]
+  inGroup:          SetInclusionState
+  inGroupCreatures: Creature[]
+  joinGroup:        SetInclusionValues
 }
 
 export interface InTheRingConfig {
-  puzzle:       PuzzleModel
-  creatures:    Creature[]
-  assignments:  Assignment<Point, unknown>[]
-  circle:       Circle
-  solution:     DiagramIcon
-  radius:       number
-  outGroupCircles: Circle[]
+  creatures:       Creature[]
+  assignments:     Assignment<Point, unknown>[]
+  circle:          Circle
+  solution:        DiagramIcon
+  radius:          number
 }
 
 interface DiagramIcon {
@@ -34,8 +34,7 @@ interface DiagramIcon {
 const DEG_45 = Math.PI / 4
 
 export function makeInTheRingConfig(props: Props): InTheRingConfig {
-  const { bounds, puzzle } = props
-  const { creatures, inGroup, joinGroup, inGroupCreatures } = puzzle
+  const { bounds, creatures, inGroup, joinGroup, inGroupCreatures } = props
 
   const boundsWidth = Math.abs(bounds.right - bounds.left)
   const boundsHeight = Math.abs(bounds.bottom - bounds.top)
@@ -54,7 +53,7 @@ export function makeInTheRingConfig(props: Props): InTheRingConfig {
 
   const solution = getIcon()
 
-  return { creatures, assignments, puzzle, circle, solution, radius, outGroupCircles }
+  return { creatures, assignments, circle, solution, radius }
 
   function getOptions(): Assignment<Point, unknown>[] {
     const places = outGroupCircles.map(toPoint)

@@ -16,8 +16,6 @@ export function Home(): ReactElement {
               name="Furbles"
               description="Explores the relationship between categorical data and its visualisations."
               tags="Statistics, Data, Bar Charts, Pie Charts, Carroll Diagrams, Venn Diagrams"
-              scottishRef="MNU 1..4-20a"
-              englishRef="Statistics"
               link="/furbles"
             />
           </Grid>

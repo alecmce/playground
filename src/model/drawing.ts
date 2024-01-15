@@ -3,7 +3,7 @@ import { ApplyFill } from 'src/draw/apply-fill'
 import { DrawRectangle } from 'src/draw/draw-rectangle'
 import { Circle, Point, Polygon } from './geometry'
 import { Size } from './values'
-import { PuzzleModel } from './puzzle'
+import { Puzzle } from './puzzle'
 import { AppState } from './app-state'
 import { Creature } from './creatures'
 
@@ -129,7 +129,7 @@ export interface DrawIcon {
 export interface DrawFurblesProps {
   brush:   Brush
   pointer: Point | null
-  puzzle:  PuzzleModel | null
+  puzzle:  Puzzle | null
   radius:  number
   size:    Size
   state:   AppState

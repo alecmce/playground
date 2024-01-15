@@ -1,9 +1,11 @@
+import { mix } from 'chroma-js'
 import { splitArray } from 'src/lib/array-util'
+import { getDistance } from 'src/lib/math-utils'
 import { getRandomSeed, makeSeededRandom } from 'src/lib/seeded-random'
 import { CATEGORY, Creature, MakeCreatures } from 'src/model/creatures'
 import { DrawFurblesProps, DrawingApi } from 'src/model/drawing'
-import { Rectangle } from 'src/model/geometry'
-import { InTheRingPuzzle } from 'src/model/puzzle'
+import { Point, Rectangle } from 'src/model/geometry'
+import { Puzzle } from 'src/model/puzzle'
 import { prune } from 'src/util/object-util'
 import { COLORS as COLOR_VALUES, EYES as EYES_VALUES, SIDES as SIDES_VALUES } from '../constants'
 import { makeInTheRingConfig } from './in-the-ring-config'
@@ -18,7 +20,7 @@ interface Props {
 
 const { COLOR, EYES, SIDES } = CATEGORY
 
-export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
+export function makeInTheRingPuzzle(props: Props): Puzzle {
   const { bounds, complexity, drawingApi, makeCreatures, seed = getRandomSeed()} = props
 
   const name = `In The Ring • Level ${complexity}`
@@ -32,6 +34,9 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
   const sides = getValues(SIDES_VALUES.map(s => s.value), SIDES)
   const count = getCount()
 
+  let successFlash = 0
+  const walks: Walk[] = []
+
   const creatures = makeCreatures({ colors, count, eyes, seed, sides })
 
   const inGroup = prune({
@@ -40,23 +45,18 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
     [SIDES]: isUsed(SIDES) ? sides[0]  : undefined,
   })
 
-  const outGroup = prune({
-    [COLOR]: isUsed(COLOR) ? colors.slice(1) : undefined,
-    [EYES]:  isUsed(EYES)  ? eyes.slice(1)   : undefined,
-    [SIDES]: isUsed(SIDES) ? sides.slice(1)  : undefined,
-  })
-
   const joinGroup = prune({
     [COLOR]: colors,
     [EYES]: eyes,
     [SIDES]: sides,
   })
 
-  const [inGroupCreatures, outGroupCreatures] = splitArray(creatures, isInGroup)
+  const [inGroupCreatures] = splitArray(creatures, isInGroup)
 
-  const puzzle: InTheRingPuzzle = { creatures, drawEnter, drawMain, drawExit, inGroup, joinGroup, inGroupCreatures, name, outGroup, outGroupCreatures, seed }
-  const config = makeInTheRingConfig({ bounds, puzzle })
-  return { ...puzzle }
+  const puzzle: Puzzle = { creatures, drawEnter, drawMain, drawExit, name, seed, onDrop }
+  const config = makeInTheRingConfig({ bounds, creatures, inGroup, inGroupCreatures, joinGroup })
+  return puzzle
+
 
   function getValues(values: string[], target: CATEGORY): string[] {
     return random.list(values, getColorCount())
@@ -106,7 +106,21 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
     const { brush, pointer } = props
     const { drawCircle } = drawingApi
 
-    drawCircle({ brush, circle: config.circle })
+    walks.forEach(walk => walk.update())
+
+    if (successFlash > 0) {
+      successFlash -= 0.016
+      const { width, color } = brush
+      const flashBrush = {
+        ...brush,
+        width: width * (1 + successFlash * 3),
+        color: mix(color as string, 'lime', successFlash * 2).hex(),
+      }
+      drawCircle({ brush: flashBrush, circle: config.circle })
+    } else {
+      successFlash = 0.000
+      drawCircle({ brush, circle: config.circle })
+    }
     creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
   }
 
@@ -118,4 +132,38 @@ export function makeInTheRingPuzzle(props: Props): InTheRingPuzzle {
     drawCircle({ brush: { ...brush, alpha }, circle: config.circle })
     creatures.forEach(creature => creature.draw({ alpha, pointer, scale: 1, target: null }))
   }
+
+  function onDrop(down: Point, current: Point, creature: Creature): void {
+    if (isDroppedInCircle()) {
+      return isInGroup()
+        ? acceptCreature()
+        : rejectCreature()
+    }
+
+    console.log('puzzle.onDrop', down, current, creature)
+
+    function isDroppedInCircle(): boolean {
+      const { circle: { center, radius } } = config
+      return getDistance(center, current) < radius
+    }
+
+    function isInGroup(): boolean {
+      return inGroupCreatures.includes(creature)
+    }
+
+    function acceptCreature(): void {
+      successFlash = 1.0
+    }
+
+    function rejectCreature(): void {
+
+    }
+  }
+}
+
+
+interface Walk {
+  creature: Creature
+  target:   Point
+  update:   VoidFunction
 }

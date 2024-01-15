@@ -61,7 +61,7 @@ export function Furbles(): ReactElement {
 
   const chart = useCurrentChart({ type: state.chart, barChart, carrollDiagram, pieChart })
   const onClick = useCallback((creature: Creature | null) => creature && waves?.apply(creature, HANDS.BOTH), [waves])
-  useCreatureInteraction({ chart, creatures, enabled: !showDialog, onClick, setPointer, setTarget })
+  useCreatureInteraction({ chart, creatures, enabled: !showDialog, onClick, puzzle, setPointer, setTarget })
 
   const tick = useCallback((deltaTime: number) => {
     dispatchAppState(iterate(deltaTime))

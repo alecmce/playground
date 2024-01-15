@@ -1,20 +1,17 @@
 import { CSSObject } from '@emotion/react'
 import { Button, Card, CardActions, CardContent, Stack, Theme, Typography } from '@mui/joy'
 import { ReactElement } from 'react'
-import { CurriculumRefs } from './CurriculumRefs'
 
 
 interface Props {
   description: string
-  englishRef:  string
   link:        string
   name:        string
-  scottishRef: string
   tags:        string
 }
 
 export function AppCard(props: Props): ReactElement {
-  const { description, englishRef, link, name, scottishRef, tags } = props
+  const { description, link, name, tags } = props
   return (
     <Card size="sm" variant="soft" sx={{width: 300}}>
       <CardContent>
@@ -27,7 +24,6 @@ export function AppCard(props: Props): ReactElement {
             { tags }
           </Typography>
         </Stack>
-        <CurriculumRefs scottishRef={scottishRef} englishRef={englishRef} />
       </CardContent>
       <CardActions>
         <Button component="a" href={link} sx={sx}>Open</Button>

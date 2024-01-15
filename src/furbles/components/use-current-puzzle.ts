@@ -3,7 +3,7 @@ import { PUZZLE_TYPE, PuzzleSetupModel } from 'src/model/app-state'
 import { MakeCreatures } from 'src/model/creatures'
 import { DrawingApi } from 'src/model/drawing'
 import { Rectangle } from 'src/model/geometry'
-import { PuzzleModel } from 'src/model/puzzle'
+import { Puzzle } from 'src/model/puzzle'
 import { makeInTheRingPuzzle } from '../in-the-ring/in-the-ring-puzzle'
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 }
 
 // TODO: Make bounds mutate current puzzle
-export function useCurrentPuzzle(props: Props): PuzzleModel | null {
+export function useCurrentPuzzle(props: Props): Puzzle | null {
   const { bounds, drawingApi, makeCreatures, puzzle } = props
 
   return useMemo(() => {
@@ -31,7 +31,7 @@ interface DefinedProps {
   puzzle:        PuzzleSetupModel
 }
 
-function makePuzzle(props: DefinedProps): PuzzleModel | null {
+function makePuzzle(props: DefinedProps): Puzzle | null {
   const { bounds, drawingApi, makeCreatures, puzzle } = props
   const { complexity, seed, type } = puzzle
 

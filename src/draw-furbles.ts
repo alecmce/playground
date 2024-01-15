@@ -5,7 +5,7 @@ import { CategorisationChart, Chart, SetInclusionChart } from './model/charts'
 import { Creature } from './model/creatures'
 import { DrawFurblesProps, DrawingApi } from './model/drawing'
 import { PushApart } from './model/push-apart'
-import { PuzzleModel } from './model/puzzle'
+import { Puzzle } from './model/puzzle'
 
 const SCALAR = 0.01 as const
 
@@ -16,7 +16,7 @@ interface Props extends DrawFurblesProps {
   drawingApi:     DrawingApi
   pieChart:       CategorisationChart | undefined
   pushApart:      PushApart | undefined
-  puzzle:         PuzzleModel | null
+  puzzle:         Puzzle | null
   vennDiagram:    SetInclusionChart | undefined
 }
 

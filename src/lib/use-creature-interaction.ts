@@ -4,15 +4,17 @@ import { Creature } from 'src/model/creatures'
 import { Point } from 'src/model/geometry'
 import { POINTER_ACTION } from 'src/model/interaction'
 import { InteractionHandlers } from 'src/model/interaction-handlers'
+import { Puzzle } from 'src/model/puzzle'
 import { usePointerHandlers } from './use-pointer-handlers'
 
 interface Props {
   chart:      Chart<any> | undefined
   creatures:  Creature[] | undefined
   enabled:    boolean
+  onClick?:   (creature: Creature | null) => void
+  puzzle:     Puzzle | null
   setPointer: Dispatch<SetStateAction<Point | null>>
   setTarget:  Dispatch<SetStateAction<Creature | null>>
-  onClick?:   (creature: Creature | null) => void
 }
 
 const NULL_HANDLERS: InteractionHandlers<Creature | null> = {
@@ -26,7 +28,7 @@ const NULL_HANDLERS: InteractionHandlers<Creature | null> = {
 }
 
 export function useCreatureInteraction(props: Props): void {
-  const { chart, creatures, enabled, onClick, setPointer, setTarget } = props
+  const { chart, creatures, enabled, onClick, puzzle, setPointer, setTarget } = props
 
   const initial = useRef<Point>({ x: 0, y: 0 })
 
@@ -73,11 +75,13 @@ export function useCreatureInteraction(props: Props): void {
         }
       }
 
-      function onDrop(): void {
-
+      function onDrop(down: Point, current: Point, target: Creature | null): void {
+        if (puzzle && target) {
+          puzzle.onDrop(down, current, target)
+        }
       }
     }
-  }, [chart, creatures, enabled, initial, setPointer, setTarget])
+  }, [chart, creatures, enabled, initial, puzzle, setPointer, setTarget])
 
   usePointerHandlers<Creature | null>({ handlers })
 }

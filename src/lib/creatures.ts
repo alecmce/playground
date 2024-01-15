@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Creature, MakeCreatures } from 'src/model/creatures'
 import { PopulationModel } from 'src/model/population'
-import { PuzzleModel } from 'src/model/puzzle'
+import { Puzzle } from 'src/model/puzzle'
 
 interface Props {
   makeCreatures: MakeCreatures | undefined
   population:    PopulationModel
-  puzzle:        PuzzleModel | null
+  puzzle:        Puzzle | null
 }
 
 export function useCreatures(props: Partial<Props> = {}): Creature[] | undefined {
