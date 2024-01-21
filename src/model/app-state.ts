@@ -27,13 +27,14 @@ export enum PUZZLE_TYPE {
   IN_THE_RING = 'in-the-ring',
 }
 
-export interface AppState {
+export interface AppState<Metadata = object> {
   type:      STATE_TYPE
   duration:  number
   time:      number
   isPaused?: boolean
   chart?:    CHART_TYPE
   puzzle?:   PuzzleSetupModel
+  metadata?: Metadata
 }
 
 export interface PuzzleSetupModel {
@@ -42,13 +43,14 @@ export interface PuzzleSetupModel {
   type:       PUZZLE_TYPE
 }
 
-export type AppStateAction = JumpAction | IterateAction | TriggerPieAction | TogglePauseAction
+export type AppStateAction = JumpAction | IterateAction | TriggerPieAction | TogglePauseAction | SetMetadataAction
 
 export enum STATE_ACTION_TYPE {
-  TRIGGER_PIE  = 'toggle-pie',
-  TOGGLE_PAUSE = 'toggle-pause',
-  JUMP         = 'jump',
   ITERATE      = 'iterate',
+  JUMP         = 'jump',
+  SET_METADATA = 'set-metadata',
+  TOGGLE_PAUSE = 'toggle-pause',
+  TRIGGER_PIE  = 'toggle-pie',
 }
 
 interface JumpAction {
@@ -83,4 +85,13 @@ interface TogglePauseAction {
 
 export function togglePause(): TogglePauseAction {
   return { type: STATE_ACTION_TYPE.TOGGLE_PAUSE }
+}
+
+interface SetMetadataAction {
+  type: typeof STATE_ACTION_TYPE.SET_METADATA
+  metadata: object
+}
+
+export function setMetadata(metadata: object): SetMetadataAction {
+  return { type: STATE_ACTION_TYPE.SET_METADATA, metadata }
 }

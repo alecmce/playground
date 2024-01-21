@@ -32,6 +32,7 @@ const MAX_COUNT = 400 as const
 const WAVE_DURATION = 1.5 as const
 
 export function Furbles(): ReactElement {
+  const [infoContainer, setInfoContainer] = useState<HTMLDivElement | null>(null)
   const [showDialog, setShowDialog] = useState(false)
 
   const [population, setPopulation] = useState<PopulationModel>(makeDefaultPopulation())
@@ -48,7 +49,7 @@ export function Furbles(): ReactElement {
   const bounds = useBounds(size)
   const radius = useRadius({ count, density: DENSITY, size })
   const makeCreatures = useCreatureFactory({ bounds, brush: BRUSH, drawingApi, maxCount: MAX_COUNT, radius })
-  const puzzle = useCurrentPuzzle({ bounds, drawingApi, makeCreatures, puzzle: state.puzzle })
+  const puzzle = useCurrentPuzzle({ bounds, dispatchAppState, drawingApi, makeCreatures, puzzle: state.puzzle })
   const creatures = useCreatures({ makeCreatures, population, puzzle })
   const pushApart = usePushApart({ creatures })
   const barChart = useBarChart({ bounds, creatures, drawingApi, radius })
@@ -83,12 +84,16 @@ export function Furbles(): ReactElement {
         ref={setCanvas}
         width={width}
         height={height}
-        style={{ position: 'absolute', width, height: height, left: 0, top: 0 }}
+        style={{ position: 'absolute', width, height, left: 0, top: 0 }}
       />
+      <div style={{ position: 'absolute', display: 'flex', width: '100%', top: '20px', alignItems: 'center', justifyContent: 'center' }}>
+        <div ref={setInfoContainer} />
+      </div>
       <Ui
         barChart={barChart}
         carrollDiagram={carrollDiagram}
         dispatchAppState={dispatchAppState}
+        infoContainer={infoContainer}
         makeCreatures={makeCreatures}
         maxCount={MAX_COUNT}
         pieChart={pieChart}

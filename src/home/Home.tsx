@@ -20,6 +20,14 @@ export function Home(): ReactElement {
             />
           </Grid>
           <Grid spacing={2}>
+            <AppCard
+              name="Grid Algebra"
+              description="Explore the relationships between numbers in a grid."
+              tags="Number, Algebra"
+              link="https://gridalgebra.com/"
+            />
+          </Grid>
+          <Grid spacing={2}>
             <PlaceholderCard
               name="Primitives"
               description="Explores the structure of numbers as a combination of prime factors."

@@ -2,26 +2,29 @@ import { mix } from 'chroma-js'
 import { splitArray } from 'src/lib/array-util'
 import { getDistance } from 'src/lib/math-utils'
 import { getRandomSeed, makeSeededRandom } from 'src/lib/seeded-random'
-import { CATEGORY, Creature, MakeCreatures } from 'src/model/creatures'
-import { DrawFurblesProps, DrawingApi } from 'src/model/drawing'
+import { AppStateAction, setMetadata } from 'src/model/app-state'
+import { CATEGORY, Creature, MakeCreatures, SetInclusionState } from 'src/model/creatures'
+import { Brush, DrawFurblesProps, DrawingApi } from 'src/model/drawing'
 import { Point, Rectangle } from 'src/model/geometry'
 import { Puzzle } from 'src/model/puzzle'
 import { prune } from 'src/util/object-util'
 import { COLORS as COLOR_VALUES, EYES as EYES_VALUES, SIDES as SIDES_VALUES } from '../constants'
 import { makeInTheRingConfig } from './in-the-ring-config'
+import { makeWalks } from './walks'
 
 interface Props {
-  bounds:        Rectangle
-  complexity:    1 | 2 | 3
-  drawingApi:    DrawingApi
-  makeCreatures: MakeCreatures
-  seed?:         number
+  bounds:           Rectangle
+  complexity:       1 | 2 | 3
+  dispatchAppState: (action: AppStateAction) => void
+  drawingApi:       DrawingApi
+  makeCreatures:    MakeCreatures
+  seed?:            number
 }
 
 const { COLOR, EYES, SIDES } = CATEGORY
 
 export function makeInTheRingPuzzle(props: Props): Puzzle {
-  const { bounds, complexity, drawingApi, makeCreatures, seed = getRandomSeed()} = props
+  const { bounds, complexity, dispatchAppState, drawingApi, makeCreatures, seed = getRandomSeed()} = props
 
   const name = `In The Ring • Level ${complexity}`
   const random = makeSeededRandom(seed)
@@ -35,9 +38,10 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
   const count = getCount()
 
   let successFlash = 0
-  const walks: Walk[] = []
+  const walks = makeWalks()
 
   const creatures = makeCreatures({ colors, count, eyes, seed, sides })
+  const inRing = new Set<Creature>()
 
   const inGroup = prune({
     [COLOR]: isUsed(COLOR) ? colors[0] : undefined,
@@ -51,7 +55,8 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
     [SIDES]: sides,
   })
 
-  const [inGroupCreatures] = splitArray(creatures, isInGroup)
+  const inGroupCreatures = getInGroupCreatures(inGroup, creatures)
+  updateMetadata()
 
   const puzzle: Puzzle = { creatures, drawEnter, drawMain, drawExit, name, seed, onDrop }
   const config = makeInTheRingConfig({ bounds, creatures, inGroup, inGroupCreatures, joinGroup })
@@ -82,17 +87,6 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
     }
   }
 
-  function isInGroup(creature: Creature): boolean {
-    const { color, eyes, sides } = creature
-    const { [COLOR]: groupColor, [EYES]: groupEyes, [SIDES]: groupSides } = inGroup
-
-    return (
-      (!groupColor || color === groupColor) &&
-      (!groupEyes || eyes === groupEyes) &&
-      (!groupSides || sides === groupSides)
-    )
-  }
-
   function drawEnter(props: DrawFurblesProps, proportion: number): void {
     const { brush, pointer } = props
     const { drawCircle } = drawingApi
@@ -106,22 +100,25 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
     const { brush, pointer } = props
     const { drawCircle } = drawingApi
 
-    walks.forEach(walk => walk.update())
+    walks.update()
 
     if (successFlash > 0) {
-      successFlash -= 0.016
-      const { width, color } = brush
-      const flashBrush = {
-        ...brush,
-        width: width * (1 + successFlash * 3),
-        color: mix(color as string, 'lime', successFlash * 2).hex(),
-      }
-      drawCircle({ brush: flashBrush, circle: config.circle })
+      successFlash -= 0.008
+      drawCircle({ brush: getFlashBrush(brush, successFlash), circle: config.circle })
     } else {
       successFlash = 0.000
       drawCircle({ brush, circle: config.circle })
     }
     creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
+  }
+
+  function getFlashBrush(brush: Brush, successFlash: number): Brush {
+    const { width, color } = brush
+    return {
+      ...brush,
+      width: width * (1 + successFlash * 3),
+      color: mix(color as string, 'lime', successFlash * 2).hex(),
+    }
   }
 
   function drawExit(props: DrawFurblesProps, proportion: number): void {
@@ -133,37 +130,53 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
     creatures.forEach(creature => creature.draw({ alpha, pointer, scale: 1, target: null }))
   }
 
-  function onDrop(down: Point, current: Point, creature: Creature): void {
-    if (isDroppedInCircle()) {
-      return isInGroup()
-        ? acceptCreature()
-        : rejectCreature()
-    }
+  function onDrop(_: Point, current: Point, creature: Creature): void {
+    isDroppedInCircle()
+      ? inRing.add(creature)
+      : inRing.delete(creature)
 
-    console.log('puzzle.onDrop', down, current, creature)
+    updateMetadata()
 
     function isDroppedInCircle(): boolean {
       const { circle: { center, radius } } = config
       return getDistance(center, current) < radius
     }
 
-    function isInGroup(): boolean {
-      return inGroupCreatures.includes(creature)
-    }
+    // function acceptCreature(creature: Creature): void {
+    //   successFlash = 1.0
+    //   inRing.add(creature)
+    // }
 
-    function acceptCreature(): void {
-      successFlash = 1.0
-    }
+    // function rejectCreature(): void {
+    //   walks.add(creature, down)
+    // }
+  }
 
-    function rejectCreature(): void {
+  function updateMetadata(): void {
+    const [right, wrong] = splitArray(creatures, isInRightPlace)
+    dispatchAppState(setMetadata({ right, wrong }))
 
+    function isInRightPlace(creature: Creature): boolean {
+      return inRing.has(creature) == isInGroup(creature)
     }
+  }
+
+  function isInGroup(creature: Creature): boolean {
+    return inGroupCreatures.includes(creature)
   }
 }
 
+function getInGroupCreatures(inGroup: SetInclusionState, creatures: Creature[]): Creature[] {
+  return creatures.filter(isInGroup)
 
-interface Walk {
-  creature: Creature
-  target:   Point
-  update:   VoidFunction
+  function isInGroup(creature: Creature): boolean {
+    const { color, eyes, sides } = creature
+    const { [COLOR]: groupColor, [EYES]: groupEyes, [SIDES]: groupSides } = inGroup
+
+    return (
+      (!groupColor || color === groupColor) &&
+      (!groupEyes || eyes === groupEyes) &&
+      (!groupSides || sides === groupSides)
+    )
+  }
 }

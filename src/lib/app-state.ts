@@ -15,6 +15,7 @@ export function stateReducer(state: AppState, action: AppStateAction): AppState 
     case STATE_ACTION_TYPE.ITERATE:      return isPaused ? state : iterate(state, action.deltaTime)
     case STATE_ACTION_TYPE.TRIGGER_PIE:  return triggerPie(state)
     case STATE_ACTION_TYPE.TOGGLE_PAUSE: return togglePause(state)
+    case STATE_ACTION_TYPE.SET_METADATA: return setMetadata(action.metadata)
   }
 
   function iterate(state: AppState, deltaTime: number): AppState {
@@ -37,6 +38,10 @@ export function stateReducer(state: AppState, action: AppStateAction): AppState 
 
   function togglePause(state: AppState): AppState {
     return { ...state, isPaused: !state.isPaused }
+  }
+
+  function setMetadata<T extends object>(metadata: T): AppState {
+    return { ...state, metadata }
   }
 }
 
@@ -118,8 +123,8 @@ function makeTransitionState(props: TransitionProps): TransitionState {
 
     function resolve(chart: CHART_TYPE | undefined, puzzle: PuzzleSetupModel | undefined, typeOrPartial: TransitionConfig, time: number): AppState {
       return typeof typeOrPartial === 'string'
-        ? withDuration({ chart, puzzle, type: typeOrPartial, time })
-        : withDuration({ chart, puzzle, ...typeOrPartial, time })
+        ? withDuration({ ...state, chart, puzzle, type: typeOrPartial, time })
+        : withDuration({ ...state, chart, puzzle, ...typeOrPartial, time })
     }
   }
 }

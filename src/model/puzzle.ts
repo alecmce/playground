@@ -11,3 +11,8 @@ export interface Puzzle {
   drawExit:   (props: DrawFurblesProps, p: number) => void
   onDrop:     (down: Point, current: Point, creature: Creature) => void
 }
+
+export interface InTheRingMetadata {
+  right: Creature[]
+  wrong: Creature[]
+}

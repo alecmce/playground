@@ -30,6 +30,8 @@ export function useCreatureFactory(props: Partial<Props>): MakeCreatures | undef
   }, [bounds, brush, drawingApi, maxCount, radius])
 }
 
+let NEXT_CREATURE_ID = 0
+
 export function makeCreatureFactory(props: Props): MakeCreatures {
   const { bounds, brush: baseBrush, drawingApi, maxCount, radius } = props
   const { drawPolygon, drawEyes } = drawingApi
@@ -46,6 +48,7 @@ export function makeCreatureFactory(props: Props): MakeCreatures {
     return makePositions({ bounds, count, maxCount, radius, seed }).map(makeCreature)
 
     function makeCreature(center: Point): Creature {
+      const id = `creature-${NEXT_CREATURE_ID++}`
       const sides = random.from(sidesList)
       const color = random.from(colorsList)
       const eyes = random.from(eyesList)
@@ -53,7 +56,7 @@ export function makeCreatureFactory(props: Props): MakeCreatures {
       const polygon = makeRegularPolygon({ center: { x: 0, y: 0 }, radius, rotation, sides: parseInt(sides, 10) })
       const baseFill = { color }
 
-      const self = { center, color, draw, eyes, radius, isUnder, sides }
+      const self = { id, center, color, draw, eyes, radius, isUnder, sides }
       return self
 
       function draw(props: CreatureDrawProps): void {

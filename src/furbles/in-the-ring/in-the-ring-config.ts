@@ -6,6 +6,7 @@ import { Assignment } from 'src/model/charts'
 import { Creature, SetInclusionState, SetInclusionValues } from 'src/model/creatures'
 import { Circle, Point, Polygon, Rectangle } from 'src/model/geometry'
 import { makePlaceAssignmentOptions } from 'src/util/make-place-assignment-options'
+import { isDefined } from 'src/util/object-util'
 
 interface Props {
   bounds:           Rectangle
@@ -36,6 +37,10 @@ const DEG_45 = Math.PI / 4
 export function makeInTheRingConfig(props: Props): InTheRingConfig {
   const { bounds, creatures, inGroup, joinGroup, inGroupCreatures } = props
 
+  if (!inGroupCreatures.length) {
+    throw new Error('No creatures in group')
+  }
+
   const boundsWidth = Math.abs(bounds.right - bounds.left)
   const boundsHeight = Math.abs(bounds.bottom - bounds.top)
 
@@ -46,7 +51,7 @@ export function makeInTheRingConfig(props: Props): InTheRingConfig {
   const inGroupCircles = makeFibonacciCircles({ center, count: inGroupCreatures.length, radius: circleRadius })
   const outGroupBounds = { ...bounds, right: bounds.left + boundsWidth / 2 }
   const outGroupCircles = makeRectangleCircles({ count: creatures.length, rectangle: outGroupBounds })
-  const radius = Math.min(getRadius(inGroupCircles), getRadius(outGroupCircles))
+  const radius = Math.min(...[getRadius(inGroupCircles), getRadius(outGroupCircles)].filter(isDefined))
 
   const assignments = assignOptions(getOptions())
   assignments.forEach(setAssignment)
@@ -81,6 +86,6 @@ function toPoint(circle: Circle): Point {
   return circle.center
 }
 
-function getRadius(circles: Circle[]): number {
-  return circles[0].radius
+function getRadius(circles: Circle[]): number | undefined {
+  return circles[0]?.radius
 }

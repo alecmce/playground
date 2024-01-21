@@ -13,7 +13,7 @@ interface Props {
 export function AppCard(props: Props): ReactElement {
   const { description, link, name, tags } = props
   return (
-    <Card size="sm" variant="soft" sx={{width: 300}}>
+    <Card size="sm" variant="soft" sx={{width: 300, minHeight: 200}}>
       <CardContent>
         <Stack direction="column">
           <Typography level="h2">{ name }</Typography>

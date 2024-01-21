@@ -20,6 +20,7 @@ interface Props {
   barChart:         CategorisationChart | undefined
   carrollDiagram:   SetInclusionChart | undefined
   dispatchAppState: (action: AppStateAction) => void
+  infoContainer:    HTMLDivElement | null
   makeCreatures:    MakeCreatures | undefined
   maxCount:         number
   pieChart:         CategorisationChart | undefined
@@ -35,6 +36,7 @@ interface Props {
 export interface RenderedProps extends Props {
   barChart:       CategorisationChart
   carrollDiagram: SetInclusionChart
+  infoContainer:  HTMLDivElement | null
   makeCreatures:  MakeCreatures
   pieChart:       CategorisationChart
   vennDiagram:    SetInclusionChart
@@ -50,7 +52,7 @@ export function Ui(props: Props): ReactElement | null {
 
 function Component(props: RenderedProps): ReactElement | null {
   const {
-    barChart, carrollDiagram, dispatchAppState, makeCreatures, maxCount, pieChart, population, setPopulation,
+    barChart, carrollDiagram, dispatchAppState, infoContainer, maxCount, pieChart, population, setPopulation,
     setShowDialog, showDialog, state, vennDiagram, puzzleName,
   } = props
   const { type } = state
@@ -85,7 +87,8 @@ function Component(props: RenderedProps): ReactElement | null {
       case STATE_TYPE.PIE_CHART_CONFIG:       return <PieChartConfig pieChart={pieChart} dispatchAppState={dispatchAppState} />
       case STATE_TYPE.VENN_DIAGRAM_CONFIG:    return <VennDiagramConfig diagram={vennDiagram} dispatchAppState={dispatchAppState} />
       case STATE_TYPE.IN_THE_RING_CONFIG:     return <InTheRingConfig dispatchAppState={dispatchAppState} />
-      case STATE_TYPE.PUZZLE_MAIN:            return <PuzzleActive dispatchAppState={dispatchAppState} state={state} name={puzzleName} />
+      case STATE_TYPE.ENTER_PUZZLE:           return <PuzzleActive dispatchAppState={dispatchAppState} infoContainer={infoContainer} state={state} name={puzzleName} />
+      case STATE_TYPE.PUZZLE_MAIN:            return <PuzzleActive dispatchAppState={dispatchAppState} infoContainer={infoContainer} state={state} name={puzzleName} />
       default:                                return null
     }
   }
