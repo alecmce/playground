@@ -19,11 +19,11 @@ interface Props {
 
 const NULL_HANDLERS: InteractionHandlers<Creature | null> = {
   isOver:  () => null,
-  onDown:  () => false,
+  onDown:  () => void 0,
   onDrag:  () => void 0,
   onDrop:  () => void 0,
   onHover: () => void 0,
-  onMove:  () => void 0,
+  onMove:  () => false,
   onUp:    () => void 0,
 }
 
@@ -57,13 +57,15 @@ export function useCreatureInteraction(props: Props): void {
         setTarget(target)
       }
 
-      function onMove(point: Point): void {
+      function onMove(point: Point): boolean {
         setPointer(point)
         chart?.setPointer(point, POINTER_ACTION.MOVE)
+        return true
       }
 
       function onUp(point: Point): void {
         chart?.setPointer(point, POINTER_ACTION.UP)
+        console.log('onUp', point)
         onClick?.(isOver(point))
       }
 

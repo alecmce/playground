@@ -37,7 +37,7 @@ export function usePointerHandlers<T>(props: Props<T>): void {
 
       function onPointerMove(event: PointerEvent): void {
         const point = getPoint(event)
-        onMove(point)
+        state.current.isDrag = !!state.current.down && onMove(point)
 
         if (state.current.isDrag) {
           onDrag(state.current.down!, point, state.current.item!)
@@ -52,7 +52,8 @@ export function usePointerHandlers<T>(props: Props<T>): void {
 
         window.addEventListener('pointerup', onPointerUp)
         state.current.down = point
-        state.current.isDrag = onDown(point, state.current.item)
+        state.current.isDrag = false
+        onDown(point, state.current.item)
       }
 
       function onPointerUp(event: PointerEvent): void {

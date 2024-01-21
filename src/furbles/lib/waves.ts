@@ -53,6 +53,7 @@ export function makeWaves(props: Props): Waves {
 
   function apply(creature: Creature, hands: HANDS, extendsWave: boolean = false): void {
     const current = waves.get(creature)
+    console.log('wave', creature.id)
     if (current && extendsWave) {
       current.duration += duration
     } else {
