@@ -1,28 +1,33 @@
 import { CheckCircle, Dangerous } from '@mui/icons-material'
 import { Sheet, Stack, Typography } from '@mui/joy'
 import { ReactElement, useState } from 'react'
+import { AppStateAction, PUZZLE_TYPE, PuzzleSetupModel, STATE_TYPE, jump } from 'src/model/app-state'
 import { Creature } from 'src/model/creatures'
 import { InTheRingMetadata } from 'src/model/puzzle'
 import { HelpButton } from './HelpButton'
 import { RefreshButton } from './RefreshButton'
 
 interface Props {
-  metadata: InTheRingMetadata
+  dispatchAppState: (action: AppStateAction) => void
+  metadata:         InTheRingMetadata
+  puzzle:           PuzzleSetupModel
 }
 
 export function InTheRingInfo(props: Props): ReactElement {
+  const { dispatchAppState } = props
+
   const [showHelp, setShowHelp] = useState(false)
 
-  const backgroundColor = showHelp ? 'rgb(240, 244, 248)' : 'rgb(240, 244, 248, 0.8)'
-
   return (
-    <Sheet variant="soft" style={{ padding: '0 12px', borderRadius: '12px', backgroundColor }}>
+    <Sheet>
       <Stack spacing={2} direction="row" sx={{ mb: 0, justifyContent: 'center', alignItems: 'center' }}>
         <Typography level="h2" fontSize="2rem" color="primary" style={{marginTop: '0.2em'}}>In The Ring</Typography>
         <HelpButton onClick={onHelpClick} label="Help" />
         <RefreshButton onClick={onRefresh} label="New Puzzle" />
-        <Dots {...props} />
       </Stack>
+      <Sheet variant="soft" style={{ padding: '6px 18px', borderRadius: '12px', backgroundColor: 'rgba(240, 244, 248, 0.8)' }}>
+        <Dots {...props} />
+      </Sheet>
       { showHelp && <Help /> }
     </Sheet>
   )
@@ -32,35 +37,49 @@ export function InTheRingInfo(props: Props): ReactElement {
   }
 
   function onRefresh(): void {
-
+    const { puzzle: { complexity } } = props
+    const puzzle: PuzzleSetupModel = { complexity, type: PUZZLE_TYPE.IN_THE_RING }
+    dispatchAppState(jump({ type: STATE_TYPE.ENTER_PUZZLE, time: 0, puzzle }))
   }
 }
 
 const RIGHT = '#33CC00'
 const WRONG = '#ff8000'
+const SIZE = '3em'
+const TYPOGRAPHY_SIZE = '2.5em'
 
 function Dots(props: Props): ReactElement {
   const { metadata: { right, wrong } } = props
 
   const count = right.length  + wrong.length
 
-  if (count > 6) {
-    return (
-      <Stack direction="row" style={{height: '4rem', justifyContent: 'center', alignItems: 'center'}}>
-        <Typography fontSize="3rem" style={{color:RIGHT, marginTop: '0.2em'}}>{ right.length }</Typography>
-        <CheckCircle style={{ fontSize: '4rem', color: RIGHT }} />
-        <Dangerous style={{  fontSize: '4rem', color: WRONG }} />
-        <Typography fontSize="3rem" style={{color:WRONG, marginTop: '0.2em'}}>{ wrong.length }</Typography>
-      </Stack>
-    )
-  } else {
-    return (
-      <Stack direction="row" style={{height: '4rem', justifyContent: 'center', alignItems: 'center'}}>
-        { right?.map((c: Creature) => <CheckCircle key={c.id} style={{ fontSize: '4rem', color: RIGHT }} />) }
-        { wrong?.map((c: Creature) => <Dangerous key={c.id} style={{  fontSize: '4rem', color: WRONG }} />) }
-      </Stack>
-    )
-  }
+  return count > 6
+    ? <NumberedDots {...props} />
+    : <IndividualDots {...props} />
+}
+
+function NumberedDots(props: Props): ReactElement {
+  const { metadata: { right, wrong } } = props
+
+  return (
+    <Stack direction="row" style={{height: SIZE, justifyContent: 'center', alignItems: 'center'}}>
+      <Typography fontSize={TYPOGRAPHY_SIZE} style={{color:RIGHT, marginTop: '0.2em'}}>{ right.length }</Typography>
+      <CheckCircle style={{ fontSize: SIZE, color: RIGHT }} />
+      <Dangerous style={{  fontSize: SIZE, color: WRONG }} />
+      <Typography fontSize={TYPOGRAPHY_SIZE} style={{color:WRONG, marginTop: '0.2em'}}>{ wrong.length }</Typography>
+    </Stack>
+  )
+}
+
+function IndividualDots(props: Props): ReactElement {
+  const { metadata: { right, wrong } } = props
+
+  return (
+    <Stack direction="row" style={{height: SIZE, justifyContent: 'center', alignItems: 'center'}}>
+      { right?.map((c: Creature) => <CheckCircle key={c.id} style={{ fontSize: SIZE, color: RIGHT }} />) }
+      { wrong?.map((c: Creature) => <Dangerous key={c.id} style={{  fontSize: SIZE, color: WRONG }} />) }
+    </Stack>
+  )
 }
 
 function Help(): ReactElement {

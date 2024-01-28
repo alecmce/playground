@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/joy'
 import { Portal } from '@mui/material'
 import { ReactElement } from 'react'
-import { AppState, AppStateAction, PUZZLE_TYPE, STATE_TYPE, jump } from 'src/model/app-state'
+import { AppState, AppStateAction, PUZZLE_TYPE, PuzzleSetupModel, STATE_TYPE, jump } from 'src/model/app-state'
 import { InTheRingMetadata } from 'src/model/puzzle'
 import { CloseButton } from './CloseButton'
 import { InTheRingInfo } from './InTheRingPuzzleInfo'
@@ -33,12 +33,22 @@ export function PuzzleActive(props: Props): ReactElement {
 }
 
 function PuzzleInfo(props: Props): ReactElement | null {
-  const { state } = props
+  const { dispatchAppState, state } = props
   const { puzzle, metadata } = state
 
   switch (puzzle?.type) {
-    case PUZZLE_TYPE.IN_THE_RING: return metadata ? <InTheRingInfo metadata={metadata as InTheRingMetadata} /> : null
+    case PUZZLE_TYPE.IN_THE_RING: return metadata ? InTheRing() : null
     default:                      return null
+  }
+
+  function InTheRing(): ReactElement {
+    return (
+      <InTheRingInfo
+        dispatchAppState={dispatchAppState}
+        metadata={metadata as InTheRingMetadata}
+        puzzle={puzzle as PuzzleSetupModel}
+      />
+    )
   }
 }
 

@@ -1,12 +1,11 @@
-import { mix } from 'chroma-js'
 import { splitArray } from 'src/lib/array-util'
-import { getDistance } from 'src/lib/math-utils'
+import { clamp, getDistance } from 'src/lib/math-utils'
 import { getRandomSeed, makeSeededRandom } from 'src/lib/seeded-random'
 import { AppStateAction, setMetadata } from 'src/model/app-state'
 import { CATEGORY, Creature, MakeCreatures, SetInclusionState } from 'src/model/creatures'
-import { Brush, DrawFurblesProps, DrawingApi } from 'src/model/drawing'
+import { DrawFurblesProps, DrawingApi } from 'src/model/drawing'
 import { Point, Rectangle } from 'src/model/geometry'
-import { Puzzle } from 'src/model/puzzle'
+import { InTheRingMetadata, Puzzle } from 'src/model/puzzle'
 import { prune } from 'src/util/object-util'
 import { COLORS as COLOR_VALUES, EYES as EYES_VALUES, SIDES as SIDES_VALUES } from '../constants'
 import { makeInTheRingConfig } from './in-the-ring-config'
@@ -40,7 +39,7 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
   let successFlash = 0
   const walks = makeWalks()
 
-  const creatures = makeCreatures({ colors, count, eyes, seed, sides })
+  const creatures = makeCreatures({ colors, count, eyes, seed, sides }, { atLeastOne: true })
   const inRing = new Set<Creature>()
 
   const inGroup = prune({
@@ -97,28 +96,18 @@ export function makeInTheRingPuzzle(props: Props): Puzzle {
   }
 
   function drawMain(props: DrawFurblesProps): void {
-    const { brush, pointer } = props
+    const { brush, pointer, state } = props
+    const { metadata } = state
+    const { right, wrong } = (metadata as InTheRingMetadata) ?? { right: [], wrong: [] }
     const { drawCircle } = drawingApi
+
+    const successDelta = 0.008 * (wrong.length == 0 && right.length > 0 ? 1 : -1)
+    successFlash = clamp(successFlash + successDelta, 0, 1)
 
     walks.update()
 
-    if (successFlash > 0) {
-      successFlash -= 0.008
-      drawCircle({ brush: getFlashBrush(brush, successFlash), circle: config.circle })
-    } else {
-      successFlash = 0.000
-      drawCircle({ brush, circle: config.circle })
-    }
+    drawCircle({ brush, fill: { color: 'lime', alpha: successFlash * 0.2 }, circle: config.circle })
     creatures.forEach(creature => creature.draw({ pointer, scale: 1, target: null }))
-  }
-
-  function getFlashBrush(brush: Brush, successFlash: number): Brush {
-    const { width, color } = brush
-    return {
-      ...brush,
-      width: width * (1 + successFlash * 3),
-      color: mix(color as string, 'lime', successFlash * 2).hex(),
-    }
   }
 
   function drawExit(props: DrawFurblesProps, proportion: number): void {

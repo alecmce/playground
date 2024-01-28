@@ -62,6 +62,10 @@ export interface SetInclusionValues {
   [CATEGORY.SIDES]?: string[]
 }
 
+export interface MakeCreaturesOpts {
+  atLeastOne?: boolean
+}
+
 export interface MakeCreatures {
-  (model: PopulationModel): Creature[]
+  (model: PopulationModel, opts?: MakeCreaturesOpts): Creature[]
 }
